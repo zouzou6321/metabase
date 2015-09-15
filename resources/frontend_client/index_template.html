@@ -22,41 +22,8 @@
                             <mb-logo-icon class="text-white m1"></mb-logo-icon>
                         </a>
                     </li>
-                    <li>
-                        <div class="NavDropdown ml1 md-ml3" dropdown on-toggle="toggled(open)">
-                            <a class="NavDropdown-button NavItem text-white cursor-pointer p2 flex align-center" dropdown-toggle>
-                                <span class="NavDropdown-button-layer">
-                                    Dashboards
-                                    <mb-icon class="ml1" name="chevrondown" width="8px" height="8px"></mb-icon>
-                                </span>
-                            </a>
-                            <div class="NavDropdown-content DashboardList" ng-controller="DashList">
-                                <div class="NavDropdown-content-layer text-white text-centered" ng-if="dashboards.length === 0">
-                                    <div class="p2"><span class="QuestionCircle">?</span></div>
-                                    <div class="px2 py1 text-bold">You don’t have any dashboards yet.</div>
-                                    <div class="px2 pb2 text-light">Dashboards group visualizations for frequent questions in a single handy place.</div>
-                                    <div class="border-top border-light">
-                                        <a class="Dropdown-item block text-white no-decoration" href="#" mb-dashboard-create>Create a new dashboard</a>
-                                    </div>
-                                </div>
-                                <ul class="NavDropdown-content-layer" ng-if="dashboards.length > 0">
-                                    <li class="block" ng-repeat="dash in dashboards">
-                                        <a class="Dropdown-item block text-white no-decoration" href="/dash/{{dash.id}}">
-                                            <div class="flex text-bold">
-                                                {{dash.name}}
-                                                <mb-icon class="ml1 flex flex-align-right align-center" name="lock" width="12px" height="12px" ng-if="dash.public_perms === 0"></mb-icon>
-                                            </div>
-                                            <div class="mt1 text-light text-brand-light" ng-if="dash.description">
-                                                {{dash.description}}
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li class="block border-top border-light">
-                                        <a class="Dropdown-item block text-white no-decoration" href="#" mb-dashboard-create>Create a new dashboard</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
+                    <li ng-controller="DashList">
+                        <div mb-dash-dropdown dashboards="dashboards"></div>
                     </li>
                     <li class="flex-align-right">
                         <a class="rounded inline-block bg-white text-brand cursor-pointer p2 no-decoration" href="/q">New <span class="hide sm-show">Question</span></a>

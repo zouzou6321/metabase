@@ -3,7 +3,8 @@
 import { Provider } from 'react-redux';
 import { DevTools, DebugPanel } from 'redux-devtools/lib/react';
 
-import ProfileLink from './components/ProfileLink.react'
+import ProfileLink from './components/ProfileLink.react';
+import DashDropdown from './components/DashDropdown.react';
 
 /* Directives */
 var MetabaseDirectives = angular.module('metabase.directives', []);
@@ -227,6 +228,21 @@ NavbarDirectives.directive('mbProfileLink', [function () {
         scope: {
             context: '=',
             user: '='
+        },
+    };
+}]);
+
+NavbarDirectives.directive('mbDashDropdown', [function () {
+
+    return {
+        restrict: 'A',
+        template: '<div mb-react-component="DashDropdown"></div>',
+        controller: ['$scope', function ($scope) {
+            $scope.dashboards = $scope.dashboards;
+            $scope.DashDropdown = DashDropdown;
+        }],
+        scope: {
+            dashboards: '=',
         },
     };
 }]);
