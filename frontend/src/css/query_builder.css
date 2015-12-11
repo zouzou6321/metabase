@@ -676,3 +676,17 @@
     border-left: 2px solid rgba(0,0,0,0.1);
     color: rgba(255,255,255,0.5);
 }
+
+@media print {
+  nav,
+  .PopoverContainer,
+  #react_qb_editor,
+  #react_qb_header {
+    display: none;
+  }
+
+  #react_qb_viz {
+    display: block;
+    width: 100%;
+  }
+}

@@ -70,8 +70,144 @@ export default class QueryVisualizationTable extends Component {
         }
     }
 
+    image1() {
+      return {
+        cols: [
+          { name: 'account ID'},
+          { name: 'signed up'},
+          { name: 'name' },
+          { name: 'industry'},
+          { name: 'city' },
+          { name: 'state' },
+          { name: 'country' },
+          { name: 'timezone' },
+          { name: 'usage_metric'},
+        ],
+        columns: ["Account ID","signed up","name","industry","city","state","country","timezone","usage_metric"  ],
+        rows: [
+          ["2535","12/16/2025","Sacramento Vet School","Education","Sacramento","California","USA","PST","0.3857834134"  ],
+          ["2536","12/16/2025","Ads 4 Cats","Ad Tech","San Francisco","California","USA","PST","3.00541455"  ],
+          ["2537","12/16/2025","Snapcat","Consumer Web","NYC","New York","USA","EST","8.486237851"  ],
+          ["2538","12/16/2025","Two Old White Guys Holding Co","Finance","Omaha ","Nebraska","USA","CST","4.714871215"  ],
+          ["2539","12/16/2025","Walks 4 Dogs","Dog Walking","Seattle","Washington","USA","PST","7.98222469"  ],
+          ["2540","12/16/2025","Doggy Native Advertising LLC","Ad Tech","Atlanta","Georgia","USA","EST","4.104402003"  ],
+          ["2541","12/16/2025","Metaboat Sailing Academy","Education","Half Moon Bay","California","USA","PST","6.263691879"  ],
+          ["2542","12/16/2025","Home Economics ","Education","Portland ","Orgeon","USA","PST","7.779336182"  ],
+          ["2543","12/16/2025","Place Your Products LLC","Ad Tech","Austin","Texas","USA","CST","9.057702976"  ],
+          ["2544","12/16/2025","Royal Prancing Corgis","Dog Walking","London","","UK","GMT","4.098218921"  ],
+          ["2545","12/16/2025","I Will Teach You to be Poor","Finance","NYC","New York","USA","EST","1.841642928"  ],
+          ["2546","12/16/2025","Oak Desks and Handshakes","Finance","NYC","New York","USA","EST","8.095041207"  ],
+          ["2547","12/17/2025","Forex Hustlerz","Finance","NYC","New York","USA","EST","4.28437375"  ],
+          ["2548","12/17/2025","Madoff's Press Relations Agency","Ad Tech","NYC","New York","USA","EST","0.5759267875"  ],
+          ["2549","12/17/2025","Cash for Cats","Finance","NYC","New York","USA","EST","1.806880537"  ],
+          ["2550","12/17/2025","Spot's Day in the Sun","Dog Walking","Fresno","California","","PST","0.3490896712"  ],
+          ["2551","12/17/2025","Fresno School Board","Education","Fresno","California","USA","PST","4.489397874"  ],
+          ["2552","12/17/2025","Modesto School Board","Education","Modesto","California","USA","PST","9.506834922"  ],
+          ["2553","12/17/2025","Reverse Annuities PS","Finance","NYC","New York","USA","EST","1.868229926"  ],
+          ["2554","12/17/2025","No Ponzi Schemes here","Finance","NYC","New York","USA","EST","4.4333974"  ]
+        ]
+      }
+    }
+
+    image2() {
+      return {
+        cols: [
+          { name: 'account ID'},
+          { name: 'signed up'},
+          { name: 'name' },
+          { name: 'industry'},
+          { name: 'city' },
+          { name: 'state' },
+          { name: 'country' },
+          { name: 'timezone' },
+          { name: 'usage_metric'},
+          { name: 'aggressively_onboarded' },
+          { name: 'onboarded_on' },
+        ],
+        columns: ["Account ID","signed up","name","industry","city","state","country","timezone","usage_metric","aggressively_onboarded", "onboarded_on"],
+        rows: [
+          [2535,"12/16/2025","Sacramento Vet School","Education","Sacramento","California","USA","PST",4.273828671,"TRUE",""  ],
+          [2536,"12/16/2025","Ads 4 Cats","Ad Tech","San Francisco","California","USA","PST",3.951916388,"TRUE","12/22/2025"  ],
+          [2537,"12/16/2025","Snapcat","Consumer Web","NYC","New York","USA","EST",2.154730636,"TRUE",""  ],
+          [2538,"12/16/2025","Two Old White Guys Holding Co","Finance","Omaha ","Nebraska","USA","CST",9.468555752,"TRUE",""  ],
+          [2539,"12/16/2025","Walks 4 Dogs","Dog Walking","Seattle","Washington","USA","PST",4.983506409,"TRUE",""  ],
+          [2540,"12/16/2025","Doggy Native Advertising LLC","Ad Tech","Atlanta","Georgia","USA","EST",5.87364456,"TRUE",""  ],
+          [2541,"12/16/2025","Metaboat Sailing Academy","Education","Half Moon Bay","California","USA","PST",9.80604079,"TRUE","12/22/2025"  ],
+          [2542,"12/16/2025","Home Economics ","Education","Portland ","Orgeon","USA","PST",1.601927648,"TRUE","12/22/2025"  ],
+          [2543,"12/16/2025","Place Your Products LLC","Ad Tech","Austin","Texas","USA","CST",6.010537844,"TRUE",""  ],
+          [2544,"12/16/2025","Royal Prancing Corgis","Dog Walking","London","","UK","GMT",8.951050766,"TRUE",""  ],
+          [2545,"12/16/2025","I Will Teach You to be Poor","Finance","NYC","New York","USA","EST",0.4752397492,"TRUE",""  ],
+          [2546,"12/16/2025","Oak Desks and Handshakes","Finance","NYC","New York","USA","EST",3.354940644,"TRUE",""  ],
+          [2547,"12/17/2025","Forex Hustlerz","Finance","NYC","New York","USA","EST",4.702762113,"TRUE",""  ],
+          [2548,"12/17/2025","Madoff's Press Relations Agency","Ad Tech","NYC","New York","USA","EST",1.683754394,"TRUE",""  ],
+          [2549,"12/17/2025","Cash for Cats","Finance","NYC","New York","USA","EST",9.944289699,"TRUE","12/22/2025"  ],
+          [2550,"12/17/2025","Spot's Day in the Sun","Dog Walking","Fresno","California","","PST",3.20274191,"TRUE",""  ],
+          [2551,"12/17/2025","Fresno School Board","Education","Fresno","California","USA","PST",5.519938952,"TRUE",""  ],
+          [2552,"12/17/2025","Modesto School Board","Education","Modesto","California","USA","PST",3.008171693,"TRUE","12/22/2025"  ],
+          [2553,"12/17/2025","Reverse Annuities PS","Finance","NYC","New York","USA","EST",0.6949899519,"TRUE",""  ],
+          [2554,"12/17/2025","No Ponzi Schemes here","Finance","NYC","New York","USA","EST",1.540085819,"TRUE",""  ]
+        ]
+      }
+    }
+
+    image3() {
+        return {
+          cols: [
+            {name: 'Industry / aggressively_onboarded'},
+            {name: 'yes'},
+            {name: 'no'},
+          ],
+          columns: ['Industry / aggressively_onboarded', 'Yes', 'No'],
+          rows: [
+            ['Education', 1, 300],
+            ['Ad Tech', 8, 80,],
+            ['Finance', 20, 200],
+            ['Consumer Web', 10, 208],
+            ['Dog Walking', 61, 112],
+          ]
+        }
+    }
+
+    image4() {
+        return {
+          cols: [
+            {name: 'Status / aggressively_onboarded'},
+            {name: 'yes'},
+            {name: 'no'},
+          ],
+          columns: ['Timezone / status', 'Yes', 'No'],
+          rows: [
+            ['trial', 0, 0],
+            ['paid', 92, 800,],
+            ['unsubscribed', 8, 100],
+            ['Total', 100, 900],
+          ]
+        }
+    }
+
+    image5() {
+        return {
+          cols: [
+            {name: 'Timezone / status'},
+            {name: 'trial'},
+            {name: 'paid'},
+            {name: 'unsubscribed'},
+          ],
+          columns: ['Timezone / status', 'trial', 'paid', 'unsubscribed'],
+          rows: [
+            ['EST', 0, 0, 42],
+            ['CMT', 0, 10, 2],
+            ['PST', 0, 35, 10],
+            ['', '', 85, 14],
+          ]
+        }
+    }
+
     componentDidMount() {
         this.calculateSizing(this.state);
+        this.setState({
+          data: this.image4()
+        })
     }
 
     shouldComponentUpdate(nextProps, nextState) {

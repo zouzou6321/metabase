@@ -146,6 +146,7 @@
                                                                     "www.google-analytics.com"
                                                                     "*.googleapis.com"
                                                                     "*.gstatic.com"
+                                                                    "localhost:8080"
                                                                     "js.intercomcdn.com"
                                                                     "*.intercom.io"]
                                                       :style-src   ["'unsafe-inline'"
@@ -158,7 +159,9 @@
                                                       :connect-src ["'self'"
                                                                     "metabase.us10.list-manage.com"
                                                                     "*.intercom.io"
-                                                                    "wss://*.intercom.io"]}] ; allow websockets as well
+                                                                    "wss://*.intercom.io"
+                                                                    "localhost:8080"
+                                                                    "ws://localhost:8080"]}] ; allow websockets as well
                                           (format "%s %s; " (name k) (apply str (interpose " " vs)))))})
 
 (defsetting ssl-certificate-public-key
