@@ -1,7 +1,3 @@
-.Nav {
-    z-index: 2;
-}
-
 .CheckBg {
     background-image: url('/app/components/icons/assets/header_rect.svg');
     background-repeat: repeat;
@@ -9,11 +5,6 @@
 
 .CheckBg-offset {
   background-position-y: -15px;
-}
-
-.Main {
-    z-index: 1;
-    position: relative;
 }
 
 .NavItem {
@@ -43,33 +34,11 @@
     }
 }
 
-.HomeTab {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 4px 4px 0 0;
-    text-decoration: none;
-    padding: 0.55rem 1rem;
-    transition: background .15s linear;
-}
-
-@media screen and (--breakpoint-min-sm) {
-    .HomeTab {
-        padding: 0.65rem 1.35rem;
-    }
-}
-
-.HomeTab:hover {
-    background-color: rgba(255, 255, 255, 0.4);
-    cursor: pointer;
-}
-
-.HomeTab.HomeTab--active {
-    background-color: #fff;
-}
-
 .bullet {
     position: relative;
     margin-left: 1.2em;
 }
+
 .bullet:before {
     content: "\2022";
     color: #6FB0EB;
