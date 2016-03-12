@@ -37,4 +37,9 @@ var Urls = {
     }
 }
 
+/* given a location and a path determine if the current path is active
+   used to determine if a nav item is active
+*/
+export const isActive = (location, path) => location.path().indexOf(path) >= 0;
+
 export default Urls;

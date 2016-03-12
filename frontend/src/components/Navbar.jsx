@@ -6,6 +6,8 @@ import Icon from "metabase/components/Icon.jsx";
 import LogoIcon from "metabase/components/LogoIcon.jsx";
 import ProfileLink from "metabase/components/ProfileLink.jsx";
 
+import AdminNav from "metabase/admin/components/AdminNav.jsx";
+
 // TODO - this relies on props.location, which is angular's $location service
 
 export default class Navbar extends Component {
@@ -37,46 +39,6 @@ export default class Navbar extends Component {
 
     isActive(path) {
         return this.props.location.path().indexOf(path) >= 0;
-    }
-
-    renderAdminNav() {
-        const classes = "NavItem py1 px2 no-decoration";
-
-        return (
-            <nav className="AdminNav">
-                <div className="wrapper flex align-center">
-                    <div className="NavTitle flex align-center">
-                        <Icon name={'gear'} className="AdminGear" width={22} height={22}></Icon>
-                        <span className="NavItem-text ml1 hide sm-show">Site Administration</span>
-                    </div>
-
-                    <ul className="sm-ml4 flex flex-full">
-                        <li>
-                            <a data-metabase-event={"Navbar;Settings"} className={cx(classes, {"is--selected": this.isActive("/admin/settings")})}  href="/admin/settings/">
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;People"} className={cx(classes, {"is--selected": this.isActive("/admin/people")})} href="/admin/people/">
-                                People
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;Data Model"} className={cx(classes, {"is--selected": this.isActive("/admin/datamodel")})} href="/admin/datamodel/database">
-                                Data Model
-                            </a>
-                        </li>
-                        <li>
-                            <a data-metabase-event={"Navbar;Databases"} className={cx(classes, {"is--selected": this.isActive("/admin/databases")})} href="/admin/databases/">
-                                Databases
-                            </a>
-                        </li>
-                    </ul>
-
-                    <ProfileLink {...this.props}></ProfileLink>
-                </div>
-            </nav>
-        );
     }
 
     renderEmptyNav() {
@@ -135,7 +97,7 @@ export default class Navbar extends Component {
         if (!user) return null;
 
         switch (context) {
-            case "admin": return this.renderAdminNav();
+            case "admin": return <AdminNav {...this.props}/>
             case "auth": return null;
             case "none": return this.renderEmptyNav();
             case "setup": return null;
