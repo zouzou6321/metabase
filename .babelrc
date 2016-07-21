@@ -1,9 +1,12 @@
 {
-  "plugins": ["transform-flow-strip-types", "transform-decorators-legacy"],
-  "presets": ["es2015", "stage-0", "react"],
-  "env": {
-    "development": {
-      "presets": []
+    "plugins": ["transform-flow-strip-types", "transform-decorators-legacy"],
+    "presets": ["es2015", "stage-0", "react"],
+    "env": {
+        "development": {
+            "presets": []
+        },
+        "test": {
+            "plugins": [["babel-plugin-webpack-alias", { "config": "./webpack.config.js" }]]
+        }
     }
-  }
 }

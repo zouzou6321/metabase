@@ -1,10 +1,11 @@
 import jsdom from 'jsdom';
+import angular from 'angular';
 
 const document = jsdom.jsdom('<html><head><script></script></head><body></body></html>');
-const window = document.defaultView;
+const window = document.createWindow();
 
-global.document = document;
 global.window = window;
+global.document = document;
 
 Object.keys(window).forEach((key) => {
   if (!(key in global)) {
