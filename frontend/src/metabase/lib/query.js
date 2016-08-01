@@ -46,6 +46,59 @@ const mbqlCompare = (a, b) => mbqlCanonicalize(a) === mbqlCanonicalize(b)
 
 var Query = {
 
+    // REFACTOR ME
+    clone(query){
+        return JSON.parse(JSON.stringify(query))
+    },
+
+    // Make me
+    getUnderlyingTable(query){
+        return {name: "Fake Table"}
+    },
+
+    filterBySegment(query, segment){
+        return {}
+    },
+
+    objectDetailFor(field, fieldValue){
+        return {}
+    },
+
+    isBrokenOutByTime(query){
+        return true
+    },
+
+    getTimeExtract(query){
+        return  'Day of Week'
+    },
+
+    getAllTimeExtracts(){
+        return ['Hour of Day', 'Day of Week', 'Week of Year', "Month of Year", "Quarter of Year"]
+    },
+    changeTimeExtract(query, field, newTimeExtract){
+        return {}
+    },
+    getTimeGranularity(query){
+        return "Day"
+    },
+
+    getAllTimeGranularities(){
+        return ["Hour", "Day", "Week", "Month", "Quarter", "Year"]
+    },
+    changeTimeGranularity(query, field, newTimGranularity){
+        return {}
+    },
+    toUrl(query){
+        return "/q/fake_url"
+    },
+    replaceAggregationWithMetric(query, metric){
+        return query
+    },
+    replaceBreakout(query, field){
+        return query
+    },
+    // End Make Me
+
     isStructured(dataset_query) {
         return dataset_query && dataset_query.type === "query";
     },
