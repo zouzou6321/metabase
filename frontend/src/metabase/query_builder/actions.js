@@ -149,7 +149,7 @@ export const closeQbTutorial = createAction(CLOSE_QB_TUTORIAL, () => {
 });
 
 export const CLOSE_QB_NEWB_MODAL = "CLOSE_QB_NEWB_MODAL";
-export const closeQbNewbModal = createThunkAction(CLOSE_QB_NEWB_MODAL, () => {
+export const closeQbNewbModal = createThunkAction(CLOSE_QB_NE`WB_MODAL, () => {
     return async (dispatch, getState) => {
         // persist the fact that this user has seen the NewbModal
         const { currentUser } = getState();
@@ -798,6 +798,15 @@ export const cancelQuery = createThunkAction(CANCEL_QUERY, () => {
         }
     };
 });
+
+export const CYCLE_NEXT_QUESTIONS = 'CYCLE_NEXT_QUESTIONS'
+export const cycleNextQuestions = createThunkAction(CYCLE_NEXT_QUESTIONS, () => {
+  return async (dispatch, getState) => {
+  }
+})
+
+export const DISMISS_NEXT_QUESTION_SUGGESTION = 'DISMISS_NEXT_QUESTION_SUGGESTION'
+export const dismissNextQuestionSuggestion = createAction(DISMISS_NEXT_QUESTION_SUGGESTION)
 
 // cellClicked
 export const CELL_CLICKED = "CELL_CLICKED";

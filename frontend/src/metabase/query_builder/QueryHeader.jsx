@@ -258,7 +258,7 @@ export default class QueryHeader extends Component {
         }
 
         // parameters
-        if (Query.isNative(this.props.query)) {
+        if (!this.props.simple && Query.isNative(this.props.query)) {
             const parametersButtonClasses = cx('transition-color', {
                 'text-brand': this.props.uiControls.isShowingTemplateTagsEditor,
                 'text-brand-hover': !this.props.uiControls.isShowingTemplateTagsEditor
@@ -306,7 +306,7 @@ export default class QueryHeader extends Component {
         }
 
         // history icon on saved cards
-        if (!this.props.isNew) {
+        if (!this.props.isNew && !this.props.simple) {
             buttonSections.push([
                 <Tooltip key="history" tooltip="Revision history">
                     <ModalWithTrigger
@@ -328,29 +328,33 @@ export default class QueryHeader extends Component {
         }
 
         // query mode toggle
-        buttonSections.push([
-            <QueryModeButton
-                key="queryModeToggle"
-                mode={this.props.card.dataset_query.type}
-                allowNativeToQuery={this.props.isNew && !this.props.isDirty}
-                nativeForm={this.props.result && this.props.result.data && this.props.result.data.native_form}
-                onSetMode={this.props.setQueryModeFn}
-                tableMetadata={this.props.tableMetadata}
-            />
-        ]);
+        if(!this.props.simple) {
+            buttonSections.push([
+                <QueryModeButton
+                    key="queryModeToggle"
+                    mode={this.props.card.dataset_query.type}
+                    allowNativeToQuery={this.props.isNew && !this.props.isDirty}
+                    nativeForm={this.props.result && this.props.result.data && this.props.result.data.native_form}
+                    onSetMode={this.props.setQueryModeFn}
+                    tableMetadata={this.props.tableMetadata}
+                />
+            ]);
+        }
 
+        if(!this.props.simple) {
+            var dataReferenceButtonClasses = cx('mr1 transition-color', {
+                'text-brand': this.props.isShowingDataReference,
+                'text-brand-hover': !this.state.isShowingDataReference
+            });
+            buttonSections.push([
+                <Tooltip key="dataReference" tooltip="Learn about your data">
+                    <a className={dataReferenceButtonClasses}>
+                        <Icon name='reference' size={16} onClick={this.onToggleDataReference}></Icon>
+                    </a>
+                </Tooltip>
+            ]);
+        }
         // data reference button
-        var dataReferenceButtonClasses = cx('mr1 transition-color', {
-            'text-brand': this.props.isShowingDataReference,
-            'text-brand-hover': !this.state.isShowingDataReference
-        });
-        buttonSections.push([
-            <Tooltip key="dataReference" tooltip="Learn about your data">
-                <a className={dataReferenceButtonClasses}>
-                    <Icon name='reference' size={16} onClick={this.onToggleDataReference}></Icon>
-                </a>
-            </Tooltip>
-        ]);
 
         return (
             <ButtonBar buttons={buttonSections} className="Header-buttonSection borderless" />

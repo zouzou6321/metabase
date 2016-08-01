@@ -291,7 +291,7 @@ export default class TableInteractive extends Component {
             <span className={cx('MB-DataTable', { 'MB-DataTable--pivot': this.props.isPivoted, 'MB-DataTable--ready': this.state.contentWidths })}>
                 <Table
                     ref="table"
-                    rowHeight={35}
+                    rowHeight={45}
                     rowGetter={this.rowGetter}
                     rowsCount={this.props.data.rows.length}
                     width={this.state.width}

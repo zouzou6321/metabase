@@ -102,7 +102,8 @@ const mapStateToProps = (state, props) => {
         revisionApi:               revisionApi,
         loadTableAndForeignKeysFn: loadTableAndForeignKeys,
         autocompleteResultsFn:     (prefix) => autocompleteResults(state.qb.card, prefix),
-        cellIsClickableFn:         (rowIndex, columnIndex) => cellIsClickable(state.qb.queryResult, rowIndex, columnIndex)
+        cellIsClickableFn:         (rowIndex, columnIndex) => cellIsClickable(state.qb.queryResult, rowIndex, columnIndex),
+        simple:                    true
     }
 }
 
@@ -186,33 +187,40 @@ export default class QueryBuilder extends Component {
         const showDrawer = uiControls.isShowingDataReference || uiControls.isShowingTemplateTagsEditor;
         return (
             <div>
-                <div className={cx("QueryBuilder flex flex-column bg-white spread", {"QueryBuilder--showSideDrawer": showDrawer})}>
+                <div className={cx("QueryBuilder flex flex-column bg-white spread", {"QueryBuilder--showSideDrawer": !this.props.simple && showDrawer})}>
                     <div id="react_qb_header">
                         <QueryHeader {...this.props}/>
                     </div>
 
-                    <div id="react_qb_editor" className="z2">
-                        { card && card.dataset_query && card.dataset_query.type === "native" ?
-                            <NativeQueryEditor {...this.props} isOpen={!card.dataset_query.native.query || isDirty} />
-                        :
-                            <div className="wrapper"><GuiQueryEditor {...this.props}/></div>
-                        }
-                    </div>
+                    { !this.props.simple &&
+                        (
+                            <div id="react_qb_editor" className="z2">
+                                { card && card.dataset_query && card.dataset_query.type === "native" ?
+                                    <NativeQueryEditor {...this.props} isOpen={!card.dataset_query.native.query || isDirty} />
+                                :
+                                    <div className="wrapper"><GuiQueryEditor {...this.props}/></div>
+                                }
+                            </div>
+
+                        )
+                    }
 
                     <div id="react_qb_viz" className="flex z1">
                         <QueryVisualization {...this.props}/>
                     </div>
                 </div>
 
-                <div className={cx("SideDrawer", { "SideDrawer--show": showDrawer })}>
-                    { uiControls.isShowingDataReference &&
-                        <DataReference {...this.props} closeFn={() => this.props.toggleDataReference()} />
-                    }
+                { !this.props.simple && (
+                    <div className={cx("SideDrawer", { "SideDrawer--show": showDrawer })}>
+                        { uiControls.isShowingDataReference &&
+                            <DataReference {...this.props} closeFn={() => this.props.toggleDataReference()} />
+                        }
 
-                    { uiControls.isShowingTemplateTagsEditor &&
-                        <TagEditorSidebar {...this.props} onClose={() => this.props.toggleTemplateTagsEditor()} />
-                    }
-                </div>
+                        { uiControls.isShowingTemplateTagsEditor &&
+                            <TagEditorSidebar {...this.props} onClose={() => this.props.toggleTemplateTagsEditor()} />
+                        }
+                    </div>
+                )}
 
                 { uiControls.isShowingTutorial &&
                     <QueryBuilderTutorial onClose={() => this.props.closeQbTutorial()} />

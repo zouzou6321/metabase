@@ -1,3 +1,6 @@
+.MB-DataTable {
+
+}
 
 .MB-DataTable-header:hover {
     cursor: pointer;
@@ -21,14 +24,14 @@
 
 /* what follows is a war crime but such is the state of FE development */
 .MB-DataTable .public_fixedDataTable_main {
-    border-color: rgb(205, 205, 205);
+    /*border-color: rgb(205, 205, 205);*/
 }
 
 .MB-DataTable .public_fixedDataTableCell_main {
-    border-right: 1px solid #e8e8e8;
+    /*border-right: 1px solid #e8e8e8;
     border-bottom: 1px solid #e8e8e8;
     border-top: 1px solid transparent;
-    border-left: 1px solid transparent;
+    border-left: 1px solid transparent;*/
 }
 
 .MB-DataTable .public_fixedDataTableCell_main:hover {

@@ -9,6 +9,8 @@ import VisualizationSettings from './VisualizationSettings.jsx';
 import VisualizationError from "./VisualizationError.jsx";
 import VisualizationResult from "./VisualizationResult.jsx";
 
+import NextQuestions from './containers/NextQuestions.jsx'
+
 import ModalWithTrigger from "metabase/components/ModalWithTrigger.jsx";
 import Query from "metabase/lib/query";
 
@@ -231,7 +233,8 @@ export default class QueryVisualization extends Component {
 
         const wrapperClasses = cx('wrapper full relative mb2 z1', {
             'flex': !isObjectDetail,
-            'flex-column': !isObjectDetail
+            'flex-column': !isObjectDetail,
+            'flex-row': this.props.simple && !isObjectDetail
         });
 
         const visualizationClasses = cx('flex flex-full Visualization z1 px1', {
@@ -241,7 +244,7 @@ export default class QueryVisualization extends Component {
 
         return (
             <div className={wrapperClasses}>
-                {this.renderHeader()}
+                { !this.props.simple && this.renderHeader() }
                 { isRunning && (
                     <div className="Loading spread flex flex-column layout-centered text-brand z2">
                         <LoadingSpinner />
@@ -251,6 +254,7 @@ export default class QueryVisualization extends Component {
                 <div className={visualizationClasses}>
                     {viz}
                 </div>
+                <NextQuestions />
             </div>
         );
     }
