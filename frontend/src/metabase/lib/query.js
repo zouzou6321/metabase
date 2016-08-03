@@ -277,6 +277,7 @@ var Query = {
     },
 
     updateAggregation(query, aggregationClause) {
+        console.log('from query js ------------------------------------', query)
         // when switching to or from "rows" aggregation clear out any sorting clauses
         if ((query.aggregation[0] === "rows" || aggregationClause[0] === "rows") && query.aggregation[0] !== aggregationClause[0]) {
             delete query.order_by;

@@ -773,7 +773,7 @@ export const queryCompleted = createThunkAction(QUERY_COMPLETED, (card, queryRes
             cardDisplay = "table";
         }
 
-        dispatch(updateSuggestions([card, queryResult], {}));
+        dispatch(updateSuggestions([{card: card, data: queryResult}], {}));
 
         return {
             cardDisplay,
