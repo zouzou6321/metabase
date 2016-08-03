@@ -26,13 +26,11 @@ function calculateScores(recommendations){
 
 export function allSuggestionsForQuery(query){
 	var all_recommendations =  _.flatten(_.map(TableBasedRecommenders, function(recommender){
-		console.log("Trying out recommender ", recommender)
-        window.query = query
-        window.recommendation = recommender.recommender
-		var recommendation = recommender.recommender(query)
-        console.log('recommendation -------------------------------------', recommendation)
-		recommendation.recommenderWeight = recommender.base_weight
-		return recommendation
+		var recommendations = recommender.recommender(query)
+		_.each(recommendations, function(recommendation){
+			recommendation.recommenderWeight = recommender.base_weight
+		})
+		return recommendations
 	}))
 
 	calculateScores(all_recommendations)
@@ -42,9 +40,11 @@ export function allSuggestionsForQuery(query){
 
 export function allSuggestionsForRow(query, resultRow, columnDefinitions){
 	var all_recommendations =  _.flatten(_.map(RowBasedRecommenders, function(recommender){
-		var recommendation = recommender.recommender(query, resultRow, columnDefinitions)
-		recommendation.recommenderWeight = recommender.base_weight
-		return recommendation
+		var recommendations = recommender.recommender(query, resultRow, columnDefinitions)
+		_.each(recommendations, function(recommendation){
+			recommendation.recommenderWeight = recommender.base_weight
+		})
+		return recommendations
 
 	}))
 
@@ -54,9 +54,11 @@ export function allSuggestionsForRow(query, resultRow, columnDefinitions){
 
 export function allSuggestionsForColumn(query, columnDefinitions, columnIndex){
 	var all_recommendations =  _.flatten(_.map(columnBasedRecommenders, function(recommender){
-		var recommendation = recommender.recommender(query, columnDefinitions, columnIndex)
-		recommendation.recommenderWeight = recommender.base_weight
-		return recommendation
+		var recommendations = recommender.recommender(query, columnDefinitions, columnIndex)
+		_.each(recommendations, function(recommendation){
+			recommendation.recommenderWeight = recommender.base_weight
+		})
+		return recommendations
 
 	}))
 
@@ -67,9 +69,11 @@ export function allSuggestionsForColumn(query, columnDefinitions, columnIndex){
 
 export function allSuggestionsForCell(query, resultRow, columnDefinitions, cellIndex){
 	var all_recommendations =  _.flatten(_.map(cellBasedRecommenders, function(recommender){
-		var recommendation = recommender.recommender(query, resultRow, columnDefinitions, cellIndex)
-		recommendation.recommenderWeight = recommender.base_weight
-		return recommendation
+		var recommendations = recommender.recommender(query, resultRow, columnDefinitions, cellIndex)
+		_.each(recommendations, function(recommendation){
+			recommendation.recommenderWeight = recommender.base_weight
+		})
+		return recommendations
 
 	}))
 
@@ -84,7 +88,11 @@ const MAXIMUM_RECOMMENDATIONS = 12
 
 function pickRecommendations(allRecommendations){
 	var proposedRecommendations = []
+<<<<<<< HEAD
 	var recommendationsWithCDF = calculateCDF(allRecommendations)
+=======
+	var recommendationsCDF = calculateCDF(allRecommendations)
+>>>>>>> origin/next_questions
 
 	// Get all thre recommendations
 	if(allRecommendations.length <= MAXIMUM_RECOMMENDATIONS){
@@ -93,9 +101,15 @@ function pickRecommendations(allRecommendations){
 		while(proposedRecommendations.length <= MAXIMUM_RECOMMENDATIONS){
 			var randomNumber =Math.random();
 
+<<<<<<< HEAD
 			var index = findElement(recommendationsWithCDF, randomNumber);
 			var result = recommendationsWithCDF[index]
 
+=======
+			var index = findElement(recommendationsCDF, randomNumber);
+			var result = allRecommendations[index]
+
+>>>>>>> origin/next_questions
 			if(!_.contains(proposedRecommendations, result)){
 				proposedRecommendations.push(result)
 			}
