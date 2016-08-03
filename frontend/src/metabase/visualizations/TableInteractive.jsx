@@ -4,21 +4,17 @@ import ReactDOM from "react-dom";
 import { Table, Column } from "fixed-data-table";
 
 import Icon from "metabase/components/Icon.jsx";
-import Popover from "metabase/components/Popover.jsx";
 
 import MetabaseAnalytics from "metabase/lib/analytics";
 import { formatValue, capitalize } from "metabase/lib/formatting";
 import { suggestionsForCell } from "metabase/lib/recommenders/recommenders"
 import _ from "underscore";
 import cx from "classnames";
+import { connect } from 'react-redux'
 
-const QUICK_FILTERS = [
-    { name: "<", value: "<" },
-    { name: "=", value: "=" },
-    { name: "≠", value: "!=" },
-    { name: ">", value: ">" }
-];
+import { updateSuggestions } from "metabase/suggestions/actions"
 
+@connect()
 export default class TableInteractive extends Component {
     constructor(props, context) {
         super(props, context);
@@ -155,10 +151,16 @@ export default class TableInteractive extends Component {
     }
 
     showPopover(rowIndex, cellDataKey) {
-        console.log("SUGGESTIONS", suggestionsForCell(this.props.card.dataset_query, 
-                                                         this.props.data.rows[rowIndex], 
-                                                         this.props.data.cols, 
-                                                         cellDataKey));
+        const { card, data, dispatch } = this.props
+        dispatch(updateSuggestions(
+            [{ card, data }],
+            {
+                row: data.rows[rowIndex],
+                cols: data.cols,
+                cell: cellDataKey
+            }
+        ))
+
         this.setState({
             popover: {
                 rowIndex: rowIndex,
@@ -180,31 +182,32 @@ export default class TableInteractive extends Component {
                 <a key={key} className="link cellData" onClick={this.cellClicked.bind(this, rowIndex, cellDataKey)}>{cellData}</a>
             );
         } else {
-            var popover = null;
-            if (this.state.popover && this.state.popover.rowIndex === rowIndex && this.state.popover.cellDataKey === cellDataKey) {
-                popover = (
-                    <Popover
-                        hasArrow={false}
-                        tetherOptions={{
-                            targetAttachment: "middle center",
-                            attachment: "middle center"
-                        }}
-                        onClose={this.onClosePopover}
-                    >
-                        <div className="bg-white bordered shadowed p1">
-                            <ul className="h1 flex align-center">
-                                { QUICK_FILTERS.map(({ name, value }) =>
-                                    <li key={value} className="p2 text-brand-hover" onClick={this.popoverFilterClicked.bind(this, rowIndex, cellDataKey, value)}>{name}</li>
-                                )}
-                            </ul>
-                        </div>
-                    </Popover>
-                );
-            }
+            // var popover = null;
+            // if (this.state.popover && this.state.popover.rowIndex === rowIndex && this.state.popover.cellDataKey === cellDataKey) {
+            //     popover = (
+            //         <Popover
+            //             hasArrow={false}
+            //             tetherOptions={{
+            //                 targetAttachment: "middle center",
+            //                 attachment: "middle center"
+            //             }}
+            //             onClose={this.onClosePopover}
+            //         >
+            //             <div className="bg-white bordered shadowed p1">
+            //                 <ul className="h1 flex align-center">
+            //                     { QUICK_FILTERS.map(({ name, value }) =>
+            //                         <li key={value} className="p2 text-brand-hover" onClick={this.popoverFilterClicked.bind(this, rowIndex, cellDataKey, value)}>{name}</li>
+            //                     )}
+            //                 </ul>
+            //             </div>
+            //         </Popover>
+            //     );
+            // }
             return (
-                <div key={key} onClick={this.showPopover.bind(this, rowIndex, cellDataKey)}>
+                <div key={key} onClick={this.showPopover.bind(this, rowIndex, cellDataKey)} style={{
+                    border: this.state.popover && this.state.popover.rowIndex === rowIndex && this.state.popover.cellDataKey === cellDataKey && '2px solid #409ee3'
+                }}>
                     <span className="cellData">{cellData}</span>
-                    {popover}
                 </div>
             );
         }

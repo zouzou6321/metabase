@@ -237,7 +237,7 @@ export default class QueryVisualization extends Component {
             'flex-row': this.props.simple && !isObjectDetail
         });
 
-        const visualizationClasses = cx('flex flex-full Visualization z1 px1', {
+        const visualizationClasses = cx('flex flex-full Visualization z1 shadowed rounded', {
             'Visualization--errors': (result && result.error),
             'Visualization--loading': isRunning
         });

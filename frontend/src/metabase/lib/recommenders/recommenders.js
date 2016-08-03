@@ -13,9 +13,9 @@ import { columnBasedRecommenders } from "metabase/lib/recommenders/column_based/
 // Helper functions
 
 function calculateScores(recommendations){
-	// a recommendation's score is it's recommenders weight times the recommender's score 
+	// a recommendation's score is it's recommenders weight times the recommender's score
 	// for the suggestion
-	// It's expected this will be the place where per-user blacklists, 
+	// It's expected this will be the place where per-user blacklists,
 	// instance weight modifications, etc will be woven in
 	_.each(recommendations, function(recommendation){
 		recommendation.weight = recommendation.recommenderWeight * recommendation.score
@@ -82,7 +82,7 @@ const MAXIMUM_RECOMMENDATIONS = 12
 function pickRecommendations(allRecommendations){
 	var proposedRecommendations = []
 	var recommendationsWithCDF = calculateCDF(allRecommendations)
-	
+
 	// Get all thre recommendations
 	if(allRecommendations.length <= MAXIMUM_RECOMMENDATIONS){
 		proposedRecommendations = allRecommendations
@@ -92,7 +92,7 @@ function pickRecommendations(allRecommendations){
 
 			var index = findElement(recommendationsWithCDF, randomNumber);
 			var result = recommendationsWithCDF[index]
-			
+
 			if(!_.contains(proposedRecommendations, result)){
 				proposedRecommendations.push(result)
 			}

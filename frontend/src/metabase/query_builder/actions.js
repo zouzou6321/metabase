@@ -17,7 +17,7 @@ import Utils from "metabase/lib/utils";
 
 import { getParameters } from "./selectors";
 
-import { suggestionsForQuery } from "metabase/lib/recommenders/recommenders"
+import { updateSuggestions } from "../suggestions/actions"
 
 const Metabase = new AngularResourceProxy("Metabase", ["db_list_with_tables", "db_fields", "dataset", "table_query_metadata"]);
 const User = new AngularResourceProxy("User", ["update_qbnewb"]);
@@ -151,7 +151,7 @@ export const closeQbTutorial = createAction(CLOSE_QB_TUTORIAL, () => {
 });
 
 export const CLOSE_QB_NEWB_MODAL = "CLOSE_QB_NEWB_MODAL";
-export const closeQbNewbModal = createThunkAction(CLOSE_QB_NE`WB_MODAL, () => {
+export const closeQbNewbModal = createThunkAction(CLOSE_QB_NEWB_MODAL, () => {
     return async (dispatch, getState) => {
         // persist the fact that this user has seen the NewbModal
         const { currentUser } = getState();
@@ -482,7 +482,7 @@ export const setQuery = createThunkAction(SET_QUERY, (dataset_query, run = false
         }
 
         // Suggest some next questions
-        console.log("SUGGESTIONS", suggestionsForQuery(updatedCard.dataset_query), tableMetadata);
+        // console.log("SUGGESTIONS", suggestionsForQuery(updatedCard.dataset_query), tableMetadata);
 
         // run updated query
         if (run) {
@@ -773,6 +773,8 @@ export const queryCompleted = createThunkAction(QUERY_COMPLETED, (card, queryRes
             cardDisplay = "table";
         }
 
+        dispatch(updateSuggestions([card, queryResult], {}));
+
         return {
             cardDisplay,
             queryResult
@@ -803,15 +805,6 @@ export const cancelQuery = createThunkAction(CANCEL_QUERY, () => {
         }
     };
 });
-
-export const CYCLE_NEXT_QUESTIONS = 'CYCLE_NEXT_QUESTIONS'
-export const cycleNextQuestions = createThunkAction(CYCLE_NEXT_QUESTIONS, () => {
-  return async (dispatch, getState) => {
-  }
-})
-
-export const DISMISS_NEXT_QUESTION_SUGGESTION = 'DISMISS_NEXT_QUESTION_SUGGESTION'
-export const dismissNextQuestionSuggestion = createAction(DISMISS_NEXT_QUESTION_SUGGESTION)
 
 // cellClicked
 export const CELL_CLICKED = "CELL_CLICKED";

@@ -62,6 +62,8 @@ import * as setup from "metabase/setup/reducers";
 import * as user from "metabase/user/reducers";
 import { currentUser, setUser } from "metabase/user";
 
+import suggestions from "metabase/suggestions/reducers";
+
 import { registerAnalyticsClickListener } from "metabase/lib/analytics";
 import { serializeCardForUrl, cleanCopyCard, urlForCardState } from "metabase/lib/card";
 import { createStoreWithAngularScope } from "metabase/lib/redux";
@@ -92,7 +94,8 @@ const reducers = combineReducers({
     databases,
     datamodel: datamodel,
     people: combineReducers(people),
-    settings
+    settings,
+    suggestions
 });
 
 // Declare app level module which depends on filters, and services
