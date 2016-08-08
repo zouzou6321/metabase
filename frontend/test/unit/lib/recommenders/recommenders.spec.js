@@ -37,8 +37,8 @@ describe("Recommender -- Primary Key Object Details", () => {
         it("should return suggestions for a table based query", () => {
             let query = {
                 source_table: 0,
-                aggregation: ["count"],
-                breakout: ["field-id", 8, "day"],
+                aggregation: ["rows"],
+                breakout: [],
                 filter: [],
                 order_by: []
             };

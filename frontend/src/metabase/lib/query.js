@@ -53,15 +53,15 @@ var Query = {
 
     // Make me
     getUnderlyingTable(query){
-        return {name: "Fake Table", 
-                fields: [{id: 1, name: 'id', special_type: 'PK'}, 
+        return {name: "Fake Table",
+                fields: [{id: 1, name: 'id', special_type: 'PK'},
                          {id: 2, name: "name", special_type:"name"},
-                         {id: 3, name: 'user_id', special_type:"FK"}, 
-                         {id: 4, name: 'city', special_type:"city"}, 
-                         {id: 5, name: 'state', special_type:"state"}, 
-                         {id: 6, name: 'country', special_type:"country"}, 
-                         {id: 7, name: 'status', special_type:"category"}, 
-                         {id: 8, name: 'timestamp', base_type:"datetime"}, 
+                         {id: 3, name: 'user_id', special_type:"FK"},
+                         {id: 4, name: 'city', special_type:"city"},
+                         {id: 5, name: 'state', special_type:"state"},
+                         {id: 6, name: 'country', special_type:"country"},
+                         {id: 7, name: 'status', special_type:"category"},
+                         {id: 8, name: 'timestamp', base_type:"datetime"},
                          ]}
     },
 
@@ -304,7 +304,6 @@ var Query = {
     },
 
     updateAggregation(query, aggregationClause) {
-        console.log('from query js ------------------------------------', query)
         // when switching to or from "rows" aggregation clear out any sorting clauses
         if ((query.aggregation[0] === "rows" || aggregationClause[0] === "rows") && query.aggregation[0] !== aggregationClause[0]) {
             delete query.order_by;

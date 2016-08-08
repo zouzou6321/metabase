@@ -37,17 +37,17 @@ export const updateSuggestions = createThunkAction(UPDATE_SUGGESTIONS, (series: 
     series = series[0]
     const query = series.card.dataset_query.query
 
-    // let categories = suggestionsForQuery(query)
-    let categories = [
-        {
-            categoryName: 'Row',
-            suggestions: [{ name: 'Derp', url: 'derp' }]
-        },
-        {
-            categoryName: 'Row category 2',
-            suggestions: [{ name: 'Derp2 ', url: 'derp' }]
-        }
-    ]
+    let categories = suggestionsForQuery(query)
+    // let categories = [
+    //     {
+    //         categoryName: 'Row',
+    //         suggestions: [{ name: 'Derp', url: 'derp' }]
+    //     },
+    //     {
+    //         categoryName: 'Row category 2',
+    //         suggestions: [{ name: 'Derp2 ', url: 'derp' }]
+    //     }
+    // ]
 
     if (descriptor.row && descriptor.cell) {
         categories = suggestionsForCell(

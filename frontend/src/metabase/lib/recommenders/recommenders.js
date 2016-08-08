@@ -22,12 +22,24 @@ function calculateScores(recommendations){
 	})
 }
 
+const buildSuggestions = (recommenders, query, descriptor) =>
+    calculateScores(_.flatten(recommenders.map(({ recommender, base_weight }) =>
+        recommender(query).map((recommendation) => {
+            recommendation['recommenderWeight'] = base_weight
+            console.log('built recommendation', recommendation)
+            return recommendation
+        })
+    )))
+
 // Getting all suggestions from each recommender
 
-export function allSuggestionsForQuery(query){
+export function allSuggestionsForQuery(query) {
+    // buildSuggestions(TableBasedRecommenders, query)
 	var all_recommendations =  _.flatten(_.map(TableBasedRecommenders, function(recommender){
 		var recommendations = recommender.recommender(query)
+        console.log('recommendations', recommendations)
 		_.each(recommendations, function(recommendation){
+            console.log('what the actual fuck', recommendation)
 			recommendation.recommenderWeight = recommender.base_weight
 		})
 		return recommendations
@@ -109,11 +121,15 @@ function pickRecommendations(allRecommendations){
 	}
 
 	// Group them
-	return _.groupBy(proposedRecommendations, function(recommendation){ return recommendation.source})
+
+    return Object.entries(
+         _.groupBy(proposedRecommendations, function(recommendation){
+            return recommendation.source
+        })
+    ).map(([categoryName, suggestions]) => ({ categoryName, suggestions}))
 }
 
-export function suggestionsForQuery(table, query){
-    console.log("table", table)
+export function suggestionsForQuery(query){
 	return pickRecommendations(allSuggestionsForQuery(query))
 }
 
