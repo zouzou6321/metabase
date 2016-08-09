@@ -12,7 +12,6 @@ const NextQuestions = ({ suggestions }) => {
         <div style={{ width: 300 }}>
             <ol style={{ listStyleType: 'none' }}>
                 { suggestions.map((suggestion, index) => {
-                    console.log(suggestion)
                     return (
                         <li key={index} style={{ marginBottom: 10 }}>
                             <SuggestionCategory {...suggestion} />

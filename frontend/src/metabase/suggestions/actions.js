@@ -31,25 +31,12 @@ export const UPDATE_SUGGESTIONS = 'UPDATE_SUGGESTIONS';
 
 export const updateSuggestions = createThunkAction(UPDATE_SUGGESTIONS, (series: Series, descriptor: Descriptor) => {
 
-    //
-    console.log('descriptor ---------------------', descriptor)
-
     series = series[0]
     const query = series.card.dataset_query.query
 
-    let categories = suggestionsForQuery(query)
-    // let categories = [
-    //     {
-    //         categoryName: 'Row',
-    //         suggestions: [{ name: 'Derp', url: 'derp' }]
-    //     },
-    //     {
-    //         categoryName: 'Row category 2',
-    //         suggestions: [{ name: 'Derp2 ', url: 'derp' }]
-    //     }
-    // ]
+    let categories
 
-    if (descriptor.row && descriptor.cell) {
+    if (descriptor.row) {
         categories = suggestionsForCell(
             query,
             descriptor.row,
@@ -58,9 +45,11 @@ export const updateSuggestions = createThunkAction(UPDATE_SUGGESTIONS, (series: 
         )
     }
 
-    // if(descriptor.row && !descriptor.cell) {
-    //     // categories = suggestionsForRow()
-    // }
+    if(descriptor.row && !descriptor.cell) {
+        // categories = suggestionsForRow()
+    }
+
+    categories = suggestionsForQuery(query)
 
     return async (): Object => ({ descriptor, categories })
 });

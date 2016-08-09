@@ -157,7 +157,7 @@ export default class TableInteractive extends Component {
             {
                 row: data.rows[rowIndex],
                 cols: data.cols,
-                cell: cellDataKey
+                cellIndex: cellDataKey
             }
         ))
 

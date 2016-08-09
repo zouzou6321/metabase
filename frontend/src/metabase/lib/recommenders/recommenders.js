@@ -26,7 +26,6 @@ const buildSuggestions = (recommenders, query, descriptor) =>
     calculateScores(_.flatten(recommenders.map(({ recommender, base_weight }) =>
         recommender(query).map((recommendation) => {
             recommendation['recommenderWeight'] = base_weight
-            console.log('built recommendation', recommendation)
             return recommendation
         })
     )))
@@ -37,9 +36,7 @@ export function allSuggestionsForQuery(query) {
     // buildSuggestions(TableBasedRecommenders, query)
 	var all_recommendations =  _.flatten(_.map(TableBasedRecommenders, function(recommender){
 		var recommendations = recommender.recommender(query)
-        console.log('recommendations', recommendations)
 		_.each(recommendations, function(recommendation){
-            console.log('what the actual fuck', recommendation)
 			recommendation.recommenderWeight = recommender.base_weight
 		})
 		return recommendations
