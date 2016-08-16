@@ -131,6 +131,6 @@
     "shrinkwrap": "npm prune && npm shrinkwrap --dev && ./bin/clean-shrinkwrap",
     "start": "npm run build && lein ring server",
     "storybook": "start-storybook -p 9001",
-    "test-mocha": "NODE_ENV=test NODE_PATH=./frontend/src/ mocha \"frontend/test/unit\" --compilers js:babel-register --recursive --require babel-polyfill --require jsdom-global/register --require \"frontend/test/test-helper.js\""
+    "test-mocha": "NODE_ENV=test NODE_PATH=./frontend/src/ mocha \"frontend/test/unit\" --compilers js:babel-register --recursive --require babel-polyfill --require jsdom-global/register` --require \"frontend/test/test-helper.js\""
   }
 }
