@@ -1,4 +1,5 @@
 import { fetchData, updateData } from 'metabase/redux/metadata';
+import sinon from 'sinon'
 
 describe("Metadata", () => {
     const getDefaultArgs = ({
@@ -17,7 +18,7 @@ describe("Metadata", () => {
             requests: { test: { path: { fetch: requestState, update: requestState } } },
             test: { path: existingData }
         }),
-        dispatch = jasmine.createSpy('dispatch'),
+        dispatch = sinon.spy(),
         getData = () => Promise.resolve(newData),
         putData = () => Promise.resolve(newData)
     } = {}) => ({dispatch, getState, requestStatePath, existingStatePath, getData, putData,
