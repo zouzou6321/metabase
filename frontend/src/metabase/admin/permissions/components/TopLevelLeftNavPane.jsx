@@ -1,6 +1,6 @@
 import React from "react";
 
-import { LeftNavPane, LeftNavPaneItem } from "./LeftNavPane.jsx"
+import { LeftNavPane, LeftNavPaneItem } from "metabase/components/LeftNavPane.jsx"
 
 function TopLevelLeftNavPane({ currentPath }) {
     currentPath = currentPath || "";

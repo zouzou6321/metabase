@@ -1,6 +1,6 @@
 import React from "react";
 
-import { LeftNavPane, LeftNavPaneItem, LeftNavPaneItemBack } from "./LeftNavPane.jsx";
+import { LeftNavPane, LeftNavPaneItem, LeftNavPaneItemBack } from "metabase/components/LeftNavPane.jsx";
 
 export default function DatabasesLeftNavPane({ currentPath, backItemPath, databases }) {
     return (

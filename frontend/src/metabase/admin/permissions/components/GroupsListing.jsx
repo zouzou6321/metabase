@@ -291,7 +291,7 @@ export default class GroupsListing extends Component {
         groups = this.state.groups || groups || [];
 
         return (
-            <Permissions leftNavPane={<TopLevelLeftNavPane currentPath={pathname} />}
+            <Permissions
                          rightTitleButtonTitle="Create a group"
                          rightTitleButtonAction={this.state.showAddGroupRow ? null : this.onCreateAGroupButtonClicked.bind(this)}
             >

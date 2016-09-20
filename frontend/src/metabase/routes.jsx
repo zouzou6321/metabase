@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from "react";
 
-import { Route, Redirect, IndexRedirect } from 'react-router';
+import { Route, Redirect, IndexRedirect, IndexRoute } from 'react-router';
 import { routerActions } from 'react-router-redux';
 import { UserAuthWrapper } from 'redux-auth-wrapper';
 
@@ -47,6 +47,11 @@ import ReferenceEntityList from "metabase/reference/containers/ReferenceEntityLi
 import ReferenceFieldsList from "metabase/reference/containers/ReferenceFieldsList.jsx";
 import ReferenceRevisionsList from "metabase/reference/containers/ReferenceRevisionsList.jsx";
 import ReferenceGettingStartedGuide from "metabase/reference/containers/ReferenceGettingStartedGuide.jsx";
+
+
+import AdminPeople from "metabase/admin/people/components/AdminPeople.jsx";
+import GroupsListingApp from "metabase/admin/permissions/containers/GroupsListingApp.jsx";
+import GroupDetailApp from "metabase/admin/permissions/containers/GroupDetailApp.jsx";
 
 import adminPermissionsRoutes from "metabase/admin/permissions/routes.jsx";
 
@@ -186,7 +191,14 @@ export const getRoutes = (store) =>
                     <Route path=":entity/:id/revisions" component={RevisionHistoryApp} />
                 </Route>
 
-                <Route path="people" component={AdminPeopleApp} />
+                {/* PEOPLE */}
+                <Route path="people" component={AdminPeopleApp}>
+                    <IndexRoute component={AdminPeople} />
+                    <Route path="groups">
+                        <IndexRoute component={GroupsListingApp} />
+                        <Route path=":groupID" component={GroupDetailApp} />
+                    </Route>
+                </Route>
 
                 <Route path="settings" component={SettingsEditorApp} />
                 <Route path="settings/:section" component={SettingsEditorApp} />

@@ -13,7 +13,7 @@ import UserAvatar from "metabase/components/UserAvatar.jsx";
 
 import AdminContentTable from "./AdminContentTable.jsx";
 import Permissions from "./Permissions.jsx";
-import { LeftNavPane, LeftNavPaneItem, LeftNavPaneItemBack } from "./LeftNavPane.jsx";
+import { LeftNavPane, LeftNavPaneItem, LeftNavPaneItemBack } from "metabase/components/LeftNavPane.jsx";
 
 
 const PermissionsAPI = new AngularResourceProxy("Permissions", ["createMembership", "deleteMembership"]);

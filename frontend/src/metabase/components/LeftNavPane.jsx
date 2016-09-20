@@ -26,12 +26,10 @@ export function LeftNavPaneItemBack({ path }) {
 
 export function LeftNavPane({ children }) {
     return (
-        <div className="MetadataEditor-main flex flex-row flex-full mt2">
-            <div className="MetadataEditor-table-list AdminList flex-no-shrink full-height">
-                <ul className="AdminList-items pt1">
-                    {children}
-                </ul>
-            </div>
+        <div className="MetadataEditor-table-list AdminList flex-no-shrink full-height">
+            <ul className="AdminList-items pt1">
+                {children}
+            </ul>
         </div>
     );
 }
