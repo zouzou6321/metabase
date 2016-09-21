@@ -17,14 +17,6 @@ function PermissionsTitle({ buttonTitle, buttonAction }) {
 
 export default function Permissions({ leftNavPane, children, rightTitleButtonTitle, rightTitleButtonAction }) {
     return (
-        <div className="flex p4">
-            <div className="MetadataEditor flex-column full-height">
-                <PermissionsTitle buttonTitle={rightTitleButtonTitle} buttonAction={rightTitleButtonAction} />
-                {leftNavPane}
-            </div>
-            <div className="flex-column flex-full m4">
-                {children}
-            </div>
-        </div>
+        <div className="m4">{children}</div>
     );
 }

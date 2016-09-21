@@ -407,7 +407,7 @@ export default class GroupDetail extends Component {
         const userSuggestions = this.state.text && this.state.text.length ? this.state.userSuggestions : users;
 
         return (
-            <Permissions leftNavPane={<NavPane groups={groups} currentPath={pathname} />}>
+            <Permissions>
                 <Title group={group} addUserVisible={this.state.addUserVisible}
                        onAddUsersClicked={this.onAddUsersClicked.bind(this)}
                 />

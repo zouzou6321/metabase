@@ -124,7 +124,7 @@ function GroupRow({ group, groupBeingEdited, index, showGroupDetail, showAddGrou
     ) : (
         <tr>
             <td>
-                <Link to={"/admin/permissions/groups/" + group.id} className="link no-decoration">
+                <Link to={"/admin/people/groups/" + group.id} className="link no-decoration">
                     <span className="text-white inline-block">
                         <UserAvatar background={color} user={{first_name: group.name}} />
                     </span>
