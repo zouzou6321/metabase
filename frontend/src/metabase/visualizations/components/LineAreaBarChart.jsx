@@ -91,16 +91,20 @@ export default class LineAreaBarChart extends Component {
 
     getHoverClasses() {
         const { hovered } = this.props;
-        if (hovered && hovered.index != null) {
-            let seriesClasses = _.range(0,5).filter(n => n !== hovered.index).map(n => "mute-"+n);
-            let axisClasses =
-                hovered.axisIndex === 0 ? "mute-yr" :
-                hovered.axisIndex === 1 ? "mute-yl" :
-                null;
-            return seriesClasses.concat(axisClasses);
-        } else {
-            return null;
-        }
+        /*
+            if (hovered && hovered.index != null) {
+
+                let seriesClasses = _.range(0,5).filter(n => n !== hovered.index).map(n => "mute-"+n);
+                let axisClasses =
+                    hovered.axisIndex === 0 ? "mute-yr" :
+                    hovered.axisIndex === 1 ? "mute-yl" :
+                    null;
+                return seriesClasses.concat(axisClasses);
+            } else {
+                return null;
+            }
+        */
+        return null;
     }
 
     getChartType() {

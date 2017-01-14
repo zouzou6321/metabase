@@ -129,6 +129,7 @@ export default class Visualization extends Component {
     }
 
     onHoverChange(hovered) {
+        console.log('hovered', hovered)
         const { yAxisSplit } = this.state;
         if (hovered) {
             // if we have Y axis split info then find the Y axis index (0 = left, 1 = right)

@@ -15,6 +15,7 @@ export default class ChartTooltip extends Component {
         series: PropTypes.array.isRequired,
         hovered: PropTypes.object
     };
+
     static defaultProps = {
     };
 

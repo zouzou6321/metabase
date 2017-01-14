@@ -266,10 +266,17 @@ function applyChartYAxis(chart, settings, series, yExtent, axisName) {
 }
 
 function applyChartTooltips(chart, series, onHoverChange) {
+
     let [{ data: { cols } }] = series;
+
     chart.on("renderlet.tooltips", function(chart) {
         chart.selectAll(".bar, .dot, .area, .line, .bubble, g.pie-slice, g.features")
             .on("mousemove", function(d, i) {
+                console.log('---------------------------')
+                console.log('d', d)
+                console.log('i', i)
+                console.log('---------------------------')
+
                 const isSingleSeriesBar = this.classList.contains("bar") && series.length === 1;
 
                 let data;
@@ -288,13 +295,22 @@ function applyChartTooltips(chart, series, onHoverChange) {
                     ];
                 }
 
-                onHoverChange && onHoverChange({
-                    // for single series bar charts, fade the series and highlght the hovered element with CSS
-                    index: isSingleSeriesBar ? -1 : determineSeriesIndexFromElement(this),
-                    element: this,
-                    d: d,
-                    data: data && _.uniq(data, (d) => d.col)
-                });
+                if( series.length > 1 ) {
+                    console.log('series', series)
+                    console.log(d)
+                    onHoverChange({
+                        element: this,
+                        d: d,
+                    })
+                } else {
+                    onHoverChange && onHoverChange({
+                        // for single series bar charts, fade the series and highlght the hovered element with CSS
+                        index: isSingleSeriesBar ? -1 : determineSeriesIndexFromElement(this),
+                        element: this,
+                        d: d,
+                        data: data && _.uniq(data, (d) => d.col)
+                    });
+                }
             })
             .on("mouseleave", function() {
                 onHoverChange && onHoverChange(null);
@@ -335,6 +351,54 @@ function applyChartLineBarSettings(chart, settings, chartType) {
 
 function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
     // once chart has rendered and we can access the SVG, do customizations to axis labels / etc that you can't do through dc.js
+    //
+    function applyScrubZones() {
+        const parent = chart.svg().select("svg > g");
+        const dots = chart.svg().selectAll(".sub .dc-tooltip .dot")[0]
+
+        if(dots.length === 0) {
+            return;
+        }
+
+        const originRect = chart.svg().node().getBoundingClientRect();
+
+        const vertices = dots.map(e => {
+            let { top, left, width, height } = e.getBoundingClientRect();
+            let px = (left + width / 2) - originRect.left;
+            let py = (top + height / 2) - originRect.top;
+            return [px, py, e];
+        });
+
+        const { width, height } = parent.node().getBBox();
+
+        const numSeries = chart.svg().selectAll(".sub")[0].length
+
+        parent.append("svg:g")
+              .classed("triggers", true)
+              .selectAll("path")
+              .data(vertices)
+              .enter()
+                  .append("svg:rect")
+                  .attr('x', (d) => d[0] - (originRect.width / (dots.length / numSeries)) / 2)
+                  .attr('y', 0)
+                  .attr('width', originRect.width / (dots.length / numSeries) - 3)
+                  .attr('height', originRect.height)
+                  .attr('fill', 'transparent')
+                  .attr('stroke', 'red')
+                  .attr('stroke-opacity', 0.2)
+                  .on('mousemove', (d) => {
+                      console.log('d', d)
+                      dispatchUIEvent(d[2], "mousemove");
+                      d3.select(d[2]).classed("hover", true);
+                  })
+                  .on('mouseleave', (d) => {
+                      console.log('d', d)
+                      dispatchUIEvent(d[2], "mouseleave");
+                      d3.select(d[2]).classed("hover", false);
+                  })
+
+
+    }
 
     function removeClipPath() {
         for (let elem of chart.selectAll(".sub, .chart-body")[0]) {
@@ -396,6 +460,7 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
         }
 
         const originRect = chart.svg().node().getBoundingClientRect();
+
         const vertices = dots.map(e => {
             let { top, left, width, height } = e.getBoundingClientRect();
             let px = (left + width / 2) - originRect.left;
@@ -427,23 +492,26 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
                     .filter((d) => d != undefined)
                     .attr("d", (d) => "M" + d.join("L") + "Z")
                     .attr("clip-path", (d,i) => "url(#clip-"+i+")")
-                    .on("mousemove", ({ point }) => {
+                    .on("mousemove", ({ point, ...rest }) => {
                         let e = point[2];
+                        console.log(e)
                         dispatchUIEvent(e, "mousemove");
                         d3.select(e).classed("hover", true);
                     })
                     .on("mouseleave", ({ point }) => {
                         let e = point[2];
+                        console.log(e)
                         dispatchUIEvent(e, "mouseleave");
                         d3.select(e).classed("hover", false);
                     })
                 .order();
 
-        function dispatchUIEvent(element, eventName) {
-            let e = document.createEvent("UIEvents");
-            e.initUIEvent(eventName, true, true, window, 1);
-            element.dispatchEvent(e);
-        }
+    }
+
+    function dispatchUIEvent(element, eventName) {
+        let e = document.createEvent("UIEvents");
+        e.initUIEvent(eventName, true, true, window, 1);
+        element.dispatchEvent(e);
     }
 
     function hideDisabledLabels() {
@@ -570,13 +638,14 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
         moveContentToTop();
         setDotStyle();
         enableDots();
-        voronoiHover();
+        // voronoiHover();
         cleanupGoal(); // do this before hiding x-axis
         hideDisabledLabels();
         hideDisabledAxis();
         hideBadAxis();
         disableClickFiltering();
         fixStackZIndex();
+        applyScrubZones();
     });
 
     chart.render();
@@ -979,14 +1048,19 @@ export default function lineAreaBar(element, { series, onHoverChange, onRender, 
     }
     const isSplitAxis = (right && right.series.length) && (left && left.series.length > 0);
 
+    // callsite
     applyChartTooltips(chart, series, (hovered) => {
+        console.log('hovered', hovered)
         if (onHoverChange) {
             // disable tooltips on lines
+            /*
             if (hovered && hovered.element && hovered.element.classList.contains("line")) {
                 delete hovered.element;
             }
+            */
             onHoverChange(hovered);
         }
+        onHoverChange(hovered)
     });
 
     // if the chart supports 'brushing' (brush-based range filter), disable this since it intercepts mouse hovers which means we can't see tooltips
