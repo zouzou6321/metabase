@@ -272,10 +272,6 @@ function applyChartTooltips(chart, series, onHoverChange) {
     chart.on("renderlet.tooltips", function(chart) {
         chart.selectAll(".bar, .dot, .area, .line, .bubble, g.pie-slice, g.features")
             .on("mousemove", function(d, i) {
-                console.log('---------------------------')
-                console.log('d', d)
-                console.log('i', i)
-                console.log('---------------------------')
 
                 const isSingleSeriesBar = this.classList.contains("bar") && series.length === 1;
 
@@ -297,10 +293,11 @@ function applyChartTooltips(chart, series, onHoverChange) {
 
                 if( series.length > 1 ) {
                     console.log('series', series)
-                    console.log(d)
+                    console.log(this)
                     onHoverChange({
                         element: this,
                         d: d,
+                        data: data
                     })
                 } else {
                     onHoverChange && onHoverChange({
@@ -352,7 +349,11 @@ function applyChartLineBarSettings(chart, settings, chartType) {
 function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
     // once chart has rendered and we can access the SVG, do customizations to axis labels / etc that you can't do through dc.js
     //
-    function applyScrubZones() {
+
+    // create a set of trigger zones that correspond to the x value of
+    // a particular data point to allow for scrubbing
+
+    function applyTriggers() {
         const parent = chart.svg().select("svg > g");
         const dots = chart.svg().selectAll(".sub .dc-tooltip .dot")[0]
 
@@ -363,13 +364,10 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
         const originRect = chart.svg().node().getBoundingClientRect();
 
         const vertices = dots.map(e => {
-            let { top, left, width, height } = e.getBoundingClientRect();
+            let { left, width } = e.getBoundingClientRect();
             let px = (left + width / 2) - originRect.left;
-            let py = (top + height / 2) - originRect.top;
-            return [px, py, e];
+            return [px, e];
         });
-
-        const { width, height } = parent.node().getBBox();
 
         const numSeries = chart.svg().selectAll(".sub")[0].length
 
@@ -379,22 +377,18 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
               .data(vertices)
               .enter()
                   .append("svg:rect")
-                  .attr('x', (d) => d[0] - (originRect.width / (dots.length / numSeries)) / 2)
+                  .attr('x', (d) => Math.abs(d[0] - (originRect.width / (dots.length / numSeries)) / 2))
                   .attr('y', 0)
-                  .attr('width', originRect.width / (dots.length / numSeries) - 3)
+                  .attr('width', Math.abs(originRect.width / (dots.length / numSeries) - 3))
                   .attr('height', originRect.height)
                   .attr('fill', 'transparent')
-                  .attr('stroke', 'red')
-                  .attr('stroke-opacity', 0.2)
                   .on('mousemove', (d) => {
-                      console.log('d', d)
-                      dispatchUIEvent(d[2], "mousemove");
-                      d3.select(d[2]).classed("hover", true);
+                      dispatchUIEvent(d[1], "mousemove");
+                      d3.select(d[1]).classed("hover", true);
                   })
                   .on('mouseleave', (d) => {
-                      console.log('d', d)
-                      dispatchUIEvent(d[2], "mouseleave");
-                      d3.select(d[2]).classed("hover", false);
+                      dispatchUIEvent(d[1], "mouseleave");
+                      d3.select(d[1]).classed("hover", false);
                   })
 
 
@@ -509,6 +503,7 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
     }
 
     function dispatchUIEvent(element, eventName) {
+        console.log('element', element)
         let e = document.createEvent("UIEvents");
         e.initUIEvent(eventName, true, true, window, 1);
         element.dispatchEvent(e);
@@ -639,13 +634,13 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis) {
         setDotStyle();
         enableDots();
         // voronoiHover();
+        applyTriggers();
         cleanupGoal(); // do this before hiding x-axis
         hideDisabledLabels();
         hideDisabledAxis();
         hideBadAxis();
         disableClickFiltering();
         fixStackZIndex();
-        applyScrubZones();
     });
 
     chart.render();

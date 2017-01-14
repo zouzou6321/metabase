@@ -364,6 +364,7 @@
 .enable-dots .dc-tooltip circle.dot:hover,
 .enable-dots .dc-tooltip circle.dot.hover {
   fill: currentColor;
+  r: 6px !important;
 }
 
 .enable-dots-onhover .dc-tooltip circle.dot:hover,
