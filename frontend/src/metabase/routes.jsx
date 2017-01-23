@@ -103,6 +103,7 @@ const IsNotAuthenticated = MetabaseIsSetup(UserIsNotAuthenticated(({ children })
 
 import GraphiQL from 'graphiql';
 import "graphiql/graphiql.css"
+import GraphQLTest from "./GraphQLTest.jsx";
 
 export const getRoutes = (store) =>
     <Route component={App}>
@@ -244,6 +245,8 @@ export const getRoutes = (store) =>
                     }).then(response => response.json())
                 } />
             } />
+
+            <Route path="graphql_test" component={GraphQLTest} />
 
             {/* MISC */}
             <Route path="/unauthorized" component={Unauthorized} />

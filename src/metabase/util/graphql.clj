@@ -1,6 +1,7 @@
 (ns metabase.util.graphql
   "graphql schema"
-  (:require [clojure.tools.logging :as log]))
+  (:require [clojure.tools.logging :as log]
+            [metabase.util :as u]))
 
 
 (import 'graphql.Scalars)
@@ -80,6 +81,14 @@
   [f]
   (reify DataFetcher
     (get [this env]
+      (log/info (str "ENV=" (u/pprint-to-str
+                              {:schema      (.getGraphQLSchema env)
+                               :parent-type (.getParentType env)
+                               :field-type  (.getFieldType env)
+                               :fields      (.getFields env)
+                               :context     (.getContext env)
+                               :arguments   (.getArguments env)
+                               :source      (.getSource env)})))
       (clojure.walk/stringify-keys (f env)))))
 
 (defn env->where

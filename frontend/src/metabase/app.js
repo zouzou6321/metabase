@@ -2,7 +2,7 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Provider } from 'react-redux'
+import { ApolloProvider } from 'react-apollo';
 
 import MetabaseAnalytics, { registerAnalyticsClickListener } from "metabase/lib/analytics";
 import MetabaseSettings from "metabase/lib/settings";
@@ -17,17 +17,25 @@ import { refreshSiteSettings } from "metabase/redux/settings";
 import { Router, browserHistory } from "react-router";
 import { push, syncHistoryWithStore } from 'react-router-redux'
 
+import ApolloClient, { createNetworkInterface } from 'apollo-client';
+
 function init() {
-    const store = getStore(browserHistory);
+    const client = new ApolloClient({
+      networkInterface: createNetworkInterface({
+          uri: "/api/graphql",
+          opts: { credentials: 'same-origin' }
+      }),
+    });
+    const store = getStore(browserHistory, client);
     const routes = getRoutes(store);
     const history = syncHistoryWithStore(browserHistory, store);
 
     ReactDOM.render(
-        <Provider store={store}>
+        <ApolloProvider store={store} client={client} >
           <Router history={history}>
             {routes}
           </Router>
-        </Provider>
+        </ApolloProvider>
     , document.getElementById('root'));
 
     // listen for location changes and use that as a trigger for page view tracking

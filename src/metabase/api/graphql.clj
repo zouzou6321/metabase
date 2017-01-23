@@ -75,15 +75,12 @@
   (gql/object "QueryType"
     (gql/field "database" databaseType
       (gql/argument "id" :string)
-      (gql/argument "name" :string)
       (gql/fetch fetch-database))
     (gql/field "table" tableType
       (gql/argument "id" :string)
-      (gql/argument "name" :string)
       (gql/fetch fetch-table))
     (gql/field "field" fieldType
       (gql/argument "id" :string)
-      (gql/argument "name" :string)
       (gql/fetch fetch-field))
     (gql/field "databases" [databaseType]
       (gql/fetch fetch-databases))))

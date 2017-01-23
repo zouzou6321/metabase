@@ -19,11 +19,12 @@ if (DEBUG) {
 
 import reducers from './reducers';
 
-export function getStore(history, intialState) {
+export function getStore(history, client, intialState) {
     const reducer = combineReducers({
         ...reducers,
         form,
         routing,
+        apollo: client.reducer()
     });
 
     middleware.push(routerMiddleware(history));
