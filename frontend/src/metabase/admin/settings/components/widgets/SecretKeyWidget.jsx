@@ -8,9 +8,11 @@ import Button from "metabase/components/Button";
 import { UtilApi } from "metabase/services";
 
 type Props = {
+    updateSetting: (value: any) => void,
+    setting: {}
 };
 
-export default class SecretKeyWidget extends Component<*, Props, State> {
+export default class SecretKeyWidget extends Component<*, Props, *> {
     props: Props;
 
     _generateToken = async () => {

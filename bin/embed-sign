@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/*eslint-env node */
+/*eslint-disable import/no-commonjs */
 
 var jwt = require("jsonwebtoken");
 
@@ -9,12 +11,7 @@ var resourceType = process.argv[2];
 var resourceId = parseFloat(process.argv[3]);
 var params = process.argv[4] ? JSON.parse(process.argv[4]) : {};
 
-var resourceTypes = {
-  "card": "question",
-  "dashboard": "dashboard",
-}
-
-if (!METABASE_EMBED_SECRET_KEY || !resourceTypes[resourceType] || typeof resourceId !== "number" || isNaN(resourceId)) {
+if (!METABASE_EMBED_SECRET_KEY || !resourceType || typeof resourceId !== "number" || isNaN(resourceId)) {
   process.stderr.write("USAGE: MB_EMBEDDING_SECRET_KEY=ABCD embed-sign <resource_type> <resource_id> [<params_json>]\n");
   process.exit(1);
 }
@@ -31,4 +28,4 @@ process.stderr.write(JSON.stringify(unsignedToken, null, 2) + "\n");
 
 var signedToken = jwt.sign(unsignedToken, METABASE_EMBED_SECRET_KEY);
 
-console.log(BASE_URL + "/embed/" + resourceTypes[resourceType] + "/" + signedToken);
+console.log(BASE_URL + "/embed/" + resourceType + "/" + signedToken);

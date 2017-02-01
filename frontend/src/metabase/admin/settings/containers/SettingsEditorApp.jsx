@@ -133,6 +133,7 @@ export default class SettingsEditorApp extends Component {
                             updateSetting={this.updateSetting.bind(this, setting)}
                             reloadSettings={this.props.reloadSettings}
                             autoFocus={index === 0}
+                            settingValues={settingValues}
                         />
                     )}
                 </ul>
