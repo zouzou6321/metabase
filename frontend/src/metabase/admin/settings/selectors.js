@@ -7,6 +7,7 @@ import { slugify } from "metabase/lib/formatting";
 import CustomGeoJSONWidget from "./components/widgets/CustomGeoJSONWidget.jsx";
 import { PublicLinksDashboardListing, PublicLinksQuestionListing } from "./components/widgets/PublicLinksListing.jsx";
 import SecretKeyWidget from "./components/widgets/SecretKeyWidget.jsx";
+import EmbedSampleWidget from "./components/widgets/EmbedSampleWidget";
 
 const SECTIONS = [
     {
@@ -196,6 +197,11 @@ const SECTIONS = [
                 key: "embedding-secret-key",
                 display_name: "Embedding secret key",
                 widget: SecretKeyWidget
+            },
+            {
+                key: "-embed-demo",
+                display_name: "Sample Code",
+                widget: EmbedSampleWidget
             }
         ]
     }

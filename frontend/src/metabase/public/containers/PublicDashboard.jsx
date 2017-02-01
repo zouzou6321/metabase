@@ -57,6 +57,7 @@ export default class PublicDashboard extends Component<*, Props, *> {
         const { initialize, fetchDashboard, fetchDashboardCardData, setErrorPage, location, params: { uuid, token }}  = this.props;
         initialize();
         try {
+            // $FlowFixMe
             await fetchDashboard(uuid || token, location.query);
             await fetchDashboardCardData({ reload: false, clear: true });
         } catch (error) {

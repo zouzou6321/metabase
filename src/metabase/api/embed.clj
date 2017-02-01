@@ -11,7 +11,7 @@
 
    Tokens can have the following fields:
 
-      {:resource {:card      <card-id>
+      {:resource {:question  <card-id>
                   :dashboard <dashboard-id>}
        :params   <params>}"
   (:require [buddy.sign.jwt :as jwt]
@@ -50,13 +50,13 @@
 
    Token should have the following format:
 
-     {:resource {:card <card-id>}}"
+     {:resource {:question <card-id>}}"
   [token]
-  (public-api/public-card :id (get-in-unsigned-token-or-throw (unsign token) [:resource :card])))
+  (public-api/public-card :id (get-in-unsigned-token-or-throw (unsign token) [:resource :question])))
 
 
 (defn- run-query-for-unsigned-token [unsigned-token & options]
-  (apply public-api/run-query-for-card-with-id (get-in-unsigned-token-or-throw unsigned-token [:resource :card]) (:parameters unsigned-token) options))
+  (apply public-api/run-query-for-card-with-id (get-in-unsigned-token-or-throw unsigned-token [:resource :question]) (:parameters unsigned-token) options))
 
 
 (api/defendpoint GET "/card/:token/query"
@@ -64,7 +64,7 @@
 
    Token should have the following format:
 
-     {:resource   {:card <card-id>}
+     {:resource   {:question <card-id>}
       :parameters <parameters>}"
   [token]
   (run-query-for-unsigned-token (unsign token)))

@@ -20,7 +20,7 @@ import { setErrorPage } from "metabase/redux/app";
 import { updateIn } from "icepick";
 
 type Props = {
-    params:       { uuid: string },
+    params:       { uuid?: string, token?: string },
     location:     { query: { [key:string]: string }},
     width:        number,
     height:       number,
