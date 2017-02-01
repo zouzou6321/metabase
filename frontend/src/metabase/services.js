@@ -62,6 +62,13 @@ export const PublicApi = {
     dashboardCardQuery:          GET("/api/public/dashboard/:uuid/card/:cardId")
 };
 
+export const EmbedApi = {
+    card:                        GET("/api/embed/card/:token"),
+    cardQuery:                   GET("/api/embed/card/:token/query"),
+    dashboard:                   GET("/api/embed/dashboard/:token"),
+    dashboardCardQuery:          GET("/api/embed/dashboard/:token/card/:cardId")
+};
+
 export const EmailApi = {
     updateSettings:              PUT("/api/email"),
     sendTest:                   POST("/api/email/test"),
@@ -208,6 +215,7 @@ export const UserApi = {
 
 export const UtilApi = {
     password_check:             POST("/api/util/password_check"),
+    random_token:                GET("/api/util/random_token"),
 };
 
 global.services = exports;

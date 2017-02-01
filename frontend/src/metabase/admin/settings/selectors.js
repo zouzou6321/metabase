@@ -6,6 +6,7 @@ import { slugify } from "metabase/lib/formatting";
 
 import CustomGeoJSONWidget from "./components/widgets/CustomGeoJSONWidget.jsx";
 import { PublicLinksDashboardListing, PublicLinksQuestionListing } from "./components/widgets/PublicLinksListing.jsx";
+import SecretKeyWidget from "./components/widgets/SecretKeyWidget.jsx";
 
 const SECTIONS = [
     {
@@ -185,6 +186,16 @@ const SECTIONS = [
                 display_name: "Shared Questions",
                 widget: PublicLinksQuestionListing,
                 getHidden: (settings) => !settings["enable-public-sharing"]
+            }
+        ]
+    },
+    {
+        name: "Embedding",
+        settings: [
+            {
+                key: "embedding-secret-key",
+                display_name: "Embedding secret key",
+                widget: SecretKeyWidget
             }
         ]
     }

@@ -13,7 +13,7 @@ import { getParameters, applyParameters } from "metabase/meta/Card";
 import type { Card } from "metabase/meta/types/Card";
 import type { Dataset } from "metabase/meta/types/Dataset";
 
-import { PublicApi } from "metabase/services";
+import { PublicApi, EmbedApi } from "metabase/services";
 
 import { setErrorPage } from "metabase/redux/app";
 
@@ -37,6 +37,17 @@ const mapDispatchToProps = {
     setErrorPage
 };
 
+// returns either the public or embed API depending on if token or uuid is provided
+function Api(params) {
+    if (params.token) {
+        return EmbedApi;
+    } else if (params.uuid) {
+        return PublicApi;
+    } else {
+        throw { status: 404 };
+    }
+}
+
 @connect(null, mapDispatchToProps)
 @ExplicitSize
 export default class PublicQuestion extends Component<*, Props, State> {
@@ -54,9 +65,9 @@ export default class PublicQuestion extends Component<*, Props, State> {
 
     // $FlowFixMe
     async componentWillMount() {
-        const { setErrorPage, params: { uuid }, location: { query }} = this.props;
+        const { setErrorPage, params, location: { query }} = this.props;
         try {
-            let card = await PublicApi.card({ uuid });
+            let card = await Api(params).card(params);
 
             let parameters = getParameters(card);
             let parameterValues = {};
@@ -81,7 +92,7 @@ export default class PublicQuestion extends Component<*, Props, State> {
 
     // $FlowFixMe: setState expects return type void
     run = async (): void => {
-        const { setErrorPage, params: { uuid } } = this.props;
+        const { setErrorPage, params } = this.props;
         const { card, parameterValues } = this.state;
 
         if (!card) {
@@ -92,25 +103,27 @@ export default class PublicQuestion extends Component<*, Props, State> {
         const datasetQuery = applyParameters(card, parameters, parameterValues);
 
         try {
-            const newResult = await PublicApi.cardQuery({
-                uuid,
+            const newResult = await Api(params).cardQuery({
+                ...params,
                 parameters: JSON.stringify(datasetQuery.parameters)
             });
 
             this.setState({ result: newResult });
         } catch (error) {
+            console.log("error", error)
             setErrorPage(error);
         }
     }
 
     render() {
-        const { params: { uuid } } = this.props;
+        const { params: { uuid, token } } = this.props;
         const { card, result, parameterValues } = this.state;
 
         const actionButtons = result && (
             <QueryDownloadWidget
                 className="m1 text-grey-4-hover"
                 uuid={uuid}
+                token={token}
                 result={result}
             />
         )

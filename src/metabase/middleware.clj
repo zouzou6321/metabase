@@ -82,9 +82,14 @@
 (defn- current-user-info-for-session
   "Return User ID and superuser status for Session with SESSION-ID if it is valid and not expired."
   [session-id]
-  (when (and session-id ((resolve 'metabase.core/initialized?)))
-    (when-let [session (session-with-id session-id)]
-      (when-not (session-expired? session)
+  (when (and session-id (or ((resolve 'metabase.core/initialized?))
+                            (println "Metabase is not initialized!") ; NOCOMMIT
+                            ))
+    (when-let [session (or (session-with-id session-id)
+                           (println "no matching session with ID") ; NOCOMMIT
+                           )]
+      (if (session-expired? session)
+        (println (format "session-is-expired! %d min / %d min" (session-age-minutes session) (config/config-int :max-session-age))) ; NOCOMMIT
         {:metabase-user-id (:user_id session)
          :is-superuser?    (:is_superuser session)}))))
 

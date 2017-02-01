@@ -19,7 +19,7 @@ import Utils from "metabase/lib/utils";
 import type { Dashboard, DashCard, DashCardId } from "metabase/meta/types/Dashboard";
 import type { Card, CardId } from "metabase/meta/types/Card";
 
-import { DashboardApi, MetabaseApi, CardApi, RevisionApi, PublicApi } from "metabase/services";
+import { DashboardApi, MetabaseApi, CardApi, RevisionApi, PublicApi, EmbedApi } from "metabase/services";
 
 import { getDashboard, getDashboardComplete } from "./selectors";
 
@@ -78,6 +78,16 @@ export const SET_PARAMETER_MAPPING = "metabase/dashboard/SET_PARAMETER_MAPPING";
 export const SET_PARAMETER_NAME = "metabase/dashboard/SET_PARAMETER_NAME";
 export const SET_PARAMETER_VALUE = "metabase/dashboard/SET_PARAMETER_VALUE";
 export const SET_PARAMETER_DEFAULT_VALUE = "metabase/dashboard/SET_PARAMETER_DEFAULT_VALUE";
+
+function getDashboardType(id) {
+    if (Utils.isUUID(id)) {
+        return "public";
+    } else if (Utils.isJWT(id)) {
+        return "embed";
+    } else {
+        return "normal";
+    }
+}
 
 // action creators
 
@@ -170,7 +180,8 @@ export const fetchCardData = createThunkAction(FETCH_CARD_DATA, function(card, d
             };
         }
 
-        const isPublicLink = Utils.isUUID(dashcard.dashboard_id);
+        const dashboardType = getDashboardType(dashcard.dashboard_id);
+
         const { dashboardId, dashboards, parameterValues, dashcardData } = getState().dashboard;
         const dashboard = dashboards[dashboardId];
 
@@ -205,9 +216,15 @@ export const fetchCardData = createThunkAction(FETCH_CARD_DATA, function(card, d
         }, DATASET_SLOW_TIMEOUT);
 
         // make the actual request
-        if (isPublicLink) {
+        if (dashboardType === "public") {
             result = await fetchDataOrError(PublicApi.dashboardCardQuery({
                 uuid: dashcard.dashboard_id,
+                cardId: card.id,
+                parameters: datasetQuery.parameters ? JSON.stringify(datasetQuery.parameters) : undefined
+            }));
+        } else if (dashboardType === "embed") {
+            result = await fetchDataOrError(EmbedApi.dashboardCardQuery({
+                token: dashcard.dashboard_id,
                 cardId: card.id,
                 parameters: datasetQuery.parameters ? JSON.stringify(datasetQuery.parameters) : undefined
             }));
@@ -244,9 +261,19 @@ export const setDashboardId = createAction(SET_DASHBOARD_ID);
 export const fetchDashboard = createThunkAction(FETCH_DASHBOARD, function(dashId, queryParams, enableDefaultParameters = true) {
     let result;
     return async function(dispatch, getState) {
-        const isPublicLink = Utils.isUUID(dashId);
-        if (isPublicLink) {
+        const dashboardType = getDashboardType(dashId);
+        if (dashboardType === "public") {
             result = await PublicApi.dashboard({ uuid: dashId });
+            result = {
+                ...result,
+                id: dashId,
+                ordered_cards: result.ordered_cards.map(dc => ({
+                    ...dc,
+                    dashboard_id: dashId
+                }))
+            };
+        } else if (dashboardType === "embed") {
+            result = await EmbedApi.dashboard({ token: dashId });
             result = {
                 ...result,
                 id: dashId,
@@ -271,7 +298,7 @@ export const fetchDashboard = createThunkAction(FETCH_DASHBOARD, function(dashId
             }
         }
 
-        if (!isPublicLink) {
+        if (dashboardType === "normal") {
             // fetch database metadata for every card
             _.chain(result.ordered_cards)
                 .map((dc) => [dc.card].concat(dc.series))

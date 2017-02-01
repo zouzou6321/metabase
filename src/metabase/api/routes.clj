@@ -8,6 +8,7 @@
                           [database :as database]
                           [dataset :as dataset]
                           [email :as email]
+                          [embed :as embed]
                           [field :as field]
                           [getting-started :as getting-started]
                           [geojson :as geojson]
@@ -45,6 +46,7 @@
   (context "/database"        [] (+auth database/routes))
   (context "/dataset"         [] (+auth dataset/routes))
   (context "/email"           [] (+auth email/routes))
+  (context "/embed"           [] embed/routes)
   (context "/field"           [] (+auth field/routes))
   (context "/getting_started" [] (+auth getting-started/routes))
   (context "/geojson"         [] (+auth geojson/routes))
