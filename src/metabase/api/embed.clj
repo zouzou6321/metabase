@@ -84,6 +84,13 @@
 
 ;;; ------------------------------------------------------------ Dashboards ------------------------------------------------------------
 
+(defn- merge-params
+  "FIXME: NOT SECURE.
+  This should actually occur in the /dashboard/:token/card/:card-id endpoint using parameter_mappings"
+  [token-params parameters]
+  ; fake JWT token-enforced parameter values:
+  (map (fn [parameter] (assoc parameter :FIXME_value ((keyword (:slug parameter)) token-params))) parameters))
+
 (api/defendpoint GET "/dashboard/:token"
   "Fetch a Dashboard via a JSON Web Token signed with the `embedding-secret-key`.
 
@@ -91,8 +98,10 @@
 
      {:resource {:dashboard <dashboard-id>}}"
   [token]
-  (public-api/public-dashboard :id (get-in-unsigned-token-or-throw (unsign token) [:resource :dashboard])))
-
+  (let [unsigned  (unsign token)
+        id        (get-in-unsigned-token-or-throw unsigned [:resource :dashboard])
+        dashboard (public-api/public-dashboard :id id)]
+    (update dashboard :parameters (partial merge-params (:params unsigned)))))
 
 (api/defendpoint GET "/dashboard/:token/card/:card-id"
   "Fetch the results of running a Card belonging to a Dashboard using a JSON Web Token signed with the `embedding-secret-key`.
@@ -101,11 +110,11 @@
 
      {:resource   {:dashboard <dashboard-id>}
       :parameters <parameters>}"
-  [token card-id]
+  [token card-id parameters]
   (let [token (unsign token)]
     (public-api/public-dashcard-results (get-in-unsigned-token-or-throw token [:resource :dashboard])
                                         card-id
-                                        (:parameters token))))
+                                        parameters)))
 
 
 (api/define-routes)

@@ -46,7 +46,8 @@ export default class Parameters extends Component {
         } = this.props;
         return (
             <div className="flex flex-row align-end">
-                { parameters.map(parameter =>
+                {/* fake JWT token-enforced parameter values: */}
+                { parameters.filter(parameter => !("FIXME_value" in parameter)).map(parameter =>
                     <ParameterWidget
                         key={parameter.id}
 

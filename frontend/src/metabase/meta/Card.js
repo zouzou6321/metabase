@@ -87,6 +87,11 @@ export function applyParameters(
     for (const parameter of parameters || []) {
         let value = parameterValues[parameter.id];
 
+        // fake JWT token-enforced parameter values:
+        if ("FIXME_value" in parameter) {
+            value = parameter.FIXME_value;
+        }
+
         // dashboards
         const mapping = _.findWhere(parameterMappings, { card_id: card.id, parameter_id: parameter.id });
         if (value != null && mapping) {
