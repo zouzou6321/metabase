@@ -64,14 +64,16 @@
 (defn run-query-for-card-with-id
   "Run the query belonging to Card with CARD-ID with PARAMETERS and other query options (e.g. `:constraints`)."
   [card-id parameters & options]
-  (api/check-public-sharing-enabled)
   (-> (let [parameters (json/parse-string parameters keyword)]
         (binding [api/*current-user-permissions-set*     (atom #{"/"})
                   qp/*allow-queries-with-no-executor-id* true]
           (apply card-api/run-query-for-card card-id, :parameters parameters, options)))
       (u/select-nested-keys [[:data :columns :cols :rows :rows_truncated] [:json_query :parameters] :error :status])))
 
-(defn- run-query-for-card-with-public-uuid [uuid parameters & options]
+(defn- run-query-for-card-with-public-uuid
+  "Run query for a *public* Card with UUID. If public sharing is not enabled, this throws an exception."
+  [uuid parameters & options]
+  (api/check-public-sharing-enabled)
   (apply run-query-for-card-with-id (api/check-404 (db/select-one-id Card :public_uuid uuid, :archived false)) parameters options))
 
 
