@@ -7,6 +7,7 @@ var METABASE_EMBED_SECRET_KEY = process.env["MB_EMBEDDING_SECRET_KEY"];
 
 var resourceType = process.argv[2];
 var resourceId = parseFloat(process.argv[3]);
+var params = process.argv[4] ? JSON.parse(process.argv[4]) : {};
 
 var resourceTypes = {
   "card": "question",
@@ -14,7 +15,7 @@ var resourceTypes = {
 }
 
 if (!METABASE_EMBED_SECRET_KEY || !resourceTypes[resourceType] || typeof resourceId !== "number" || isNaN(resourceId)) {
-  process.stderr.write("USAGE: MB_EMBEDDING_SECRET_KEY=ABCD embed-sign <resource_type> <resource_id>\n");
+  process.stderr.write("USAGE: MB_EMBEDDING_SECRET_KEY=ABCD embed-sign <resource_type> <resource_id> [<params_json>]\n");
   process.exit(1);
 }
 
@@ -23,8 +24,10 @@ resource[resourceType] = resourceId;
 
 var unsignedToken = {
   resource: resource,
-  params: {}
+  params: params
 };
+
+process.stderr.write(JSON.stringify(unsignedToken, null, 2) + "\n");
 
 var signedToken = jwt.sign(unsignedToken, METABASE_EMBED_SECRET_KEY);
 
