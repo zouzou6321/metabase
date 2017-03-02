@@ -26,8 +26,6 @@
                              [permissions :refer [Permissions], :as perms]
                              [permissions-group :as perm-group]
                              [permissions-group-membership :refer [PermissionsGroupMembership], :as perm-membership]
-                             [raw-column :refer [RawColumn]]
-                             [raw-table :refer [RawTable]]
                              [table :refer [Table] :as table]
                              [setting :refer [Setting], :as setting]
                              [user :refer [User]])
@@ -116,12 +114,6 @@
       (setting/set! :admin-email email))))
 
 
-;; Remove old `database-sync` activity feed entries
-(defmigration ^{:author "agilliland", :added "0.13.0"} remove-database-sync-activity-entries
-  (when-not (contains? activity-feed-topics :database-sync-begin)
-    (db/simple-delete! Activity :topic "database-sync")))
-
-
 ;; Migrate dashboards to the new grid
 ;; NOTE: this scales the dashboards by 4x in the Y-scale and 3x in the X-scale
 (defmigration ^{:author "agilliland",:added "0.16.0"} update-dashboards-to-new-grid
@@ -149,60 +141,6 @@
     (db/update-where! Field {:visibility_type "unset"
                              :active          true}
       :visibility_type "normal")))
-
-
-;; populate RawTable and RawColumn information
-;; NOTE: we only handle active Tables/Fields and we skip any FK relationships (they can safely populate later)
-;; TODO - this function is way to big and hard to read -- See https://github.com/metabase/metabase/wiki/Metabase-Clojure-Style-Guide#break-up-larger-functions
-(defmigration ^{:author "agilliland",:added "0.17.0"} create-raw-tables
-  (when (zero? (db/count RawTable))
-    (binding [db/*disable-db-logging* true]
-      (db/transaction
-       (doseq [{database-id :id, :keys [name engine]} (db/select Database)]
-         (when-let [tables (not-empty (db/select Table, :db_id database-id, :active true))]
-           (log/info (format "Migrating raw schema information for %s database '%s'" engine name))
-           (let [processed-tables (atom #{})]
-             (doseq [{table-id :id, table-schema :schema, table-name :name} tables]
-               ;; this check gaurds against any table that appears in the schema multiple times
-               (if (contains? @processed-tables {:schema table-schema, :name table-name})
-                 ;; this is a dupe of this table, retire it and it's fields
-                 (table/retire-tables! #{table-id})
-                 ;; this is the first time we are encountering this table, so migrate it
-                 (do
-                   ;; add this table to the set of tables we've processed
-                   (swap! processed-tables conj {:schema table-schema, :name table-name})
-                   ;; create the RawTable
-                   (let [{raw-table-id :id} (db/insert! RawTable
-                                              :database_id database-id
-                                              :schema      table-schema
-                                              :name        table-name
-                                              :details     {}
-                                              :active      true)]
-                     ;; update the Table and link it with the RawTable
-                     (db/update! Table table-id
-                       :raw_table_id raw-table-id)
-                     ;; migrate all Fields in the Table (skipping :dynamic-schema dbs)
-                     (when-not (driver/driver-supports? (driver/engine->driver engine) :dynamic-schema)
-                       (let [processed-fields (atom #{})]
-                         (doseq [{field-id :id, column-name :name, :as field} (db/select Field, :table_id table-id, :visibility_type [:not= "retired"])]
-                           ;; guard against duplicate fields with the same name
-                           (if (contains? @processed-fields column-name)
-                             ;; this is a dupe, disable it
-                             (db/update! Field field-id
-                               :visibility_type "retired")
-                             ;; normal unmigrated field, so lets use it
-                             (let [{raw-column-id :id} (db/insert! RawColumn
-                                                         :raw_table_id raw-table-id
-                                                         :name         column-name
-                                                         :is_pk        (= :id (:special_type field))
-                                                         :details      {:base-type (:base_type field)}
-                                                         :active       true)]
-                               ;; update the Field and link it with the RawColumn
-                               (db/update! Field field-id
-                                 :raw_column_id raw-column-id
-                                 :last_analyzed (u/new-sql-timestamp))
-                               ;; add this column to the set we've processed already
-                               (swap! processed-fields conj column-name)))))))))))))))))
 
 
 ;;; +------------------------------------------------------------------------------------------------------------------------+
@@ -251,24 +189,24 @@
 ;;; +------------------------------------------------------------------------------------------------------------------------+
 
 (def ^:private ^:const old-special-type->new-type
-    {"avatar"                 "type/AvatarURL"
-     "category"               "type/Category"
-     "city"                   "type/City"
-     "country"                "type/Country"
-     "desc"                   "type/Description"
-     "fk"                     "type/FK"
-     "id"                     "type/PK"
-     "image"                  "type/ImageURL"
-     "json"                   "type/SerializedJSON"
-     "latitude"               "type/Latitude"
-     "longitude"              "type/Longitude"
-     "name"                   "type/Name"
-     "number"                 "type/Number"
-     "state"                  "type/State"
-     "timestamp_milliseconds" "type/UNIXTimestampMilliseconds"
-     "timestamp_seconds"      "type/UNIXTimestampSeconds"
-     "url"                    "type/URL"
-     "zip_code"               "type/ZipCode"})
+  {"avatar"                 "type/AvatarURL"
+   "category"               "type/Category"
+   "city"                   "type/City"
+   "country"                "type/Country"
+   "desc"                   "type/Description"
+   "fk"                     "type/FK"
+   "id"                     "type/PK"
+   "image"                  "type/ImageURL"
+   "json"                   "type/SerializedJSON"
+   "latitude"               "type/Latitude"
+   "longitude"              "type/Longitude"
+   "name"                   "type/Name"
+   "number"                 "type/Number"
+   "state"                  "type/State"
+   "timestamp_milliseconds" "type/UNIXTimestampMilliseconds"
+   "timestamp_seconds"      "type/UNIXTimestampSeconds"
+   "url"                    "type/URL"
+   "zip_code"               "type/ZipCode"})
 
 ;; make sure the new types are all valid
 (when-not config/is-prod?

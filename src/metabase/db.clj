@@ -378,9 +378,10 @@
 (defn join
   "Convenience for generating a HoneySQL `JOIN` clause.
 
+     ;; select Table IDs whose DB is :active
      (db/select-ids Table
-       (mdb/join [Table :raw_table_id] [RawTable :id])
-       :active true)"
+       (mdb/join [Table :db_id] [Database :id])
+       (db/qualify Database :active) true)"
   [[source-entity fk] [dest-entity pk]]
   {:left-join [(db/resolve-model dest-entity) [:= (db/qualify source-entity fk)
                                                   (db/qualify dest-entity pk)]]})

@@ -1,27 +1,30 @@
 (ns metabase.models.field
   (:require (clojure [data :as d]
-                     [string :as s])
-            [metabase.config :as config]
+                     [string :as str])
+            [schema.core :as s]
             (toucan [db :as db]
                     [models :as models])
+            [metabase.config :as config]
             metabase.types
             (metabase.models [field-values :refer [FieldValues]]
                              [humanization :as humanization]
                              [interface :as i]
                              [permissions :as perms])
-            [metabase.util :as u]))
+            [metabase.util :as u]
+            [metabase.util.schema :as su]))
 
 
 ;;; ------------------------------------------------------------ Type Mappings ------------------------------------------------------------
 
 (def ^:const visibility-types
   "Possible values for `Field.visibility_type`."
-  #{:normal         ; Default setting.  field has no visibility restrictions.
-    :details-only   ; For long blob like columns such as JSON.  field is not shown in some places on the frontend.
-    :hidden         ; Lightweight hiding which removes field as a choice in most of the UI.  should still be returned in queries.
-    :sensitive      ; Strict removal of field from all places except data model listing.  queries should error if someone attempts to access.
-    :retired})      ; For fields that no longer exist in the physical db.  automatically set by Metabase.  QP should error if encountered in a query.
-
+  #{:normal       ; Default setting.  field has no visibility restrictions.
+    :details-only ; For long blob like columns such as JSON.  field is not shown in some places on the frontend.
+    :hidden       ; Lightweight hiding which removes field as a choice in most of the UI.  should still be returned in queries.
+    :sensitive    ; Strict removal of field from all places except data model listing.  queries should error if someone attempts to access.
+    :retired})    ; For fields that no longer exist in the physical db.  automatically set by Metabase.  QP should error if encountered in a query.
+;; TODO - WTF is the difference between a Field being "retired" and a Field being "inactive"??
+;;        Consider removing the "retired" flag since it seems to duplicate the behavior of inactive
 
 
 ;;; ------------------------------------------------------------ Entity & Lifecycle ------------------------------------------------------------
@@ -130,7 +133,7 @@
 (defn qualified-name
   "Return a combined qualified name for FIELD, e.g. `table_name.parent_field_name.field_name`."
   [field]
-  (s/join \. (qualified-name-components field)))
+  (str/join \. (qualified-name-components field)))
 
 (defn table
   "Return the `Table` associated with this `Field`."
@@ -138,6 +141,9 @@
   [{:keys [table_id]}]
   (db/select-one 'Table, :id table_id))
 
+
+;; TODO - I'd really like to move all of the below back into a `metabase.sync-database` namespace
+;;        They were originally in a sync namespace (since they're part of the sync code)
 
 ;;; ------------------------------------------------------------ Sync Util Type Inference Fns ------------------------------------------------------------
 
@@ -200,20 +206,27 @@
   [field-name base-type]
   (when (and (string? field-name)
              (keyword? base-type))
-    (or (when (= "id" (s/lower-case field-name)) :type/PK)
+    (or (when (= "id" (str/lower-case field-name)) :type/PK)
         (some (fn [[name-pattern valid-base-types special-type]]
                 (when (and (some (partial isa? base-type) valid-base-types)
-                           (re-matches name-pattern (s/lower-case field-name)))
+                           (re-matches name-pattern (str/lower-case field-name)))
                   special-type))
               pattern+base-types+special-type))))
 
 
 ;;; ------------------------------------------------------------ Sync Util CRUD Fns ------------------------------------------------------------
 
-(defn update-field-from-field-def!
+(def ^:private FieldDef
+  {:name         su/NonBlankString
+   :base-type    su/FieldType
+   :special-type (s/maybe su/FieldType)
+   :pk?          s/Bool
+   :parent-id    (s/maybe su/IntGreaterThanZero)})
+
+(s/defn ^:always-validate update-field-from-field-def!
   "Update an EXISTING-FIELD from the given FIELD-DEF."
   {:arglists '([existing-field field-def])}
-  [{:keys [id], :as existing-field} {field-name :name, :keys [base-type special-type pk? parent-id]}]
+  [{:keys [id], :as existing-field} {field-name :name, :keys [base-type special-type pk? parent-id]} :- FieldDef]
   (u/prog1 (assoc existing-field
              :base_type    base-type
              :display_name (or (:display_name existing-field)
@@ -233,17 +246,16 @@
         :special_type (:special_type <>)
         :parent_id    parent-id))))
 
-(defn create-field-from-field-def!
+(s/defn ^:always-validate create-field-from-field-def!
   "Create a new `Field` from the given FIELD-DEF."
   {:arglists '([table-id field-def])}
-  [table-id {field-name :name, :keys [base-type special-type pk? parent-id raw-column-id]}]
+  [table-id {field-name :name, :keys [base-type special-type pk? parent-id]} :- FieldDef]
   {:pre [(integer? table-id) (string? field-name) (isa? base-type :type/*)]}
   (let [special-type (or special-type
                        (when pk? :type/PK)
                        (infer-field-special-type field-name base-type))]
     (db/insert! Field
       :table_id      table-id
-      :raw_column_id raw-column-id
       :name          field-name
       :display_name  (humanization/name->human-readable-name field-name)
       :base_type     base-type

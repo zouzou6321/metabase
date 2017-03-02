@@ -6,11 +6,13 @@
             [metabase.config :as config]
             (metabase.models [database :refer [Database]]
                              field
+                             table
                              [query-execution :refer [QueryExecution]]
                              [setting :refer [defsetting]])
             [metabase.util :as u])
   (:import clojure.lang.Keyword
            metabase.models.database.DatabaseInstance
+           metabase.models.table.TableInstance
            metabase.models.field.FieldInstance))
 
 
@@ -68,12 +70,12 @@
      It is expected that this function will be peformant and avoid draining meaningful resources of the database.
      Results should match the `DescribeDatabase` schema.")
 
-  (describe-table ^java.util.Map [this, ^DatabaseInstance database, ^java.util.Map table]
+  (describe-table ^java.util.Map [this, ^DatabaseInstance database, ^TableInstance table]
     "Return a map containing information that describes the physical schema of TABLE.
      It is expected that this function will be peformant and avoid draining meaningful resources of the database.
      Results should match the `DescribeTable` schema.")
 
-  (describe-table-fks ^java.util.Set [this, ^DatabaseInstance database, ^java.util.Map table]
+  (describe-table-fks ^java.util.Set [this, ^DatabaseInstance database, ^TableInstance table]
     "*OPTIONAL*, BUT REQUIRED FOR DRIVERS THAT SUPPORT `:foreign-keys`*
      Results should match the `DescribeTableFKs` schema.")
 
@@ -289,8 +291,9 @@
   (contains? (available-drivers) (keyword engine)))
 
 (defn driver-supports?
-  "Tests if a driver supports a given feature."
+  "Does DRIVER support a given (keyword) FEATURE?"
   [driver feature]
+  {:pre [(keyword? feature)]}
   (contains? (features driver) feature))
 
 (defn class->base-type
@@ -337,6 +340,18 @@
       (let [namespce (symbol (format "metabase.driver.%s" (name engine)))]
         (u/ignore-exceptions (require namespce))
         ((keyword engine) @registered-drivers))))
+
+(defn database->driver
+  "Return the driver for DATABASE."
+  [database]
+  {:pre [(keyword? (:engine database))]}
+  (engine->driver (:engine database)))
+
+
+(defn database-supports?
+  "Does the driver for DATABASE support a given (keyword) FEATURE?"
+  [database feature]
+  (driver-supports? (database->driver database) feature))
 
 
 ;; Can the type of a DB change?

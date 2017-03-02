@@ -180,15 +180,14 @@
 
 (defn create-table-from-tabledef!
   "Create `Table` with the data from TABLE-DEF."
-  [database-id {schema-name :schema, table-name :name, raw-table-id :raw-table-id, visibility-type :visibility-type}]
-  (if-let [existing-id (db/select-one-id Table :db_id database-id, :raw_table_id raw-table-id, :schema schema-name, :name table-name, :active false)]
+  [database-id {schema-name :schema, table-name :name, visibility-type :visibility-type}]
+  (if-let [existing-id (db/select-one-id Table :db_id database-id, :schema schema-name, :name table-name, :active false)]
     ;; if the table already exists but is marked *inactive*, mark it as *active*
     (db/update! Table existing-id
       :active true)
     ;; otherwise create a new Table
     (db/insert! Table
       :db_id           database-id
-      :raw_table_id    raw-table-id
       :schema          schema-name
       :name            table-name
       :visibility_type visibility-type

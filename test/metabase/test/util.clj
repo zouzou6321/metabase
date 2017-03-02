@@ -17,8 +17,6 @@
                              [permissions-group :refer [PermissionsGroup]]
                              [pulse :refer [Pulse]]
                              [pulse-channel :refer [PulseChannel]]
-                             [raw-column :refer [RawColumn]]
-                             [raw-table :refer [RawTable]]
                              [revision :refer [Revision]]
                              [segment :refer [Segment]]
                              [setting :as setting]
@@ -163,16 +161,6 @@
                                     :details       {}
                                     :schedule_type :daily
                                     :schedule_hour 15})})
-
-(u/strict-extend (class RawColumn)
-  test/WithTempDefaults
-  {:with-temp-defaults (fn [_] {:active true
-                                :name   (random-name)})})
-
-(u/strict-extend (class RawTable)
-  test/WithTempDefaults
-  {:with-temp-defaults (fn [_] {:active true
-                                :name   (random-name)})})
 
 (u/strict-extend (class Revision)
   test/WithTempDefaults

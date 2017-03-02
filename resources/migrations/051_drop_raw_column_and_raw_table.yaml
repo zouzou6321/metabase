@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 51
+      author: camsaul
+      changes:
+        - dropColumn:
+            tableName: metabase_table
+            columnName: raw_table_id
+        - dropColumn:
+            tableName: metabase_field
+            columnName: raw_column_id
+        - dropTable:
+            tableName: raw_table
+        - dropTable:
+            tableName: raw_column

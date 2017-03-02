@@ -108,7 +108,7 @@
    {:name "Brite Spot Family Restaurant", :price 2, :category_id 20, :id 5}]
   (for [row (take 5 (sort-by :id (table-rows-seq datasets/*driver*
                                                  (db/select-one 'Database :id (id))
-                                                 (db/select-one 'RawTable :id (db/select-one-field :raw_table_id 'Table, :id (id :venues))))))]
+                                                 (db/select-one 'Table :id (id :venues)))))]
     ;; different DBs use different precisions for these
     (-> (dissoc row :latitude :longitude)
         (update :price int)

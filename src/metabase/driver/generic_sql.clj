@@ -9,7 +9,6 @@
             (metabase [db :as db]
                       [driver :as driver])
             (metabase.models [field :as field]
-                             raw-table
                              [table :as table])
             metabase.query-processor.interface
             [metabase.sync-database.analyze :as analyze]
