@@ -2,14 +2,15 @@ import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { normal } from 'metabase/lib/colors';
 import { selectFlow } from '../actions'
 
 const queryTypes = [
     { name: 'A metric', type: 'metric' },
     { name: 'A metric on a map', type: 'map' },
+    { name: 'Segment or table', type: 'segment' },
     { name: 'A metric on a timeseries', type: 'time' },
     { name: 'Pivot a metric', type: 'pivot' },
-    { name: 'Segment or table', type: 'segment' },
     { name: 'SQL', type: 'sql' },
 ]
 
@@ -24,18 +25,27 @@ class QueryTypeList extends Component {
                 flex: 1,
                 flexWrap: 'wrap'
             })}>
-                { queryTypes.map(type =>
+                { queryTypes.map((type, index) =>
                     <li
-                        className={`p3 ${cxs({ flex: '0 0 33.33%' })}`}
+                        className={`p3 ${cxs({flex: '0 0 33.33%',})}`}
                         key={type.type}
                         onClick={() => this.props.selectFlow(type.type)}
                     >
                         <div className={cxs({
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            minHeight: 220,
+                            border: '1px solid #ddd',
+                            borderRadius: 4,
+                            ':hover': {
+                                backgroundColor: normal.blue,
+                                color: '#fff',
+                                borderColor: normal.blue,
+                                cursor: 'pointer'
+                            }
                         })}>
-                            {type.name}
+                            <h3>{type.name}</h3>
                         </div>
                     </li>
                   )

@@ -2,7 +2,8 @@ import {
     ADVANCE_STEP,
     BACK,
     NEW_METRIC,
-    SELECT_FLOW
+    SELECT_FLOW,
+    SET_TIP
 } from './actions'
 
 import QueryTypeList from './components/QueryTypeList'
@@ -18,7 +19,7 @@ const tips = {
     },
     'database': {
         title: 'Databi',
-        text: "Your data lives in databases, which is good cause otherwise that'd be a silly name. Each database can have many tables, which are"
+        text: "Your data lives in databases, which is good cause otherwise that'd be a silly name. Each database can have many tables, which are where individual values live."
     },
     'schemas': {
         title: 'Schemas',
@@ -52,6 +53,11 @@ const newMetricSteps = [
         title: 'Pick a schema',
         component: MetricBuilder,
         tip: tips['schema']
+    },
+    {
+        title: 'Pick a table',
+        component: MetricBuilder,
+        tip: tips['schema']
     }
 ]
 
@@ -61,8 +67,7 @@ const segment = []
 const mapTitle = 'Metric on a map'
 const map = [
     {
-        title: mapTitle,
-        subtitle: 'What kind of map would you like to see?',
+        title: 'What kind of map would you like to see?',
         component: MapLanding,
     },
     {
@@ -108,6 +113,14 @@ const initialState = {
 export default function(state = initialState, { type, payload, error }) {
     const { currentStepIndex, flow } = state;
     switch(type) {
+        case SET_TIP:
+            return {
+                ...state,
+                currentStep: {
+                    ...state.currentStep,
+                    tip: payload
+                }
+            }
         case BACK:
             const newStepIndex = currentStepIndex - 1;
 

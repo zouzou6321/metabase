@@ -1,9 +1,13 @@
+import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import { newMetric } from '../actions'
 import { fetchMetrics } from 'metabase/redux/metadata';
 
+import Button from 'metabase/components/Button';
+
+import Text from '../components/Text';
 
 const mapStateToProps = (state) => ({
     metrics: state.metadata.metrics // TODO - use a selector here
@@ -24,16 +28,24 @@ class MetricLanding extends Component {
         return (
             <div>
                 <div>
-                    <div
-                        className="flex align-center justify-center bordered rounded border-dark"
-                        onClick={() => newMetric()}
-                    >
-                        A fresh metric
+                    <div className={cxs({ display: 'flex' })}>
+                        <h3>Existing metrics</h3>
+                        <Button
+                            className="ml-auto"
+                            onClick={() => newMetric()}
+                            primary
+                        >
+                            A fresh metric
+                        </Button>
                     </div>
-                    <h3>Existing metrics</h3>
                     <ol>
                         { Object.keys(metrics).map(metric =>
-                            <li key={metric}>{ metrics[metric].name }</li>
+                            <li
+                                key={metric}
+                            >
+                                <h2 className="link">{ metrics[metric].name }</h2>
+                                <Text>{ metrics[metric].description }</Text>
+                            </li>
                         )}
                     </ol>
                 </div>
