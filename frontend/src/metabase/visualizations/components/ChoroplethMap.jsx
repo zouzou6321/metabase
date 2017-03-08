@@ -10,7 +10,6 @@ import MetabaseSettings from "metabase/lib/settings";
 import { formatNumber } from "metabase/lib/formatting";
 
 import ChartWithLegend from "./ChartWithLegend.jsx";
-import ChartTooltip from "./ChartTooltip.jsx";
 import LegacyChoropleth from "./LegacyChoropleth.jsx";
 import LeafletChoropleth from "./LeafletChoropleth.jsx";
 
@@ -218,7 +217,6 @@ export default class ChoroplethMap extends Component {
                         minimalBounds={minimalBounds}
                     />
                 }
-                <ChartTooltip series={series} hovered={hovered} />
             </ChartWithLegend>
         );
     }

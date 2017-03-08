@@ -132,15 +132,30 @@ export const queryResult = createSelector(
     (queryResult) => queryResult
 );
 
+import { getMode as getMode_ } from "metabase/qb/lib/modes";
+
+export const getMode = createSelector(
+    [card, tableMetadata],
+    (card, tableMetadata) => getMode_(card, tableMetadata)
+)
+
 export const getImplicitParameters = createSelector(
     [card],
     (card) =>
         getTemplateTagParameters(getTemplateTags(card))
 );
 
+export const getModeParameters = createSelector(
+    [card, tableMetadata, getMode],
+    (card, tableMetadata, mode) =>
+        (card && tableMetadata && mode && mode.getModeParameters) ?
+            mode.getModeParameters(card, tableMetadata) :
+            []
+);
+
 export const getParameters = createSelector(
-    [getImplicitParameters],
-    (implicitParameters) => implicitParameters
+    [getModeParameters, getImplicitParameters],
+    (modeParameters, implicitParameters) => [...modeParameters, ...implicitParameters]
 );
 
 export const getParametersWithValues = createSelector(

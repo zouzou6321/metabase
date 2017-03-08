@@ -139,7 +139,7 @@ export default class QueryVisualization extends Component {
     }
 
     render() {
-        const { card, databases, isObjectDetail, isRunning, result } = this.props
+        const { className, card, databases, isObjectDetail, isRunning, result } = this.props
         let viz;
 
         if (!result) {
@@ -162,19 +162,19 @@ export default class QueryVisualization extends Component {
             }
         }
 
-        const wrapperClasses = cx('wrapper full relative mb2 z1', {
+        const wrapperClasses = cx(className, 'relative', {
             'flex': !isObjectDetail,
             'flex-column': !isObjectDetail
         });
 
-        const visualizationClasses = cx('flex flex-full Visualization z1 px1', {
+        const visualizationClasses = cx('flex flex-full Visualization z1', {
             'Visualization--errors': (result && result.error),
             'Visualization--loading': isRunning
         });
 
         return (
             <div className={wrapperClasses}>
-                {this.renderHeader()}
+                { !this.props.noHeader && this.renderHeader()}
                 { isRunning && (
                     <div className="Loading spread flex flex-column layout-centered text-brand z2">
                         <LoadingSpinner />

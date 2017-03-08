@@ -79,13 +79,8 @@ class BrowserSelect extends Component {
             <PopoverWithTrigger
                 ref="popover"
                 className={className}
-                triggerElement={
-                    <div className={"flex align-center " + (!value ? " text-grey-3" : "")}>
-                        <span className="mr1">{selectedName}</span>
-                        <Icon className="flex-align-right" name="chevrondown" size={12} />
-                    </div>
-                }
-                triggerClasses={cx("AdminSelect", className)}
+                triggerElement={<SelectButton hasValue={!!value}>{selectedName}</SelectButton>}
+                triggerClasses={className}
                 verticalAttachments={["top"]}
                 isInitiallyOpen={isInitiallyOpen}
             >
@@ -116,6 +111,12 @@ class BrowserSelect extends Component {
         );
     }
 }
+
+export const SelectButton = ({ hasValue, children }) =>
+    <div className={"AdminSelect flex align-center " + (!hasValue ? " text-grey-3" : "")}>
+        <span className="mr1">{children}</span>
+        <Icon className="flex-align-right" name="chevrondown" size={12} />
+    </div>
 
 export class Option extends Component {
     static propTypes = {

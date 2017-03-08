@@ -4,17 +4,9 @@ import GuiQueryEditor from "metabase/query_builder/components/GuiQueryEditor.jsx
 
 import { serializeCardForUrl } from "metabase/lib/card";
 
-import _ from "underscore";
 import cx from "classnames";
 
 export default class PartialQueryBuilder extends Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {};
-
-        _.bindAll(this, "setQuery");
-    }
-
     static propTypes = {
         onChange: PropTypes.func.isRequired,
         tableMetadata: PropTypes.object.isRequired,
@@ -34,7 +26,7 @@ export default class PartialQueryBuilder extends Component {
         });
     }
 
-    setQuery(query) {
+    setQuery = (query) => {
         this.props.onChange(query.query);
         this.props.updatePreviewSummary(query);
     }

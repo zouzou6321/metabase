@@ -14,3 +14,15 @@ export function getTemplateTagParameters(tags: TemplateTag[]): Parameter[] {
             default: tag.default
         }))
 }
+
+export function getTimeseriesParameters(card, tableMetadata): Parameter[] {
+    // TODO: use query lib
+    const dimension = card.dataset_query.query.breakout[0];
+    return [{
+        id: "TIMESERIES",
+        type: "date/range",
+        target: ["dimension", dimension],
+        name: "",
+        slug: "date"
+    }]
+}

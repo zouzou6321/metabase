@@ -293,7 +293,7 @@ function applyChartYAxis(chart, settings, series, yExtent, axisName) {
     }
 }
 
-function applyChartTooltips(chart, series, isStacked, onHoverChange) {
+function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualizationClick) {
     let [{ data: { cols } }] = series;
     chart.on("renderlet.tooltips", function(chart) {
         chart.selectAll(".bar, .dot, .area, .line, .bubble")
@@ -348,6 +348,13 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange) {
             })
             .on("mouseleave", function() {
                 onHoverChange && onHoverChange(null);
+            })
+            .on("mouseup", function(d) {
+                onVisualizationClick && onVisualizationClick({
+                    value: d.data.key,
+                    col: cols[0],
+                    event: d3.event
+                })
             });
 
         chart.selectAll("title").remove();
@@ -746,7 +753,7 @@ function forceSortedGroupsOfGroups(groupsOfGroups: CrossfilterGroup[][], indexMa
 }
 
 
-export default function lineAreaBar(element, { series, onHoverChange, onRender, chartType, isScalarSeries, settings, maxSeries }) {
+export default function lineAreaBar(element, { series, onHoverChange, onVisualizationClick, onRender, chartType, isScalarSeries, settings, maxSeries }) {
     const colors = settings["graph.colors"];
 
     const isTimeseries = settings["graph.x_axis.scale"] === "timeseries";
@@ -1073,7 +1080,7 @@ export default function lineAreaBar(element, { series, onHoverChange, onRender, 
             }
             onHoverChange(hovered);
         }
-    });
+    }, onVisualizationClick);
 
     // render
     parent.render();

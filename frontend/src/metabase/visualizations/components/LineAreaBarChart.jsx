@@ -4,7 +4,6 @@ import React, { Component, PropTypes } from "react";
 
 import CardRenderer from "./CardRenderer.jsx";
 import LegendHeader from "./LegendHeader.jsx";
-import ChartTooltip from "./ChartTooltip.jsx";
 
 import "./LineAreaBarChart.css";
 
@@ -225,7 +224,6 @@ export default class LineAreaBarChart extends Component<*, VisualizationProps, *
                     maxSeries={MAX_SERIES}
                     renderer={this.constructor.renderer}
                 />
-                <ChartTooltip series={series} hovered={hovered} />
             </div>
         );
     }

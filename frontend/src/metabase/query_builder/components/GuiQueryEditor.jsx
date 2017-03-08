@@ -25,11 +25,6 @@ export default class GuiQueryEditor extends Component {
         this.state = {
             expanded: true
         };
-
-        _.bindAll(
-            this,
-            "setBreakout",
-        );
     }
 
     static propTypes = {
@@ -53,64 +48,6 @@ export default class GuiQueryEditor extends Component {
             limit: true
         }
     };
-
-    setQuery(datasetQuery) {
-        this.props.setQueryFn(datasetQuery);
-    }
-
-    setBreakout = (index, field) => {
-        if (field == null) {
-            Query.removeBreakout(this.props.query.query, index);
-            this.setQuery(this.props.query);
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove GroupBy');
-        } else {
-            if (index > Query.getBreakouts(this.props.query.query) - 1) {
-                Query.addBreakout(this.props.query.query, field);
-                this.setQuery(this.props.query);
-                MetabaseAnalytics.trackEvent('QueryBuilder', 'Add GroupBy');
-            } else {
-                Query.updateBreakout(this.props.query.query, index, field);
-                this.setQuery(this.props.query);
-                MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify GroupBy');
-            }
-        }
-    }
-
-    updateAggregation = (index, aggregationClause) => {
-        Query.updateAggregation(this.props.query.query, index, aggregationClause);
-        this.setQuery(this.props.query);
-
-        MetabaseAnalytics.trackEvent('QueryBuilder', 'Set Aggregation', aggregationClause[0]);
-    }
-
-    removeAggregation = (index, aggregationClause) => {
-        Query.removeAggregation(this.props.query.query, index);
-        this.setQuery(this.props.query);
-
-        MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Aggregation', aggregationClause[0]);
-    }
-
-    addFilter = (filter) => {
-        const query = this.props.query;
-        Query.addFilter(query.query, filter);
-        this.setQuery(query);
-
-        MetabaseAnalytics.trackEvent('QueryBuilder', 'Add Filter');
-    }
-
-    updateFilter = (index, filter) => {
-        Query.updateFilter(this.props.query.query, index, filter);
-        this.setQuery(this.props.query);
-
-        MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify Filter');
-    }
-
-    removeFilter = (index) => {
-        Query.removeFilter(this.props.query.query, index);
-        this.setQuery(this.props.query);
-
-        MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Filter');
-    }
 
     renderAdd(text, onClick, targetRefName) {
         let className = "AddButton text-grey-2 text-bold flex align-center text-grey-4-hover cursor-pointer no-decoration transition-color";
@@ -155,8 +92,8 @@ export default class GuiQueryEditor extends Component {
                     <FilterList
                         filters={filters}
                         tableMetadata={this.props.tableMetadata}
-                        removeFilter={this.removeFilter}
-                        updateFilter={this.updateFilter}
+                        removeFilter={this.props.removeQueryFilter}
+                        updateFilter={this.props.setQueryFilter}
                     />
                 );
             }
@@ -187,7 +124,7 @@ export default class GuiQueryEditor extends Component {
                             isNew={true}
                             tableMetadata={this.props.tableMetadata || {}}
                             customFields={Query.getExpressions(this.props.query.query)}
-                            onCommitFilter={this.addFilter}
+                            onCommitFilter={this.props.addQueryFilter}
                             onClose={() => this.refs.filterPopover.close()}
                         />
                     </PopoverWithTrigger>
@@ -227,8 +164,8 @@ export default class GuiQueryEditor extends Component {
                         aggregation={aggregation}
                         tableMetadata={tableMetadata}
                         customFields={Query.getExpressions(this.props.query.query)}
-                        updateAggregation={(aggregation) => this.updateAggregation(index, aggregation)}
-                        removeAggregation={canRemoveAggregation ? this.removeAggregation.bind(null, index) : null}
+                        updateAggregation={(aggregation) => this.props.setQueryAggregation(index, aggregation)}
+                        removeAggregation={canRemoveAggregation ? this.props.removeQueryAggregation.bind(null, index) : null}
                         addButton={this.renderAdd(null)}
                     />
                 );
@@ -287,7 +224,7 @@ export default class GuiQueryEditor extends Component {
                         customFieldOptions={Query.getExpressions(query)}
                         tableMetadata={tableMetadata}
                         field={breakout}
-                        setField={(field) => this.setBreakout(i, field)}
+                        setField={(field) => this.props.setQueryBreakout(i, field)}
                         addButton={this.renderAdd(i === 0 ? "Add a grouping" : null)}
                     />
                 );
@@ -411,7 +348,7 @@ export default class GuiQueryEditor extends Component {
                     {this.props.children}
                     <ExtendedOptions
                         {...this.props}
-                        setQuery={(query) => this.setQuery(query)}
+                        setQuery={(query) => this.props.setQueryQuery(query)}
                     />
                 </div>
             </div>

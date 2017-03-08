@@ -778,6 +778,101 @@ export const setQuerySort = createThunkAction(SET_QUERY_SORT, (column) => {
     };
 });
 
+export const SET_QUERY_BREAKOUT = "SET_QUERY_BREAKOUT";
+export const setQueryBreakout = createThunkAction(SET_QUERY_BREAKOUT, (index, field) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            if (field == null) {
+                Query.removeBreakout(datasetQuery.query, index);
+                dispatch(setQuery(datasetQuery));
+                MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove GroupBy');
+            } else {
+                if (index > Query.getBreakouts(datasetQuery.query) - 1) {
+                    Query.addBreakout(datasetQuery.query, field);
+                    dispatch(setQuery(datasetQuery));
+                    MetabaseAnalytics.trackEvent('QueryBuilder', 'Add GroupBy');
+                } else {
+                    Query.updateBreakout(datasetQuery.query, index, field);
+                    dispatch(setQuery(datasetQuery));
+                    MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify GroupBy');
+                }
+            }
+        }
+        return null;
+    }
+);
+
+export const SET_QUERY_AGGREGATION = "SET_QUERY_AGGREGATION";
+export const setQueryAggregation = createThunkAction(SET_QUERY_AGGREGATION, (index, aggregationClause) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            Query.updateAggregation(datasetQuery.query, index, aggregationClause);
+            dispatch(setQuery(datasetQuery));
+            MetabaseAnalytics.trackEvent('QueryBuilder', 'Set Aggregation', aggregationClause[0]);
+        }
+        return null;
+    }
+);
+
+export const REMOVE_QUERY_AGGREGATION = "REMOVE_QUERY_AGGREGATION";
+export const removeQueryAggregation = createThunkAction(REMOVE_QUERY_AGGREGATION, (index) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            Query.removeAggregation(datasetQuery.query, index);
+            dispatch(setQuery(datasetQuery));
+            MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Aggregation');
+        }
+        return null;
+    }
+);
+
+export const ADD_QUERY_FILTER = "ADD_QUERY_FILTER";
+export const addQueryFilter = createThunkAction(ADD_QUERY_FILTER, (filter) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            Query.addFilter(datasetQuery.query, filter);
+            dispatch(setQuery(datasetQuery));
+            MetabaseAnalytics.trackEvent('QueryBuilder', 'Add Filter');
+        }
+        return null;
+    }
+);
+
+export const SET_QUERY_FILTER = "SET_QUERY_FILTER";
+export const setQueryFilter = createThunkAction(SET_QUERY_FILTER, (index, filter) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            Query.updateFilter(datasetQuery.query, index, filter);
+            dispatch(setQuery(datasetQuery));
+            MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify Filter');
+        }
+        return null;
+    }
+);
+
+export const REMOVE_QUERY_FILTER = "REMOVE_QUERY_FILTER";
+export const removeQueryFilter = createThunkAction(REMOVE_QUERY_FILTER, (index) =>
+    (dispatch, getState) => {
+        const { qb: { card } } = getState();
+        if (card.dataset_query.type === "query") {
+            const datasetQuery = Utils.copy(card.dataset_query);
+            Query.removeFilter(datasetQuery.query, index);
+            dispatch(setQuery(datasetQuery));
+            MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Filter');
+        }
+        return null;
+    }
+);
 
 // runQuery
 export const RUN_QUERY = "RUN_QUERY";

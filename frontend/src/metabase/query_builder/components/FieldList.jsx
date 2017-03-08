@@ -120,8 +120,7 @@ export default class FieldList extends Component {
                         }}
                     >
                         <TimeGroupingPopover
-                            field={field}
-                            value={item.value}
+                            field={field || ["datetime-field", item.value, "as", null]}
                             onFieldChange={this.props.onFieldChange}
                             groupingOptions={item.field.grouping_options}
                         />

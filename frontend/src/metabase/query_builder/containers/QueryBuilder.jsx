@@ -17,6 +17,10 @@ import DataReference from "../components/dataref/DataReference.jsx";
 import TagEditorSidebar from "../components/template_tags/TagEditorSidebar.jsx";
 import SavedQuestionIntroModal from "../components/SavedQuestionIntroModal.jsx";
 
+import Toggle from "metabase/components/Toggle";
+
+import NewQueryBuilder from "metabase/qb/components/QueryBuilder.jsx";
+
 import {
     card,
     originalCard,
@@ -118,6 +122,10 @@ export default class QueryBuilder extends Component {
 
         // TODO: React tells us that forceUpdate() is not the best thing to use, so ideally we can find a different way to trigger this
         this.forceUpdateDebounced = _.debounce(this.forceUpdate.bind(this), 400);
+
+        this.state = {
+            legacy: false
+        }
     }
 
     componentWillMount() {
@@ -170,6 +178,23 @@ export default class QueryBuilder extends Component {
     }
 
     render() {
+        return (
+            <div className="flex-full flex relative">
+                <div className="absolute bottom right p2 flex align-center z4">
+                    <Toggle value={this.state.legacy} onChange={() => this.setState({ legacy: !this.state.legacy })} />
+                </div>
+                { this.state.legacy ?
+                    <LegacyQueryBuilder {...this.props} />
+                :
+                    <NewQueryBuilder {...this.props} />
+                }
+            </div>
+        )
+    }
+}
+
+class LegacyQueryBuilder extends Component {
+    render() {
         const { card, isDirty, databases, uiControls } = this.props;
 
         // if we don't have a card at all or no databases then we are initializing, so keep it simple
@@ -198,7 +223,7 @@ export default class QueryBuilder extends Component {
                     </div>
 
                     <div ref="viz" id="react_qb_viz" className="flex z1" style={{ "transition": "opacity 0.25s ease-in-out" }}>
-                        <QueryVisualization {...this.props} />
+                        <QueryVisualization {...this.props} className="full wrapper mb2 z1" />
                     </div>
                 </div>
 

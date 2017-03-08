@@ -4,6 +4,8 @@ import React, { Component, PropTypes, Element } from "react";
 
 import ExplicitSize from "metabase/components/ExplicitSize.jsx";
 import LegendHeader from "metabase/visualizations/components/LegendHeader.jsx";
+import ChartTooltip from "metabase/visualizations/components/ChartTooltip.jsx";
+import ChartDrillThrough from "metabase/visualizations/components/ChartDrillThrough.jsx";
 import LoadingSpinner from "metabase/components/LoadingSpinner.jsx";
 import Icon from "metabase/components/Icon.jsx";
 import Tooltip from "metabase/components/Tooltip.jsx";
@@ -95,6 +97,7 @@ export default class Visualization extends Component<*, Props, State> {
 
         this.state = {
             hovered: null,
+            drill: null,
             error: null,
             warnings: [],
             yAxisSplit: null,
@@ -151,6 +154,7 @@ export default class Visualization extends Component<*, Props, State> {
     transform(newProps) {
         this.setState({
             hovered: null,
+            drill: null,
             error: null,
             warnings: [],
             yAxisSplit: null,
@@ -158,7 +162,7 @@ export default class Visualization extends Component<*, Props, State> {
         });
     }
 
-    onHoverChange = (hovered) => {
+    handleHoverChange = (hovered) => {
         const { yAxisSplit } = this.state;
         if (hovered) {
             // if we have Y axis split info then find the Y axis index (0 = left, 1 = right)
@@ -168,6 +172,13 @@ export default class Visualization extends Component<*, Props, State> {
             }
         }
         this.setState({ hovered });
+    }
+
+    handleVisualizationClick = (clicked) => {
+        // needs to be delayed so we don't clear it when switching from one drill through to another
+        setTimeout(() => {
+            this.setState({ clicked });
+        }, 100)
     }
 
     onRender = ({ yAxisSplit, warnings = [] } = {}) => {
@@ -182,6 +193,18 @@ export default class Visualization extends Component<*, Props, State> {
         const { actionButtons, className, isDashboard, width, height, errorIcon, isSlow, expectedDuration, replacementContent, linkToCard } = this.props;
         const { series, CardVisualization } = this.state;
         const small = width < 330;
+
+        let { hovered, clicked } = this.state;
+        let drillActions = [];
+
+        const { mode, tableMetadata } = this.props;
+        if (clicked && mode && mode.getDrillThroughActions) {
+            drillActions = mode.getDrillThroughActions().map(getAction => getAction(series[0].card, tableMetadata, clicked)).filter(action => !!action);
+        }
+
+        if (drillActions && drillActions.length > 0) {
+            hovered = null;
+        }
 
         let error = this.props.error || this.state.error;
         let loading = !(series && series.length > 0 && _.every(series, (s) => s.data));
@@ -323,14 +346,25 @@ export default class Visualization extends Component<*, Props, State> {
                         card={series[0].card} // convienence for single-series visualizations
                         // $FlowFixMe
                         data={series[0].data} // convienence for single-series visualizations
-                        hovered={this.state.hovered}
-                        onHoverChange={this.onHoverChange}
+                        hovered={hovered}
+                        onHoverChange={this.handleHoverChange}
+                        onVisualizationClick={this.handleVisualizationClick}
                         onRenderError={this.onRenderError}
                         onRender={this.onRender}
                         gridSize={gridSize}
                         linkToCard={linkToCard}
                     />
                 }
+                <ChartTooltip
+                    series={series}
+                    hovered={hovered}
+                />
+                <ChartDrillThrough
+                    clicked={clicked}
+                    drillActions={drillActions}
+                    onDrillThrough={this.props.onDrillThrough}
+                    onClose={() => this.setState({ clicked: null })}
+                />
             </div>
         );
     }
