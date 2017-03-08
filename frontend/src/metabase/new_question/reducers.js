@@ -3,7 +3,9 @@ import {
     BACK,
     NEW_METRIC,
     SELECT_FLOW,
-    SET_TIP
+    SET_TIP,
+    SELECT_METRIC,
+    SELECT_METRIC_BREAKOUT
 } from './actions'
 
 import QueryTypeList from './components/QueryTypeList'
@@ -11,6 +13,7 @@ import QueryTypeList from './components/QueryTypeList'
 import MetricLanding from './containers/MetricLanding'
 import MetricBuilder from './containers/MetricBuilder'
 import MapLanding from './containers/MapLanding'
+import BreakoutSelection from './containers/BreakoutSelection'
 
 const tips = {
     'metric': {
@@ -35,10 +38,16 @@ const initialStep = {
 }
 
 const metricTitle = 'Metrics'
+
 const metric = [
     {
         title: 'Pick a metric',
         component: MetricLanding,
+        tip: tips['metric']
+    },
+    {
+        title: 'How do you want to see this metric?',
+        component: BreakoutSelection,
         tip: tips['metric']
     },
 ]
@@ -107,7 +116,8 @@ const initialState = {
     newMetric: false,
     currentStep: initialStep,
     flow: { title: 'Start with...' },
-    currentStepIndex: 0
+    currentStepIndex: 0,
+    card: {}
 }
 
 export default function(state = initialState, { type, payload, error }) {
@@ -119,6 +129,18 @@ export default function(state = initialState, { type, payload, error }) {
                 currentStep: {
                     ...state.currentStep,
                     tip: payload
+                }
+            }
+        case SELECT_METRIC:
+            return {
+                ...state,
+                card: payload
+            }
+        case SELECT_METRIC_BREAKOUT:
+            return {
+                ...state,
+                card: {
+                    ...state.card
                 }
             }
         case BACK:
@@ -148,10 +170,6 @@ export default function(state = initialState, { type, payload, error }) {
                 currentStepIndex: currentStepIndex + 1
             }
         case SELECT_FLOW:
-            // if the chosen mode is SQL then just dump off to sql
-            if(payload === 'sql') {
-
-            }
             return {
                 ...state,
                 flow: {

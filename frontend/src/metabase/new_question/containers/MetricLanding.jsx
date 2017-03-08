@@ -2,7 +2,7 @@ import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { newMetric } from '../actions'
+import { newMetric, selectMetric, selectAndAdvance } from '../actions'
 import { fetchMetrics } from 'metabase/redux/metadata';
 
 import Button from 'metabase/components/Button';
@@ -14,8 +14,10 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = ({
+    fetchMetrics,
     newMetric,
-    fetchMetrics
+    selectMetric,
+    selectAndAdvance,
 })
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -24,7 +26,7 @@ class MetricLanding extends Component {
         this.props.fetchMetrics()
     }
     render () {
-        const { metrics, newMetric } = this.props;
+        const { metrics, newMetric, selectMetric, selectAndAdvance } = this.props;
         return (
             <div>
                 <div>
@@ -41,6 +43,7 @@ class MetricLanding extends Component {
                     <ol>
                         { Object.keys(metrics).map(metric =>
                             <li
+                                onClick={() => selectAndAdvance(() => selectMetric(metrics[metric])) }
                                 key={metric}
                             >
                                 <h2 className="link">{ metrics[metric].name }</h2>

@@ -37,13 +37,25 @@ export const selectAndAdvance = createThunkAction(SELECT_AND_ADVANCE, (selection
 
 export const SELECT_FLOW = 'SELECT_FLOW';
 export const selectFlow = createThunkAction(SELECT_FLOW, (flow) => {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         // if the user is selecting a SQL starting point just dump them into SQL mode
         if(flow === 'sql') {
-            const newSQL = startNewCard('native', 2)
+            const newSQL = startNewCard('native', getState().metadata.databases.first)
             return dispatch(push(`/q#${serializeCardForUrl(newSQL)}`))
         }
         // otherwise return the flow type they selected
         return flow
     }
 });
+
+export const SELECT_METRIC_BREAKOUT = 'SELECT_METRIC_BREAKOUT';
+export const selectMetricBreakout = createAction(SELECT_METRIC_BREAKOUT)
+
+export const SELECT_METRIC = 'SELECT_METRIC';
+export const selectMetric = createAction(SELECT_METRIC, ({ database_id, table_id, id }) => {
+    let card = startNewCard("query", database_id, table_id);
+    // TODO it'd be dope if we didn't have to set this in two places
+    card.dataset_query.aggregation = [["METRIC", id]];
+    card.dataset_query.query.aggregation = [["METRIC", id]];
+    return card
+})

@@ -2,6 +2,8 @@ import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { fetchDatabasesWithMetadata } from 'metabase/redux/metadata';
+
 import Icon from 'metabase/components/Icon';
 
 import Text from '../components/Text';
@@ -21,11 +23,15 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = ({
+    fetchDatabasesWithMetadata,
     goBack: back,
 })
 
 @connect(mapStateToProps, mapDispatchToProps)
 class NewQuestion extends Component {
+    componentDidMount () {
+        this.props.fetchDatabasesWithMetadata()
+    }
     render () {
         const { back, goBack, component, tip, title, subtitle } = this.props;
         const CurrentStep = component

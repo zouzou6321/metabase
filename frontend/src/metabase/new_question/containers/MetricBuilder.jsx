@@ -2,7 +2,7 @@ import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { normal } from 'metabase/lib/colors';
+import Card from '../components/Card';
 
 import {
     setTip,
@@ -10,22 +10,9 @@ import {
 } from '../actions'
 
 import {
-    initializeQB,
     setQueryDatabase
 } from 'metabase/query_builder/actions'
 
-const Card = ({ name }) =>
-    <div className={cxs({
-        borderRadius: 4,
-        backgroundColor: normal.blue,
-        color: 'white',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: 150
-    })}>
-        <h3>{name}</h3>
-    </div>
 
 const mapStateToProps = (state) => ({
     databases: state.metadata.databases, // TODO use a selector here
@@ -34,7 +21,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = ({
-    initializeQB,
     setTip,
     selectAndAdvance,
     setQueryDatabase,
@@ -49,7 +35,7 @@ class MetricBuilder extends Component {
         this.tip = props.tip
     }
     render () {
-        const { databases, initializeQB, setTip, selectAndAdvance, setQueryDatabase, title } = this.props;
+        const { databases, setTip, selectAndAdvance, setQueryDatabase, title } = this.props;
         return (
             <div>
                 <h2>{title}</h2>
