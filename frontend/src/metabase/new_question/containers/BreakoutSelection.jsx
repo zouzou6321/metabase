@@ -12,7 +12,8 @@ import {
 
 const mapStateToProps = (state) => ({
     title: state.newQuestion.currentStep.title,
-    breakouts: state.metadata.tables[state.newQuestion.card.dataset_query.query.source_table].fields_lookup
+    breakouts: state.metadata.tables[state.newQuestion.card.dataset_query.query.source_table].fields_lookup,
+    tip: state.newQuestion.currentStep.tip
 })
 
 const mapDispatchToProps = ({
@@ -23,6 +24,10 @@ const mapDispatchToProps = ({
 
 @connect(mapStateToProps, mapDispatchToProps)
 class BreakoutSelection extends Component {
+    constructor(props) {
+        super(props)
+        this.tip = props.tip
+    }
     render () {
         const { title, breakouts, selectAndAdvance, setTip } = this.props;
         return (
@@ -45,6 +50,7 @@ class BreakoutSelection extends Component {
                                 }
                                 return false
                             }}
+                            onMouseLeave={() => setTip(this.tip)}
                             className={cxs({ flex: '0 0 33.33%', padding: '1em' })}
                             key={breakouts[breakout].id}
                         >
