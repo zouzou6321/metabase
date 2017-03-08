@@ -99,6 +99,7 @@
     "fs-promise": "^1.0.0",
     "glob": "^7.1.1",
     "html-webpack-plugin": "^2.14.0",
+    "husky": "^0.13.2",
     "image-diff": "^1.6.3",
     "imports-loader": "^0.7.0",
     "jasmine": "^2.4.1",
@@ -114,11 +115,13 @@
     "karma-junit-reporter": "^1.1.0",
     "karma-nyan-reporter": "^0.2.2",
     "karma-webpack": "^1.7.0",
+    "lint-staged": "^3.3.1",
     "loader-utils": "^0.2.12",
     "postcss-cssnext": "^2.4.0",
     "postcss-import": "^9.0.0",
     "postcss-loader": "^1.2.1",
     "postcss-url": "^5.1.1",
+    "prettier": "^0.21.0",
     "promise-loader": "^1.0.0",
     "react-addons-test-utils": "^15.4.2",
     "react-hot-loader": "^1.3.0",
@@ -135,7 +138,9 @@
   },
   "scripts": {
     "dev": "yarn && concurrently --kill-others -p name -n 'backend,frontend' -c 'blue,green' 'lein ring server' 'yarn run build-hot'",
-    "lint": "eslint --ext .js --ext .jsx --max-warnings 0 frontend/src frontend/test",
+    "lint": "yarn run lint-eslint && yarn run lint-prettier",
+    "lint-eslint": "eslint --ext .js --ext .jsx --max-warnings 0 frontend/src frontend/test",
+    "lint-prettier": "prettier --tab-width 4 -l 'frontend/src/metabase/qb/**/*.js*' || (echo '\nThese files are not formatted correctly. Did you forget to run \"yarn run prettier\"?' && false)",
     "flow": "flow check",
     "test": "karma start frontend/test/karma.conf.js --single-run",
     "test-watch": "karma start frontend/test/karma.conf.js --auto-watch --reporters nyan",
@@ -146,8 +151,16 @@
     "build-hot": "NODE_ENV=hot webpack --bail && NODE_ENV=hot webpack-dev-server --progress",
     "start": "yarn run build && lein ring server",
     "storybook": "start-storybook -p 9001",
+    "precommit": "lint-staged",
     "preinstall": "ps -fp $PPID | grep -q yarn || echo '\\033[0;33mSorry, npm is not supported. Please use Yarn (https://yarnpkg.com/).\\033[0m'",
+    "prettier": "prettier --tab-width 4 --write 'frontend/src/metabase/qb/**/*.js*'",
     "test-jest": "jest"
+  },
+  "lint-staged": {
+    "frontend/src/metabase/qb/**/*.js*": [
+      "prettier --tab-width 4 --write",
+      "git add"
+    ]
   },
   "jest": {
     "testPathIgnorePatterns": [

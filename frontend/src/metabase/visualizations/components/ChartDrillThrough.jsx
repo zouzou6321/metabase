@@ -24,14 +24,14 @@ export default class ChartDrillThrough extends Component<*, Props, *> {
                 verticalAttachments={["bottom", "top"]}
             >
                 <div className="p2">
-                    { drillActions.map(drillAction =>
+                    { drillActions.map(action =>
                         <Button
                             onClick={() => {
-                                onDrillThrough(drillAction.card);
+                                onDrillThrough(typeof action.card === "function" ? action.card() : action.card);
                                 onClose();
                             }}
                         >
-                            {drillAction.title}
+                            {action.title}
                         </Button>
                     )}
                 </div>

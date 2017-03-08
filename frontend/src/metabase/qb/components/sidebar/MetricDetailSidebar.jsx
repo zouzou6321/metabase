@@ -2,22 +2,31 @@
 
 import React, { Component, PropTypes } from "react";
 
-import Icon from "metabase/components/Icon";
-
 import * as Query from "metabase/lib/query/query";
 import * as Card from "metabase/meta/Card";
 
 import Sidebar from "./Sidebar";
 import SidebarHeader from "./SidebarHeader";
 import SidebarSection from "./SidebarSection";
-import SidebarTopAction from "./SidebarTopAction";
 
-import FilterWidget from "metabase/query_builder/components/filters/FilterWidget";
+import Action from "../Action";
 
-type Props = {
-};
+import FilterWidget
+    from "metabase/query_builder/components/filters/FilterWidget";
 
-const MetricDetailSidebar = ({ card, tableMetadata, metric, mode, setQueryFilter, removeQueryFilter, onClose }: Props) => {
+type Props = {};
+
+const MetricDetailSidebar = (
+    {
+        card,
+        tableMetadata,
+        metric,
+        mode,
+        setQueryFilter,
+        removeQueryFilter,
+        onClose
+    }: Props
+) => {
     const query = Card.getQuery(card);
     const filters = Query.getFilters(query);
     const breakouts = Query.getBreakouts(query);
@@ -26,12 +35,14 @@ const MetricDetailSidebar = ({ card, tableMetadata, metric, mode, setQueryFilter
         <Sidebar>
             <SidebarSection>
                 <SidebarHeader onClose={onClose}>
-                    { metric.name }
+                    {metric.name}
                 </SidebarHeader>
             </SidebarSection>
             <SidebarSection>
-                <div className="h5 text-bold text-uppercase text-purple">Filters</div>
-                {filters.map((filter, index) =>
+                <div className="h5 text-bold text-uppercase text-purple">
+                    Filters
+                </div>
+                {filters.map((filter, index) => (
                     <div className="flex align-center">
                         <FilterWidget
                             filter={filter}
@@ -48,23 +59,35 @@ const MetricDetailSidebar = ({ card, tableMetadata, metric, mode, setQueryFilter
                             <Icon name="close" className="text-grey-2 text-grey-4-hover cursor-pointer" />
                         </div> */}
                     </div>
-                )}
-                <div className="h5 text-bold text-grey-4 mt1 mb2 cursor-pointer">Add a filter</div>
+                ))}
+                <div
+                    className="h5 text-bold text-grey-4 mt1 mb2 cursor-pointer"
+                >
+                    Add a filter
+                </div>
 
-                <div className="h5 text-bold text-uppercase text-green">Breakouts</div>
-                {breakouts.map(breakout =>
+                <div className="h5 text-bold text-uppercase text-green">
+                    Breakouts
+                </div>
+                {breakouts.map(breakout => (
                     <div>{JSON.stringify(breakout)}</div>
-                )}
+                ))}
                 <div className="h5 text-bold text-grey-4">Add a breakout</div>
             </SidebarSection>
-            { mode.getSidebarActions && mode.getSidebarActions(card, tableMetadata)
-                .filter(Action => !Action.isValid || Action.isValid(card, tableMetadata))
-                .map(Action =>
-                    <Action card={card} tableMetadata={tableMetadata} />
-                )
-            }
+            {mode.getSidebarActions &&
+                mode
+                    .getSidebarActions()
+                    .map(getAction => getAction({ card, tableMetadata }))
+                    .filter(action => console.log(action) || action)
+                    .map(action => (
+                        <Action
+                            action={action}
+                            card={card}
+                            tableMetadata={tableMetadata}
+                        />
+                    ))}
         </Sidebar>
     );
-}
+};
 
 export default MetricDetailSidebar;

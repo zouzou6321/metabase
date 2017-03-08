@@ -1,11 +1,11 @@
 /* @flow */
 
-import { UnderlyingDataAction } from "metabase/qb/components/Actions";
+import UnderlyingDataAction from "../actions/UnderlyingDataAction";
 
-export const name = "segment";
+export default {
+    name: "segment",
 
-export const getSidebarActions = () => {
-    return [
-        UnderlyingDataAction
-    ];
-}
+    getSidebarActions() {
+        return [UnderlyingDataAction];
+    }
+};
