@@ -2,13 +2,9 @@ import cxs from 'cxs';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import Card from '../components/Card';
+import Icon from 'metabase/components/Icon';
 
-import {
-    isDate,
-    isNumber,
-    isCategory,
-} from 'metabase/lib/schema_metadata';
+import Card from '../components/Card';
 
 import {
     selectAndAdvance,
@@ -16,26 +12,23 @@ import {
     setTip
 } from '../actions';
 
-const mapStateToProps = (state) => {
-    const rawFields = state.metadata.tables[state.newQuestion.card.dataset_query.query.source_table].fields_lookup
-    const fields = Object.keys(rawFields).map(field => rawFields[field])
-    return {
-        title: state.newQuestion.currentStep.title,
-        breakouts: {
-            'date':     fields.filter(f => isDate(f)),
-            'number':   fields.filter(f => isNumber(f)),
-            'category':   fields.filter(f => isCategory(f)),
-        },
-        tip: state.newQuestion.currentStep.tip
-    }
-}
+import {
+    breakoutsForDisplay,
+    currentTip,
+    currentStepTitle,
+} from '../selectors'
+
+const mapStateToProps = (state) => ({
+    title: currentStepTitle(state),
+    breakouts: breakoutsForDisplay(state),
+    tip: currentTip(state)
+})
 
 const mapDispatchToProps = ({
     selectAndAdvance,
     selectMetricBreakout,
     setTip
 })
-
 
 @connect(mapStateToProps, mapDispatchToProps)
 class BreakoutSelection extends Component {
@@ -47,40 +40,51 @@ class BreakoutSelection extends Component {
         const { title, breakouts, selectAndAdvance, setTip } = this.props;
         return (
             <div>
-                <h3>{ title }</h3>
+                <h2>{ title }</h2>
                 <ol>
-                    { Object.keys(breakouts).map(breakout =>
-                        <li
-                            key={breakouts[breakout]}
-                        >
-                            <h3>{breakout}</h3>
-                            <ol className={cxs({ display: 'flex', flexWrap: 'wrap' })}>
-                                { breakouts[breakout].map(f =>
-                                    <li
-                                        onClick={() =>
-                                            selectAndAdvance(() =>
-                                                selectMetricBreakout(f)
-                                            )
-                                        }
-                                        onMouseEnter={() => {
-                                            if(f.description) {
-                                                setTip({
-                                                    title: f.display_name,
-                                                    text: f.description
-                                                })
+                    { breakouts.map(breakout =>
+                        breakout.fields.length > 0 && (
+                            <li
+                                className={cxs({ marginBottom: '2em' })}
+                                key={breakouts.display_name}
+                            >
+                                <h3>{breakout.display_name}</h3>
+                                <ol className={cxs({ display: 'flex', flexWrap: 'wrap' })}>
+                                    { breakout.fields.map(field=>
+                                        <li
+                                            onClick={() =>
+                                                selectAndAdvance(() =>
+                                                    selectMetricBreakout(field)
+                                                )
                                             }
-                                            return false
-                                        }}
-                                        onMouseLeave={() => setTip(this.tip)}
-                                        className={cxs({ flex: '0 0 33.33%', padding: '1em' })}
-                                        key={f.id}
-                                    >
-                                        <Card name={ f.display_name } />
-                                    </li>
-                                )}
-                            </ol>
+                                            onMouseEnter={() => {
+                                                if(field.description) {
+                                                    setTip({
+                                                        title: field.display_name,
+                                                        text: field.description
+                                                    })
+                                                }
+                                                return false
+                                            }}
+                                            onMouseLeave={() => setTip(this.tip)}
+                                            className={cxs({ flex: '0 0 33.33%', padding: '1em' })}
+                                            key={field.id}
+                                        >
+                                            <Card color={breakout.displayColor}>
+                                                <div className={cxs({ display: 'flex', flexDirection: 'column', alignItems: 'center' })}>
+                                                    <Icon
+                                                        className={cxs({ marginBottom: '1em' })}
+                                                        name={breakout.iconName}
+                                                        size={32}
+                                                    />
+                                                    <h3>{field.display_name}</h3>
+                                                </div>
+                                            </Card>
+                                        </li>
+                                    )}
+                                </ol>
                         </li>
-                    )}
+                    ))}
                 </ol>
             </div>
         )
