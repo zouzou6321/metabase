@@ -201,7 +201,7 @@ export default class Visualization extends Component<*, Props, State> {
         if (clicked && mode && mode.getDrillThroughActions) {
             drillActions = mode.getDrillThroughActions()
                 .map(getAction => getAction({ card: series[0].card, tableMetadata, clicked }))
-                .filter(action => console.log(action)||action);
+                .filter(action => action);
         }
 
         if (drillActions && drillActions.length > 0) {

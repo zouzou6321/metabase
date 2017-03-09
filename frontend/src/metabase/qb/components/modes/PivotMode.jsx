@@ -6,7 +6,7 @@ import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
 export default {
     name: "pivot",
 
-    getSidebarActions() {
+    getMetricActions() {
         return [UnderlyingDataAction, UnderlyingRecordsAction];
     }
 };

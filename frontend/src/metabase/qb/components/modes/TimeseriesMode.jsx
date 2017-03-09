@@ -46,7 +46,7 @@ export default {
         return getTimeseriesParameters(card, tableMetadata);
     },
 
-    getSidebarActions() {
+    getMetricActions() {
         return [UnderlyingDataAction, UnderlyingRecordsAction];
     },
 

@@ -6,7 +6,7 @@ import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
 export default {
     name: "geo",
 
-    getSidebarActions() {
+    getMetricActions() {
         return [UnderlyingDataAction, UnderlyingRecordsAction];
     }
 };

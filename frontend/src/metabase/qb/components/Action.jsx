@@ -22,6 +22,8 @@ const Action = ({ action, ...props }) => {
                     <PopoverContent {...props} />
                 </PopoverWithTrigger>
             );
+        } else {
+            return trigger;
         }
     }
     return null;
