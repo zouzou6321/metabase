@@ -229,7 +229,7 @@ export default class ExtendedOptions extends Component {
         const onClick = this.props.tableMetadata ? () => this.setState({isOpen: true}) : null;
 
         return (
-            <div className="GuiBuilder-section GuiBuilder-sort-limit flex align-center">
+            <div className="flex align-center">
                 <span className={cx("EllipsisButton no-decoration text-grey-1 px1", {"cursor-pointer": onClick})} onClick={onClick}>…</span>
                 {this.renderPopover()}
                 {this.renderExpressionWidget()}

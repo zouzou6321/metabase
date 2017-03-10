@@ -1,12 +1,12 @@
 /* @flow */
 
-import { UnderlyingDataAction, UnderlyingRecordsAction } from "metabase/qb/components/Actions";
+import UnderlyingDataAction from "../actions/UnderlyingDataAction";
+import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
 
-export const name = "geo";
+export default {
+    name: "geo",
 
-export const getSidebarActions = () => {
-    return [
-        UnderlyingDataAction,
-        UnderlyingRecordsAction
-    ];
-}
+    getMetricActions() {
+        return [UnderlyingDataAction, UnderlyingRecordsAction];
+    }
+};

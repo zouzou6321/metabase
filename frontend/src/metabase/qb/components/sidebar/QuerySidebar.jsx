@@ -12,11 +12,9 @@ import { getMetrics } from "metabase/qb/lib/modes";
 
 import cx from "classnames";
 
-type Props = {
-};
+type Props = {};
 
-type State = {
-};
+type State = {};
 
 export default class QuerySidebar extends Component<*, Props, State> {
     state: State;
@@ -36,36 +34,40 @@ export default class QuerySidebar extends Component<*, Props, State> {
         const { showQuestionDetails, showMetric } = this.state;
 
         const { ModeSidebarFooter } = mode;
-        const metric = showMetric != null ? getMetrics(card, tableMetadata)[showMetric] : null;
+        const metric = showMetric != null
+            ? getMetrics(card, tableMetadata)[showMetric]
+            : null;
 
         return (
             <div className={cx(className, "flex flex-column p2")}>
-                { showQuestionDetails ?
-                    <QuestionDetailSidebar
-                        {...this.props}
-                        onClose={() => this.setState({ showQuestionDetails: false })}
-                    />
-                : metric != null ?
-                    <MetricDetailSidebar
-                        {...this.props}
-                        metric={metric}
-                        onClose={() => this.setState({ showMetric: null })}
-                    />
-                :
-                    <QuestionSidebar
-                        {...this.props}
-                        onShowQuestionDetails={() => this.setState({ showQuestionDetails: true })}
-                        onShowMetric={(metricIndex) => this.setState({ showMetric: metricIndex })}
-                    />
-                }
+                {showQuestionDetails
+                    ? <QuestionDetailSidebar
+                          {...this.props}
+                          onClose={() =>
+                              this.setState({ showQuestionDetails: false })}
+                      />
+                    : metric != null
+                          ? <MetricDetailSidebar
+                                {...this.props}
+                                metric={metric}
+                                onClose={() =>
+                                    this.setState({ showMetric: null })}
+                            />
+                          : <QuestionSidebar
+                                {...this.props}
+                                onShowQuestionDetails={() => this.setState({
+                                    showQuestionDetails: true
+                                })}
+                                onShowMetric={metricIndex =>
+                                    this.setState({ showMetric: metricIndex })}
+                            />}
 
                 <div className="flex-full my1" />
 
-                { ModeSidebarFooter &&
+                {ModeSidebarFooter &&
                     <Sidebar>
                         <ModeSidebarFooter {...this.props} />
-                    </Sidebar>
-                }
+                    </Sidebar>}
             </div>
         );
     }

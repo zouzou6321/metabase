@@ -9,28 +9,30 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarSubAction from "./SidebarSubAction";
 import SidebarSection from "./SidebarSection";
 
-type Props = {
-};
+type Props = {};
 
-const QuestionDetailSidebar = ({ card, onClose }: Props) =>
+const QuestionDetailSidebar = ({ card, onClose }: Props) => (
     <Sidebar>
         <SidebarSection>
             <SidebarHeader onClose={onClose}>
                 {card.name}
             </SidebarHeader>
-            { card.collection &&
+            {card.collection &&
                 <div className="mt2">
                     <CollectionBadge collection={card.collection} />
-                </div>
-            }
-            { card.description &&
-                <div className="mt2 text-grey-4">{card.description}</div>
-            }
+                </div>}
+            {card.description &&
+                <div className="mt2 text-grey-4">{card.description}</div>}
         </SidebarSection>
         <SidebarSection>
-            <SidebarSubAction icon="pencil" className="mb1">Edit name and description</SidebarSubAction>
-            <SidebarSubAction icon="history">View the revision history</SidebarSubAction>
+            <SidebarSubAction icon="pencil" className="mb1">
+                Edit name and description
+            </SidebarSubAction>
+            <SidebarSubAction icon="history">
+                View the revision history
+            </SidebarSubAction>
         </SidebarSection>
-    </Sidebar>;
+    </Sidebar>
+);
 
 export default QuestionDetailSidebar;

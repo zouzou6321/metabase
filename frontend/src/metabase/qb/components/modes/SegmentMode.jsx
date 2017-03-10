@@ -1,11 +1,30 @@
 /* @flow */
 
-import { UnderlyingDataAction } from "metabase/qb/components/Actions";
+import React from "react";
 
-export const name = "segment";
+import QueryBuilderSidebarSection from "../sidebar/QueryBuilderSidebarSection";
 
-export const getSidebarActions = () => {
-    return [
-        UnderlyingDataAction
-    ];
-}
+import SummarizeBySegmentMetricAction
+    from "../actions/SummarizeBySegmentMetricAction";
+import PlotSegmentField from "../actions/PlotSegmentField";
+import UnderlyingDataAction from "../actions/UnderlyingDataAction";
+
+export default {
+    name: "segment",
+
+    getMainSections() {
+        return [SegmentMainView];
+    },
+
+    getMainActions() {
+        return [
+            SummarizeBySegmentMetricAction,
+            PlotSegmentField,
+            UnderlyingDataAction
+        ];
+    }
+};
+
+const SegmentMainView = props => (
+    <QueryBuilderSidebarSection {...props} features={{ filter: true }} />
+);

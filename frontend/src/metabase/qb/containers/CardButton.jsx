@@ -10,18 +10,21 @@ import { connect } from "react-redux";
 import * as actions from "metabase/query_builder/actions";
 
 const mapDispatchToProps = {
-    setCardAndRun: (card) => actions.setCardAndRun(card)
-}
-
-type Props = {
+    setCardAndRun: card => actions.setCardAndRun(card)
 };
 
+type Props = {};
+
 @connect(null, mapDispatchToProps)
-export default class QueryButton extends Component<*, Props, *> {
+export default class CardButton extends Component<*, Props, *> {
     render() {
         return React.cloneElement(React.Children.only(this.props.children), {
             onClick: () => {
-                this.props.setCardAndRun(this.props.card);
+                this.props.setCardAndRun(
+                    typeof this.props.card === "function"
+                        ? this.props.card()
+                        : this.props.card
+                );
             }
         });
         // return (

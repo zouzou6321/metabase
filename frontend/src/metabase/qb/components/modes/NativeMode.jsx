@@ -1,3 +1,5 @@
 /* @flow */
 
-export const name = "native";
+export default {
+    name: "native"
+};

@@ -2,12 +2,12 @@
 
 import React, { Component, PropTypes } from "react";
 
-type Props = {
-};
+type Props = {};
 
-const SidebarSection = ({ className, children, ...props }: Props) =>
-    <div {...props} className={"p2 " + (className||"")}>
+const SidebarSection = ({ className, children, ...props }: Props) => (
+    <div {...props} className={"p2 " + (className || "")}>
         {children}
-    </div>;
+    </div>
+);
 
 export default SidebarSection;
