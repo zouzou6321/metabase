@@ -11,7 +11,10 @@ import Tip from '../components/Tip';
 import Title from '../components/Title';
 import { Sidebar } from '../components/Layout';
 
-import { back } from '../actions';
+import {
+    back,
+    resetNewQuestionFlow
+} from '../actions';
 
 const mapStateToProps = (state) => ({
     advance: state.newQuestion.advance,
@@ -25,11 +28,13 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = ({
     fetchDatabasesWithMetadata,
     goBack: back,
+    resetNewQuestionFlow,
 })
 
 @connect(mapStateToProps, mapDispatchToProps)
 class NewQuestion extends Component {
     componentDidMount () {
+        this.props.resetNewQuestionFlow()
         this.props.fetchDatabasesWithMetadata()
     }
     render () {

@@ -9,7 +9,7 @@ const queryTypes = [
     { name: 'A metric', type: 'metric' },
     { name: 'A metric on a map', type: 'map' },
     { name: 'Segment or table', type: 'segment' },
-    { name: 'A metric on a timeseries', type: 'time' },
+    { name: 'A metric on a timeseries', type: 'timeseries' },
     { name: 'Pivot a metric', type: 'pivot' },
     { name: 'SQL', type: 'sql' },
 ]

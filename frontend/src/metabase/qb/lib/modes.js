@@ -27,6 +27,10 @@ export function getMode(card, tableMetadata): QueryBuilderMode {
         const aggregations = Query.getAggregations(query);
         const breakouts = Query.getBreakouts(query);
 
+        console.log('breakouts', breakouts)
+        console.log('aggregations', aggregations)
+
+
         if (aggregations.length === 0 && breakouts.length === 0) {
             return SegmentMode;
         }
@@ -35,15 +39,20 @@ export function getMode(card, tableMetadata): QueryBuilderMode {
         }
         if (aggregations.length > 0 && breakouts.length > 0) {
             let breakoutFields = breakouts.map(breakout => (Q.getFieldTarget(breakout, tableMetadata)||{}).field);
+            console.log(isDate(breakoutFields[0]))
+            console.log(isAddress(breakoutFields[0]))
             if ((breakoutFields.length === 1 && isDate(breakoutFields[0])) ||
                 (breakoutFields.length === 2 && isDate(breakoutFields[0]) && isCategory(breakoutFields[1]))) {
+                console.log('do we get to timeseries')
                 return TimeseriesMode;
             }
             if (breakoutFields.length === 1 && isAddress(breakoutFields[0])) {
+                console.log('do we get to geo?')
                 return GeoMode;
             }
             if ((breakoutFields.length === 1 && isCategory(breakoutFields[0])) ||
                 (breakoutFields.length === 2 && isCategory(breakoutFields[0]) && isCategory(breakoutFields[1]))) {
+                console.log('do we get to pivot??')
                 return PivotMode;
             }
         }

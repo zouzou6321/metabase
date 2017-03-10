@@ -2,11 +2,14 @@ import {
     ADVANCE_STEP,
     BACK,
     NEW_METRIC,
+    RESET_NEW_QUESTION_FLOW,
     SELECT_FLOW,
     SET_TIP,
     SELECT_METRIC,
     SELECT_METRIC_BREAKOUT
 } from './actions'
+
+import Query from "metabase/lib/query";
 
 import QueryTypeList from './components/QueryTypeList'
 
@@ -92,6 +95,11 @@ const map = [
         component: MetricLanding,
         tip: tips['metric']
     },
+    {
+        title: 'How do you want to see this metric?',
+        component: BreakoutSelection,
+        tip: tips['breakout']
+    },
 ]
 
 const pivotTitle = 'Pivot a metric'
@@ -106,18 +114,48 @@ const pivot = [
     }
 ]
 
+const timeSeriesTitle = 'A metric as a timeseries';
+const timeseries = [
+    {
+        title: 'What metric do you want for your timeseries?',
+        component: MetricLanding,
+        tip: tips['metric']
+    },
+    {
+        title: 'What time field would you like to use?',
+        component: BreakoutSelection,
+        tip: tips['breakout']
+    },
+]
+
 const titles = {
     map: mapTitle,
     metric: metricTitle,
     pivot: pivotTitle,
     segment: segmentTitle,
+    timeseries: timeSeriesTitle,
 }
 
 const flows = {
     metric,
     map,
     pivot,
-    segment
+    segment,
+    timeseries,
+}
+
+const setVizForFlow = (flow) => {
+    switch(flow) {
+        case 'timeseries':
+            return 'line'
+        case 'map':
+            return 'map'
+        case 'pivot':
+        case 'segment':
+            return 'table'
+        default:
+            return false
+    }
 }
 
 const initialState = {
@@ -131,6 +169,8 @@ const initialState = {
 export default function(state = initialState, { type, payload, error }) {
     const { currentStepIndex, flow } = state;
     switch(type) {
+        case RESET_NEW_QUESTION_FLOW:
+            return initialState
         case SET_TIP:
             return {
                 ...state,
@@ -142,16 +182,28 @@ export default function(state = initialState, { type, payload, error }) {
         case SELECT_METRIC:
             return {
                 ...state,
-                card: payload
+                card: {
+                    ...payload,
+                    display: setVizForFlow(state.flow.type)
+                }
             }
         case SELECT_METRIC_BREAKOUT:
             return {
                 ...state,
                 card: {
-                    ...state.card
+                    ...state.card,
+                    dataset_query: {
+                        ...state.card.dataset_query,
+                        query: {
+                            ...state.card.dataset_query.query,
+                            breakout: [payload]
+                        }
+                    },
+                    display: setVizForFlow(state.flow.type)
                 }
             }
         case BACK:
+            // TODO - hey, so if I go back, what happens to the query dict
             const newStepIndex = currentStepIndex - 1;
 
             // if the currentStepIndex is 0 then we're back at the beginning and
@@ -185,6 +237,10 @@ export default function(state = initialState, { type, payload, error }) {
                     title: titles[payload]
                 },
                 currentStep: flows[payload][state.currentStepIndex],
+                card: {
+                    ...state.card,
+                    display: setVizForFlow(payload)
+                }
             }
         default:
             return state
