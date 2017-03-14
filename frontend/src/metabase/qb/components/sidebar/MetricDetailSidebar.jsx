@@ -23,11 +23,13 @@ const MetricDetailSidebar = (props: Props) => {
         tableMetadata,
         metric,
         mode,
-        onClose
+        onClose,
+        setCardAndRun,
+        ...rest
     } = props;
 
     return (
-        <Sidebar>
+        <Sidebar {...rest}>
             <SidebarSection>
                 <SidebarHeader onClose={onClose}>
                     {metric.name}
@@ -44,6 +46,7 @@ const MetricDetailSidebar = (props: Props) => {
                             action={action}
                             card={card}
                             tableMetadata={tableMetadata}
+                            onAction={setCardAndRun}
                         />
                     ))}
         </Sidebar>

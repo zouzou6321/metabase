@@ -19,10 +19,12 @@ const QuestionSidebar = props => {
         tableMetadata,
         onShowMetric,
         onShowQuestionDetails,
-        mode
+        setCardAndRun,
+        mode,
+        ...rest
     } = props;
     return (
-        <Sidebar>
+        <Sidebar {...rest}>
             {card.id != null
                 ? <SidebarSection>
                       <SidebarHeader onOpen={onShowQuestionDetails}>
@@ -66,6 +68,7 @@ const QuestionSidebar = props => {
                               action={action}
                               card={card}
                               tableMetadata={tableMetadata}
+                              onAction={setCardAndRun}
                           />
                       ))
                 : null}

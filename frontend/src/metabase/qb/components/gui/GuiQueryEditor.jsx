@@ -86,7 +86,6 @@ const DataSection = (
 ) => (
     <GuiSection title="Data">
         <DataSelector
-            ref="dataSection"
             className="text-bold"
             includeTables={true}
             query={query}

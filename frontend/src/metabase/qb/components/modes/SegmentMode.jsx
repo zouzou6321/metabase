@@ -8,6 +8,7 @@ import SummarizeBySegmentMetricAction
     from "../actions/SummarizeBySegmentMetricAction";
 import PlotSegmentField from "../actions/PlotSegmentField";
 import UnderlyingDataAction from "../actions/UnderlyingDataAction";
+import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
 
 export default {
     name: "segment",
@@ -22,6 +23,10 @@ export default {
             PlotSegmentField,
             UnderlyingDataAction
         ];
+    },
+
+    getDrillThroughActions() {
+        return [UnderlyingRecordsDrill];
     }
 };
 

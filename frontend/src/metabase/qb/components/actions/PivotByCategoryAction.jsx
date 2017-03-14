@@ -2,14 +2,12 @@
 
 import React from "react";
 
-export default ({ card, tableMetadata }) => {
-    return {
-        title: (
-            <span>Pivot by <span className="text-dark">Location</span></span>
-        ),
-        icon: "location",
-        popover: PivotByCategoryPopover
-    };
-};
+import { isCategory, isAddress } from "metabase/lib/schema_metadata";
 
-const PivotByCategoryPopover = () => <div>hello world</div>;
+import PivotByAction from "./PivotByAction";
+
+export default PivotByAction(
+    "Category",
+    "label",
+    field => isCategory(field) && !isAddress(field)
+);

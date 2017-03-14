@@ -19,6 +19,7 @@ export default ({ card, tableMetadata }) => {
                     records
                 </span>
             ),
+            icon: "table",
             card: () => toUnderlyingRecords(card)
         };
     }

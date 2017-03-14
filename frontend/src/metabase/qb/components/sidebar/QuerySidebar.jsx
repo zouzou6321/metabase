@@ -43,18 +43,21 @@ export default class QuerySidebar extends Component<*, Props, State> {
                 {showQuestionDetails
                     ? <QuestionDetailSidebar
                           {...this.props}
+                          className="scroll-y"
                           onClose={() =>
                               this.setState({ showQuestionDetails: false })}
                       />
                     : metric != null
                           ? <MetricDetailSidebar
                                 {...this.props}
+                                className="scroll-y"
                                 metric={metric}
                                 onClose={() =>
                                     this.setState({ showMetric: null })}
                             />
                           : <QuestionSidebar
                                 {...this.props}
+                                className="scroll-y"
                                 onShowQuestionDetails={() => this.setState({
                                     showQuestionDetails: true
                                 })}

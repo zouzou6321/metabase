@@ -11,8 +11,8 @@ import SidebarSection from "./SidebarSection";
 
 type Props = {};
 
-const QuestionDetailSidebar = ({ card, onClose }: Props) => (
-    <Sidebar>
+const QuestionDetailSidebar = ({ card, onClose, ...rest }: Props) => (
+    <Sidebar {...rest}>
         <SidebarSection>
             <SidebarHeader onClose={onClose}>
                 {card.name}
