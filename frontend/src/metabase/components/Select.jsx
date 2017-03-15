@@ -114,8 +114,8 @@ class BrowserSelect extends Component {
 
 export const SelectButton = ({ hasValue, children }) =>
     <div className={"AdminSelect flex align-center " + (!hasValue ? " text-grey-3" : "")}>
-        <span className="mr1">{children}</span>
-        <Icon className="flex-align-right" name="chevrondown" size={12} />
+        <span className="AdminSelect-content mr1">{children}</span>
+        <Icon className="AdminSelect-chevron flex-align-right" name="chevrondown" size={12} />
     </div>
 
 export class Option extends Component {
