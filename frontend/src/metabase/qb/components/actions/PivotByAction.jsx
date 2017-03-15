@@ -39,7 +39,8 @@ export default (name, icon, fieldFilter) => (
                   View this
                   {" "}
                   <span className="text-dark">
-                      {clicked.col.unit || clicked.col.display_name}
+                      {clicked.dimensionColumn.unit ||
+                          clicked.dimensionColumn.display_name}
                   </span>
                   {" "}
                   by
@@ -56,7 +57,7 @@ export default (name, icon, fieldFilter) => (
                     card.dataset_query.query
                 )}
                 onCommitBreakout={breakout => {
-                    onAction(pivot(card, breakout, clicked));
+                    onAction(pivot(card, breakout, tableMetadata, clicked));
                     onClose && onClose();
                 }}
             />

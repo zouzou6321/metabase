@@ -12,9 +12,16 @@ export default ({ card, tableMetadata, clicked }) => {
     return {
         title: (
             <span>
-                View these records
+                View these
+                {" "}
+                <span className="text-dark">{tableMetadata.display_name}</span>
             </span>
         ),
-        card: () => drillUnderlyingRecords(card, clicked.value, clicked.col)
+        card: () =>
+            drillUnderlyingRecords(
+                card,
+                clicked.dimensionValue,
+                clicked.dimensionColumn
+            )
     };
 };

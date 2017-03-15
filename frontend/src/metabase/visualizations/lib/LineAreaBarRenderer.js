@@ -351,9 +351,11 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualiza
             })
             .on("mouseup", function(d) {
                 onVisualizationClick && onVisualizationClick({
-                    value: d.data.key,
-                    col: cols[0],
-                    event: d3.event
+                    dimensionValue:  d.data.key,
+                    dimensionColumn: cols[0],
+                    metricValue:     d.data.value,
+                    metricColumn:    cols[1],
+                    event:           d3.event
                 })
             });
 

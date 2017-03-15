@@ -118,7 +118,7 @@ export default class ChoroplethMap extends Component {
             );
         }
 
-        const { series, className, gridSize, hovered, onHoverChange, settings } = this.props;
+        const { series, className, gridSize, hovered, onHoverChange, onVisualizationClick, settings } = this.props;
         let { geoJson, minimalBounds } = this.state;
 
         // special case builtin maps to use legacy choropleth map
@@ -158,6 +158,19 @@ export default class ChoroplethMap extends Component {
                 event: hover.event,
                 data: { key: getFeatureName(hover.feature), value: getFeatureValue(hover.feature)
             } })
+        }
+        const onClickFeature = (click) => {
+            const featureKey = getFeatureKey(click.feature);
+            const row = _.find(rows, row => getRowKey(row) === featureKey);
+            if (onVisualizationClick && row !== undefined) {
+                onVisualizationClick({
+                    metricValue:     row[metricIndex],
+                    metricColumn:    cols[metricIndex],
+                    dimensionValue:  row[dimensionIndex],
+                    dimensionColumn: cols[dimensionIndex],
+                    event:           click.event
+                });
+            }
         }
 
         const valuesMap = {};
@@ -206,6 +219,7 @@ export default class ChoroplethMap extends Component {
                         geoJson={geoJson}
                         getColor={getColor}
                         onHoverFeature={onHoverFeature}
+                        onClickFeature={onClickFeature}
                         projection={projection}
                     />
                 :
@@ -214,6 +228,7 @@ export default class ChoroplethMap extends Component {
                         geoJson={geoJson}
                         getColor={getColor}
                         onHoverFeature={onHoverFeature}
+                        onClickFeature={onClickFeature}
                         minimalBounds={minimalBounds}
                     />
                 }

@@ -17,7 +17,7 @@ export default ({ card, tableMetadata }) => {
                 customFields={Query.getExpressions(card.dataset_query.query)}
                 availableAggregations={tableMetadata.aggregation_options}
                 onCommitAggregation={aggregation => {
-                    onAction(summarize(card, aggregation));
+                    onAction(summarize(card, aggregation, tableMetadata));
                     onClose && onClose();
                 }}
             />

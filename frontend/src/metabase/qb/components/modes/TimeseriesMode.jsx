@@ -18,6 +18,7 @@ import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
 import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
 import TimeseriesFilterDrill from "../drill/TimeseriesFilterDrill";
 import PivotByCategoryDrill from "../drill/PivotByCategoryDrill";
+import PivotByLocationDrill from "../drill/PivotByLocationDrill";
 
 import { getTimeseriesParameters } from "metabase/meta/Parameter";
 
@@ -64,6 +65,7 @@ export default {
         return [
             TimeseriesFilterDrill,
             PivotByCategoryDrill,
+            PivotByLocationDrill,
             UnderlyingRecordsDrill
         ];
     }

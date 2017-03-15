@@ -2,11 +2,13 @@
 
 import moment from "moment";
 
+import Q from "metabase/lib/query"; // legacy query lib
 import * as Query from "metabase/lib/query/query";
 import { startNewCard } from "metabase/lib/card";
-import { isDate } from "metabase/lib/schema_metadata";
+import { isDate, isState, isCountry } from "metabase/lib/schema_metadata";
 
 import type { Card } from "metabase/meta/types/Card";
+import type { TableMetadata } from "metabase/meta/types/Metadata";
 
 export const toUnderlyingData = (card: Card): Card => {
     const newCard = startNewCard("query");
@@ -33,7 +35,7 @@ const getFieldClauseFromCol = col => {
     }
 };
 
-const drillFilter = (card, value, col) => {
+const drillFilter = (card, dimensionValue, dimensionColumn) => {
     const newCard = startNewCard("query");
 
     newCard.display = card.display;
@@ -41,14 +43,19 @@ const drillFilter = (card, value, col) => {
     newCard.visualization_settings = card.visualization_settings;
 
     let filter;
-    if (isDate(col)) {
+    if (isDate(dimensionColumn)) {
         filter = [
             "=",
-            ["datetime-field", getFieldClauseFromCol(col), "as", col.unit],
-            moment(value).toISOString()
+            [
+                "datetime-field",
+                getFieldClauseFromCol(dimensionColumn),
+                "as",
+                dimensionColumn.unit
+            ],
+            moment(dimensionValue).toISOString()
         ];
     } else {
-        filter = ["=", getFieldClauseFromCol(col), value];
+        filter = ["=", getFieldClauseFromCol(dimensionColumn), dimensionValue];
     }
 
     newCard.dataset_query.query = Query.addFilter(
@@ -61,10 +68,14 @@ const drillFilter = (card, value, col) => {
 
 const UNITS = ["minute", "hour", "day", "week", "month", "quarter", "year"];
 
-export const drillTimeseriesFilter = (card, value, col) => {
-    const newCard = drillFilter(card, value, col);
+export const drillTimeseriesFilter = (
+    card,
+    dimensionValue,
+    dimensionColumn
+) => {
+    const newCard = drillFilter(card, dimensionValue, dimensionColumn);
 
-    let nextUnit = UNITS[Math.max(0, UNITS.indexOf(col.unit) - 1)];
+    let nextUnit = UNITS[Math.max(0, UNITS.indexOf(dimensionColumn.unit) - 1)];
 
     newCard.dataset_query.query.breakout[0] = [
         "datetime-field",
@@ -76,8 +87,14 @@ export const drillTimeseriesFilter = (card, value, col) => {
     return newCard;
 };
 
-export const drillUnderlyingRecords = (card, value, col) => {
-    return toUnderlyingRecords(drillFilter(card, value, col));
+export const drillUnderlyingRecords = (
+    card,
+    dimensionValue,
+    dimensionColumn
+) => {
+    return toUnderlyingRecords(
+        drillFilter(card, dimensionValue, dimensionColumn)
+    );
 };
 
 export const plotSegmentField = card => {
@@ -87,27 +104,62 @@ export const plotSegmentField = card => {
     return newCard;
 };
 
-export const summarize = (card, aggregation) => {
+export const summarize = (card, aggregation, tableMetadata) => {
     const newCard = startNewCard("query");
     newCard.dataset_query = card.dataset_query;
     newCard.dataset_query.query = Query.addAggregation(
         newCard.dataset_query.query,
         aggregation
     );
-    newCard.display = guessVisualization(newCard);
+    guessVisualization(newCard, tableMetadata);
     return newCard;
 };
 
-type DrillClick = {};
+import { Value, Column } from "metabase/meta/types/Dataset";
 
-export const pivot = (card: Card, breakout, clicked: ?DrillClick): Card => {
-    const newCard = drillFilter(card, clicked.value, clicked.col);
+type DrillClick = {
+    dimensionValue: Value,
+    dimensionColumn: Column,
+    metricValue: Value,
+    metricColumn: Column,
+    event: MouseEvent
+};
+
+export const pivot = (
+    card: Card,
+    breakout,
+    tableMetadata: TableMetadata,
+    clicked: ?DrillClick
+): Card => {
+    const newCard = drillFilter(
+        card,
+        clicked.dimensionValue,
+        clicked.dimensionColumn
+    );
     newCard.dataset_query = card.dataset_query;
+
+    if (clicked) {
+        const breakoutFields = Query.getBreakoutFields(
+            newCard.dataset_query.query,
+            tableMetadata
+        );
+        for (const [index, field] of breakoutFields.entries()) {
+            if (field && field.id === clicked.dimensionColumn.id) {
+                newCard.dataset_query.query = Query.removeBreakout(
+                    newCard.dataset_query.query,
+                    index
+                );
+            }
+        }
+    }
+
     newCard.dataset_query.query = Query.addBreakout(
         newCard.dataset_query.query,
         breakout
     );
-    newCard.display = guessVisualization(newCard);
+
+    guessVisualization(newCard, tableMetadata);
+
     return newCard;
 };
 
@@ -116,31 +168,38 @@ const VISUALIZATIONS_ONE_BREAKOUTS = new Set([
     "line",
     "area",
     "row",
-    "pie"
+    "pie",
+    "map"
 ]);
 const VISUALIZATIONS_TWO_BREAKOUTS = new Set(["bar", "line", "area"]);
 
-const guessVisualization = (card: Card) => {
+const guessVisualization = (card: Card, tableMetadata: TableMetadata) => {
     const aggregations = Query.getAggregations(card.dataset_query.query);
-    const breakouts = Query.getBreakouts(card.dataset_query.query);
-    if (aggregations.length === 0 && breakouts.length === 0) {
-        return "table";
-    } else if (aggregations.length === 1 && breakouts.length === 0) {
-        return "scalar";
-    } else if (aggregations.length === 1 && breakouts.length === 1) {
-        if (!VISUALIZATIONS_ONE_BREAKOUTS.has(card.display)) {
-            return "bar";
+    const breakoutFields = Query.getBreakouts(card.dataset_query.query).map(
+        breakout => (Q.getFieldTarget(breakout, tableMetadata) || {}).field
+    );
+    if (aggregations.length === 0 && breakoutFields.length === 0) {
+        card.display = "table";
+    } else if (aggregations.length === 1 && breakoutFields.length === 0) {
+        card.display = "scalar";
+    } else if (aggregations.length === 1 && breakoutFields.length === 1) {
+        if (isState(breakoutFields[0])) {
+            card.display = "map";
+            card.visualization_settings["map.type"] = "region";
+            card.visualization_settings["map.region"] = "us_states";
+        } else if (isCountry(breakoutFields[0])) {
+            card.display = "map";
+            card.visualization_settings["map.type"] = "region";
+            card.visualization_settings["map.region"] = "world_countries";
         } else {
-            return card.display;
+            card.display = "bar";
         }
-    } else if (aggregations.length === 1 && breakouts.length === 2) {
+    } else if (aggregations.length === 1 && breakoutFields.length === 2) {
         if (!VISUALIZATIONS_TWO_BREAKOUTS.has(card.display)) {
-            return "bar";
-        } else {
-            return card.display;
+            card.display = "bar";
         }
     } else {
         console.warn("Couldn't guess visualization", card);
-        return "table";
+        card.display = "table";
     }
 };
