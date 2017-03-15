@@ -10,10 +10,10 @@ import TimeseriesGroupingWidget
 
 import SidebarSection from "metabase/qb/components/sidebar/SidebarSection";
 
-import PivotByCategoryAction from "../actions/PivotByCategoryAction";
-import PivotByLocationAction from "../actions/PivotByLocationAction";
 import UnderlyingDataAction from "../actions/UnderlyingDataAction";
 import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
+import PivotByCategoryAction from "../actions/PivotByCategoryAction";
+import PivotByLocationAction from "../actions/PivotByLocationAction";
 
 import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
 import TimeseriesFilterDrill from "../drill/TimeseriesFilterDrill";

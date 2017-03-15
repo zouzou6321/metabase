@@ -131,14 +131,14 @@ export const pivot = (
     tableMetadata: TableMetadata,
     clicked: ?DrillClick
 ): Card => {
-    const newCard = drillFilter(
-        card,
-        clicked.dimensionValue,
-        clicked.dimensionColumn
-    );
-    newCard.dataset_query = card.dataset_query;
+    let newCard;
 
     if (clicked) {
+        newCard = drillFilter(
+            card,
+            clicked.dimensionValue,
+            clicked.dimensionColumn
+        );
         const breakoutFields = Query.getBreakoutFields(
             newCard.dataset_query.query,
             tableMetadata
@@ -151,6 +151,9 @@ export const pivot = (
                 );
             }
         }
+    } else {
+        newCard = startNewCard("query");
+        newCard.dataset_query = card.dataset_query;
     }
 
     newCard.dataset_query.query = Query.addBreakout(
