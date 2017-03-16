@@ -270,7 +270,7 @@ var Query = {
     },
 
     getExpressions(query) {
-        return query.expressions;
+        return query.expressions || {};
     },
 
     setExpression(query, name, expression) {

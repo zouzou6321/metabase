@@ -63,7 +63,7 @@ export default class FieldList extends Component {
             name: singularize(tableName),
             items: specialOptions.concat(fieldOptions.fields.map(field => ({
                 name: Query.getFieldPathName(field.id, tableMetadata),
-                value: ["field-id", field.id],
+                value: typeof field.id === "number" ? ["field-id", field.id] : field.id,
                 field: field
             })))
         };

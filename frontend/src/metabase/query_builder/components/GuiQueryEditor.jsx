@@ -347,7 +347,7 @@ export default class GuiQueryEditor extends Component {
                     {this.props.children}
                     <ExtendedOptions
                         {...this.props}
-                        setQuery={(query) => this.props.setQueryQuery(query)}
+                        setQuery={(query) => this.props.setQueryFn(query)}
                     />
                 </div>
             </div>

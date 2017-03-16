@@ -744,6 +744,102 @@ export const setQuerySourceTable = createThunkAction(SET_QUERY_SOURCE_TABLE, (so
     };
 });
 
+function createQueryAction(action, updaterFunction, event) {
+    return createThunkAction(action, (...args) =>
+        (dispatch, getState) => {
+            const { qb: { card } } = getState();
+            if (card.dataset_query.type === "query") {
+                const datasetQuery = Utils.copy(card.dataset_query);
+                updaterFunction(datasetQuery.query, ...args);
+                dispatch(setQuery(datasetQuery));
+                MetabaseAnalytics.trackEvent(...(typeof event === "function" ? event(...args) : event));
+            }
+            return null;
+        }
+    );
+}
+
+export const addQueryBreakout = createQueryAction(
+    "metabase/qb/ADD_QUERY_BREAKOUT",
+    Query.addBreakout,
+    ["QueryBuilder", "Add GroupBy"]
+);
+export const updateQueryBreakout = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_BREAKOUT",
+    Query.updateBreakout,
+    ["QueryBuilder", "Modify GroupBy"]
+);
+export const removeQueryBreakout = createQueryAction(
+    "metabase/qb/REMOVE_QUERY_BREAKOUT",
+    Query.removeBreakout,
+    ["QueryBuilder", "Remove GroupBy"]
+);
+export const addQueryFilter = createQueryAction(
+    "metabase/qb/ADD_QUERY_FILTER",
+    Query.addFilter,
+    ["QueryBuilder", "Add Filter"]
+);
+export const updateQueryFilter = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_FILTER",
+    Query.updateFilter,
+    ["QueryBuilder", "Modify Filter"]
+);
+export const removeQueryFilter = createQueryAction(
+    "metabase/qb/REMOVE_QUERY_FILTER",
+    Query.removeFilter,
+    ["QueryBuilder", "Remove Filter"]
+);
+export const addQueryAggregation = createQueryAction(
+    "metabase/qb/ADD_QUERY_AGGREGATION",
+    Query.addAggregation,
+    ["QueryBuilder", "Add Aggregation"]
+);
+export const updateQueryAggregation = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_AGGREGATION",
+    Query.updateAggregation,
+    ["QueryBuilder", "Set Aggregation"]
+);
+export const removeQueryAggregation = createQueryAction(
+    "metabase/qb/REMOVE_QUERY_AGGREGATION",
+    Query.removeAggregation,
+    ["QueryBuilder", "Remove Aggregation"]
+);
+export const addQueryOrderBy = createQueryAction(
+    "metabase/qb/ADD_QUERY_ORDER_BY",
+    Query.addOrderBy,
+    ["QueryBuilder", "Add OrderBy"]
+);
+export const updateQueryOrderBy = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_ORDER_BY",
+    Query.updateOrderBy,
+    ["QueryBuilder", "Set OrderBy"]
+);
+export const removeQueryOrderBy = createQueryAction(
+    "metabase/qb/REMOVE_QUERY_ORDER_BY",
+    Query.removeOrderBy,
+    ["QueryBuilder", "Remove OrderBy"]
+);
+export const updateQueryLimit = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_LIMIT",
+    Query.updateLimit,
+    ["QueryBuilder", "Update Limit"]
+);
+export const addQueryExpression = createQueryAction(
+    "metabase/qb/ADD_QUERY_EXPRESSION",
+    Query.addExpression,
+    ["QueryBuilder", "Add Expression"]
+);
+export const updateQueryExpression = createQueryAction(
+    "metabase/qb/UPDATE_QUERY_EXPRESSION",
+    Query.updateExpression,
+    ["QueryBuilder", "Set Expression"]
+);
+export const removeQueryExpression = createQueryAction(
+    "metabase/qb/REMOVE_QUERY_EXPRESSION",
+    Query.removeExpression,
+    ["QueryBuilder", "Remove Expression"]
+);
+
 // setQuerySort
 export const SET_QUERY_SORT = "SET_QUERY_SORT";
 export const setQuerySort = createThunkAction(SET_QUERY_SORT, (column) => {
@@ -787,102 +883,6 @@ export const setQuerySort = createThunkAction(SET_QUERY_SORT, (column) => {
         return null;
     };
 });
-
-export const SET_QUERY_BREAKOUT = "SET_QUERY_BREAKOUT";
-export const setQueryBreakout = createThunkAction(SET_QUERY_BREAKOUT, (index, field) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            if (field == null) {
-                Query.removeBreakout(datasetQuery.query, index);
-                dispatch(setQuery(datasetQuery));
-                MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove GroupBy');
-            } else {
-                if (index > Query.getBreakouts(datasetQuery.query) - 1) {
-                    Query.addBreakout(datasetQuery.query, field);
-                    dispatch(setQuery(datasetQuery));
-                    MetabaseAnalytics.trackEvent('QueryBuilder', 'Add GroupBy');
-                } else {
-                    Query.updateBreakout(datasetQuery.query, index, field);
-                    dispatch(setQuery(datasetQuery));
-                    MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify GroupBy');
-                }
-            }
-        }
-        return null;
-    }
-);
-
-export const SET_QUERY_AGGREGATION = "SET_QUERY_AGGREGATION";
-export const setQueryAggregation = createThunkAction(SET_QUERY_AGGREGATION, (index, aggregationClause) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            Query.updateAggregation(datasetQuery.query, index, aggregationClause);
-            dispatch(setQuery(datasetQuery));
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Set Aggregation', aggregationClause[0]);
-        }
-        return null;
-    }
-);
-
-export const REMOVE_QUERY_AGGREGATION = "REMOVE_QUERY_AGGREGATION";
-export const removeQueryAggregation = createThunkAction(REMOVE_QUERY_AGGREGATION, (index) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            Query.removeAggregation(datasetQuery.query, index);
-            dispatch(setQuery(datasetQuery));
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Aggregation');
-        }
-        return null;
-    }
-);
-
-export const ADD_QUERY_FILTER = "ADD_QUERY_FILTER";
-export const addQueryFilter = createThunkAction(ADD_QUERY_FILTER, (filter) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            Query.addFilter(datasetQuery.query, filter);
-            dispatch(setQuery(datasetQuery));
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Add Filter');
-        }
-        return null;
-    }
-);
-
-export const SET_QUERY_FILTER = "SET_QUERY_FILTER";
-export const setQueryFilter = createThunkAction(SET_QUERY_FILTER, (index, filter) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            Query.updateFilter(datasetQuery.query, index, filter);
-            dispatch(setQuery(datasetQuery));
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Modify Filter');
-        }
-        return null;
-    }
-);
-
-export const REMOVE_QUERY_FILTER = "REMOVE_QUERY_FILTER";
-export const removeQueryFilter = createThunkAction(REMOVE_QUERY_FILTER, (index) =>
-    (dispatch, getState) => {
-        const { qb: { card } } = getState();
-        if (card.dataset_query.type === "query") {
-            const datasetQuery = Utils.copy(card.dataset_query);
-            Query.removeFilter(datasetQuery.query, index);
-            dispatch(setQuery(datasetQuery));
-            MetabaseAnalytics.trackEvent('QueryBuilder', 'Remove Filter');
-        }
-        return null;
-    }
-);
 
 // runQuery
 export const RUN_QUERY = "RUN_QUERY";

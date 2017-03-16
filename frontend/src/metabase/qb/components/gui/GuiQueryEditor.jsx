@@ -7,9 +7,8 @@ import FilterSection from "./FilterSection";
 import BreakoutSection from "./BreakoutSection";
 import AggregationSection from "./AggregationSection";
 import OrderBySection from "./OrderBySection";
-
-import ExtendedOptions
-    from "metabase/query_builder/components/ExtendedOptions.jsx";
+import ExpressionSection from "./ExpressionSection";
+import LimitSection from "./LimitSection";
 
 import cx from "classnames";
 import _ from "underscore";
@@ -32,19 +31,11 @@ export default class GuiQueryEditor extends Component {
             filter: true,
             aggregation: true,
             breakout: true,
-            sort: true,
-            limit: true
+            order_by: true,
+            limit: true,
+            expressions: true
         }
     };
-
-    renderExtendedSection() {
-        return (
-            <ExtendedOptions
-                {...this.props}
-                setQuery={query => this.props.setQuery(query)}
-            />
-        );
-    }
 
     render() {
         const { query, databases, features } = this.props;
@@ -61,8 +52,9 @@ export default class GuiQueryEditor extends Component {
                 {features.filter && <FilterSection {...this.props} />}
                 {features.aggregation && <AggregationSection {...this.props} />}
                 {features.breakout && <BreakoutSection {...this.props} />}
-                {features.sort && <OrderBySection {...this.props} />}
-                {this.renderExtendedSection()}
+                {features.order_by && <OrderBySection {...this.props} />}
+                {features.expressions && <ExpressionSection {...this.props} />}
+                {features.limit && <LimitSection {...this.props} />}
                 {this.props.children}
             </div>
         );
