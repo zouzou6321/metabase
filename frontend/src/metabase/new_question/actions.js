@@ -73,7 +73,7 @@ export const selectAndAdvance = createThunkAction(
         return (dispatch, getState) => {
             const state = getState();
             const nextStep = getNextStep(state);
-            const isSkippable = nextStep.skip;
+            const isSkippable = nextStep && nextStep.skip;
 
             dispatch(selectionAction());
             dispatch(checkFlowCompletion());
