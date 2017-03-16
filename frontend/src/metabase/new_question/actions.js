@@ -5,7 +5,12 @@ import { fetchDatabases } from "metabase/redux/metadata";
 import { push } from "react-router-redux";
 import { serializeCardForUrl, startNewCard } from "metabase/lib/card";
 
-import { getCurrentFlowType, getSelectedTableMetadata } from "./selectors";
+import {
+    getCurrentFlowType,
+    getSelectedTableMetadata,
+    getNextStep,
+    getResource
+} from "./selectors";
 
 import { getMode } from "metabase/qb/lib/modes";
 
@@ -66,8 +71,25 @@ export const selectAndAdvance = createThunkAction(
     SELECT_AND_ADVANCE,
     selectionAction => {
         return (dispatch, getState) => {
+            const state = getState();
+            const nextStep = getNextStep(state);
+            const isSkippable = nextStep.skip;
+
             dispatch(selectionAction());
             dispatch(checkFlowCompletion());
+
+            if (isSkippable) {
+                console.log("next step is skippable");
+
+                const { resource, resolve } = nextStep.skip;
+                const resourcesForStep = getResource(resource, state);
+
+                /*
+                if(!nextStep.skip.resolve(resourcesForStep)) {
+                    console.log('aint nothing ehere')
+                }
+                */
+            }
             // selection action is a wrapper function that
             // dispatches an action provided by the caller that we shouldn't care
             // about here, for example adding a breakout
@@ -92,6 +114,11 @@ export const selectFlow = createThunkAction(SELECT_FLOW, flow => {
     };
 });
 
+export const SET_DATABASE = "SET_DATABASE";
+export const setDatabase = createAction(SET_DATABASE, databaseId => {
+    return startNewCard("query", databaseId);
+});
+
 export const SELECT_METRIC_BREAKOUT = "SELECT_METRIC_BREAKOUT";
 export const selectMetricBreakout = createAction(
     SELECT_METRIC_BREAKOUT,
@@ -111,8 +138,9 @@ export const selectMetric = createAction(SELECT_METRIC, ({
     id
 }) => {
     let card = startNewCard("query", database_id, table_id);
-    // TODO it'd be dope if we didn't have to set this in two places
-    card.dataset_query.aggregation = [["METRIC", id]];
     card.dataset_query.query.aggregation = [["METRIC", id]];
     return card;
 });
+
+export const SET_TABLE = "SET_TABLE";
+export const setTable = createAction(SET_TABLE);

@@ -11,8 +11,28 @@ import { normal } from "metabase/lib/colors";
 import { createSelector } from "reselect";
 import { getTables, getMetrics, getFields } from "metabase/selectors/metadata";
 
-export const currentTip = state => state.newQuestion.currentStep.tip;
-export const currentStepTitle = state => state.newQuestion.currentStep.title;
+export const getCurrentStep = state => state.newQuestion.currentStep;
+
+const getCurrentStepIndex = state => state.newQuestion.currentStepIndex;
+
+const getFlowSteps = state => state.newQuestion.flow.steps;
+
+export const getNextStep = createSelector(
+    [getCurrentStepIndex, getFlowSteps],
+    (currentStepIndex, flowSteps) => flowSteps[currentStepIndex + 1]
+);
+
+export const getResource = (resource, state) => state.metadata[resource];
+
+export const currentTip = createSelector(
+    [getCurrentStep],
+    currentStep => currentStep.tip
+);
+
+export const currentStepTitle = createSelector(
+    [getCurrentStep],
+    currentStep => currentStep.title
+);
 
 // TODO this is a hellscape, not meant for human eyes to see
 export const getSelectedTable = state => {
@@ -77,6 +97,20 @@ const FIELD_FILTERS_BY_FLOW_TYPE = {
     map: field => isCountry(field) || isState(field),
     default: () => true
 };
+
+export const getFieldsForMetric = createSelector(
+    [getCurrentFlowType],
+    currentFlowType => {
+        return currentFlowType;
+    }
+);
+
+export const getTablesForDatabase = state =>
+    Object.values(
+        state.metadata.databases[
+            state.newQuestion.card.dataset_query.database
+        ].tables_lookup
+    );
 
 export const getMetricsForCurrentFlow = createSelector(
     [getCurrentFlowType, getMetrics, getTables, getFields],
