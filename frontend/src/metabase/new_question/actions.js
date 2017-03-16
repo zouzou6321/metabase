@@ -83,7 +83,7 @@ export const selectFlow = createThunkAction(SELECT_FLOW, flow => {
         if (flow === "sql") {
             const newSQL = startNewCard(
                 "native",
-                getState().metadata.databases.first
+                Object.values(getState().metadata.databases)[0].id
             );
             return dispatch(sendToQB(newSQL));
         }
