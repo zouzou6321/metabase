@@ -1,93 +1,105 @@
-import cxs from 'cxs';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import cxs from "cxs";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import Icon from 'metabase/components/Icon';
+import Icon from "metabase/components/Icon";
 
-import Card from '../components/Card';
+import Card from "../components/Card";
 
-import {
-    selectAndAdvance,
-    selectMetricBreakout,
-    setTip
-} from '../actions';
+import { selectAndAdvance, selectMetricBreakout, setTip } from "../actions";
 
 import {
     breakoutsForDisplay,
     currentTip,
-    currentStepTitle,
-} from '../selectors'
+    currentStepTitle
+} from "../selectors";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     title: currentStepTitle(state),
     breakouts: breakoutsForDisplay(state),
     tip: currentTip(state)
-})
+});
 
-const mapDispatchToProps = ({
+const mapDispatchToProps = {
     selectAndAdvance,
     selectMetricBreakout,
     setTip
-})
+};
 
 @connect(mapStateToProps, mapDispatchToProps)
 class BreakoutSelection extends Component {
     constructor(props) {
-        super(props)
-        this.tip = props.tip
+        super(props);
+        this.tip = props.tip;
     }
-    render () {
+    render() {
         const { title, breakouts, selectAndAdvance, setTip } = this.props;
         return (
             <div>
-                <h2>{ title }</h2>
+                <h2>{title}</h2>
                 <ol>
-                    { breakouts.map(breakout =>
-                        breakout.fields.length > 0 && (
-                            <li
-                                className={cxs({ marginBottom: '2em' })}
-                                key={breakouts.display_name}
+                    {breakouts.map(
+                        breakout => breakout.fields.length > 0 &&
+                        <li
+                            className={cxs({ marginBottom: "2em" })}
+                            key={breakouts.display_name}
+                        >
+                            <h3>{breakout.display_name}</h3>
+                            <ol
+                                className={cxs({
+                                    display: "flex",
+                                    flexWrap: "wrap"
+                                })}
                             >
-                                <h3>{breakout.display_name}</h3>
-                                <ol className={cxs({ display: 'flex', flexWrap: 'wrap' })}>
-                                    { breakout.fields.map(field=>
-                                        <li
-                                            onClick={() =>
-                                                selectAndAdvance(() =>
+                                {breakout.fields.map(field => (
+                                    <li
+                                        onClick={() =>
+                                            selectAndAdvance(
+                                                () =>
                                                     selectMetricBreakout(field)
-                                                )
+                                            )}
+                                        onMouseEnter={() => {
+                                            if (field.description) {
+                                                setTip({
+                                                    title: field.display_name,
+                                                    text: field.description
+                                                });
                                             }
-                                            onMouseEnter={() => {
-                                                if(field.description) {
-                                                    setTip({
-                                                        title: field.display_name,
-                                                        text: field.description
-                                                    })
-                                                }
-                                                return false
-                                            }}
-                                            onMouseLeave={() => setTip(this.tip)}
-                                            className={cxs({ flex: '0 0 33.33%', padding: '1em' })}
-                                            key={field.id}
-                                        >
-                                            <Card color={breakout.displayColor}>
-                                                <div className={cxs({ display: 'flex', flexDirection: 'column', alignItems: 'center' })}>
-                                                    <Icon
-                                                        className={cxs({ marginBottom: '1em' })}
-                                                        name={breakout.iconName}
-                                                        size={32}
-                                                    />
-                                                    <h3>{field.display_name}</h3>
-                                                </div>
-                                            </Card>
-                                        </li>
-                                    )}
-                                </ol>
+                                            return false;
+                                        }}
+                                        onMouseLeave={() => setTip(this.tip)}
+                                        className={cxs({
+                                            flex: "0 0 33.33%",
+                                            padding: "1em"
+                                        })}
+                                        key={field.id}
+                                    >
+                                        <Card color={breakout.displayColor}>
+                                            <div
+                                                className={cxs({
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center"
+                                                })}
+                                            >
+                                                <Icon
+                                                    className={cxs({
+                                                        marginBottom: "1em"
+                                                    })}
+                                                    name={breakout.iconName}
+                                                    size={32}
+                                                />
+                                                <h3>{field.display_name}</h3>
+                                            </div>
+                                        </Card>
+                                    </li>
+                                ))}
+                            </ol>
                         </li>
-                    ))}
+                    )}
                 </ol>
             </div>
-        )
+        );
     }
 }
 

@@ -143,7 +143,7 @@
     "dev": "yarn && concurrently --kill-others -p name -n 'backend,frontend' -c 'blue,green' 'lein ring server' 'yarn run build-hot'",
     "lint": "yarn run lint-eslint && yarn run lint-prettier",
     "lint-eslint": "eslint --ext .js --ext .jsx --max-warnings 0 frontend/src frontend/test",
-    "lint-prettier": "prettier --tab-width 4 -l 'frontend/src/metabase/qb/**/*.js*' || (echo '\nThese files are not formatted correctly. Did you forget to run \"yarn run prettier\"?' && false)",
+    "lint-prettier": "prettier --tab-width 4 -l 'frontend/src/metabase/qb/**/*.js*' 'frontend/src/metabase/new_question/**/*.js*' || (echo '\nThese files are not formatted correctly. Did you forget to run \"yarn run prettier\"?' && false)",
     "flow": "flow check",
     "test": "karma start frontend/test/karma.conf.js --single-run",
     "test-watch": "karma start frontend/test/karma.conf.js --auto-watch --reporters nyan",
@@ -156,11 +156,15 @@
     "storybook": "start-storybook -p 9001",
     "precommit": "lint-staged",
     "preinstall": "ps -fp $PPID | grep -q yarn || echo '\\033[0;33mSorry, npm is not supported. Please use Yarn (https://yarnpkg.com/).\\033[0m'",
-    "prettier": "prettier --tab-width 4 --write 'frontend/src/metabase/qb/**/*.js*'",
+    "prettier": "prettier --tab-width 4 --write 'frontend/src/metabase/qb/**/*.js*' 'frontend/src/metabase/new_question/**/*.js*'",
     "test-jest": "jest"
   },
   "lint-staged": {
     "frontend/src/metabase/qb/**/*.js*": [
+      "prettier --tab-width 4 --write",
+      "git add"
+    ],
+    "frontend/src/metabase/new_question/**/*.js*": [
       "prettier --tab-width 4 --write",
       "git add"
     ]

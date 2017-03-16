@@ -1,38 +1,43 @@
-import cxs from 'cxs';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import cxs from "cxs";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { newMetric, selectMetric, selectAndAdvance } from '../actions'
-import { fetchMetrics } from 'metabase/redux/metadata';
+import { newMetric, selectMetric, selectAndAdvance } from "../actions";
+import { fetchMetrics } from "metabase/redux/metadata";
 
-import Button from 'metabase/components/Button';
+import Button from "metabase/components/Button";
 
-import Text from '../components/Text';
+import Text from "../components/Text";
 
 import { getMetricsForCurrentFlow } from "../selectors";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     metrics: getMetricsForCurrentFlow(state)
-})
+});
 
-const mapDispatchToProps = ({
+const mapDispatchToProps = {
     fetchMetrics,
     newMetric,
     selectMetric,
-    selectAndAdvance,
-})
+    selectAndAdvance
+};
 
 @connect(mapStateToProps, mapDispatchToProps)
 class MetricLanding extends Component {
-    async componentWillMount () {
-        this.props.fetchMetrics()
+    async componentWillMount() {
+        this.props.fetchMetrics();
     }
-    render () {
-        const { metrics, newMetric, selectMetric, selectAndAdvance } = this.props;
+    render() {
+        const {
+            metrics,
+            newMetric,
+            selectMetric,
+            selectAndAdvance
+        } = this.props;
         return (
             <div>
                 <div>
-                    <div className={cxs({ display: 'flex' })}>
+                    <div className={cxs({ display: "flex" })}>
                         <h3>Existing metrics</h3>
                         <Button
                             className="ml-auto"
@@ -43,19 +48,21 @@ class MetricLanding extends Component {
                         </Button>
                     </div>
                     <ol>
-                        { metrics.map(metric =>
+                        {metrics.map(metric => (
                             <li
-                                onClick={() => selectAndAdvance(() => selectMetric(metric)) }
+                                onClick={() =>
+                                    selectAndAdvance(() =>
+                                        selectMetric(metric))}
                                 key={metric.id}
                             >
-                                <h2 className="link">{ metric.name }</h2>
-                                <Text>{ metric.description }</Text>
+                                <h2 className="link">{metric.name}</h2>
+                                <Text>{metric.description}</Text>
                             </li>
-                        )}
+                        ))}
                     </ol>
                 </div>
             </div>
-        )
+        );
     }
 }
 

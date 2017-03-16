@@ -1,74 +1,72 @@
-import cxs from 'cxs';
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import cxs from "cxs";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { fetchDatabasesWithMetadata } from 'metabase/redux/metadata';
+import { fetchDatabasesWithMetadata } from "metabase/redux/metadata";
 
-import Icon from 'metabase/components/Icon';
+import Icon from "metabase/components/Icon";
 
-import Text from '../components/Text';
-import Tip from '../components/Tip';
-import Title from '../components/Title';
-import { Sidebar } from '../components/Layout';
+import Text from "../components/Text";
+import Tip from "../components/Tip";
+import Title from "../components/Title";
+import { Sidebar } from "../components/Layout";
 
-import {
-    back,
-    resetNewQuestionFlow
-} from '../actions';
+import { back, resetNewQuestionFlow } from "../actions";
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
     advance: state.newQuestion.advance,
     back: state.newQuestion.currentStep.back || true,
     component: state.newQuestion.currentStep.component,
     subtitle: state.newQuestion.currentStep.subtitle,
     tip: state.newQuestion.currentStep.tip,
-    title: state.newQuestion.flow.title,
-})
+    title: state.newQuestion.flow.title
+});
 
-const mapDispatchToProps = ({
+const mapDispatchToProps = {
     fetchDatabasesWithMetadata,
     goBack: back,
-    resetNewQuestionFlow,
-})
+    resetNewQuestionFlow
+};
 
 @connect(mapStateToProps, mapDispatchToProps)
 class NewQuestion extends Component {
-    componentDidMount () {
-        this.props.resetNewQuestionFlow()
-        this.props.fetchDatabasesWithMetadata()
+    componentDidMount() {
+        this.props.resetNewQuestionFlow();
+        this.props.fetchDatabasesWithMetadata();
     }
-    render () {
+    render() {
         const { back, goBack, component, tip, title, subtitle } = this.props;
-        const CurrentStep = component
+        const CurrentStep = component;
         return (
             <div className="wrapper relative py4">
 
-                <div className={cxs({
-                    display: 'flex',
-                    alignItems: 'center'
-                })}>
-                    { back && (
+                <div
+                    className={cxs({
+                        display: "flex",
+                        alignItems: "center"
+                    })}
+                >
+                    {back &&
                         <div
                             className={cxs({
                                 borderRadius: 99,
-                                border: '1px solid #93A1AB',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
+                                border: "1px solid #93A1AB",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
                                 width: 52,
                                 height: 52,
-                                marginRight: '1em',
-                                ':hover': {
-                                    cursor: 'pointer'
+                                marginRight: "1em",
+                                ":hover": {
+                                    cursor: "pointer"
                                 }
                             })}
                             onClick={() => goBack()}
                         >
-                            <Icon name='chevronleft' />
-                        </div>
-                    )}
+                            <Icon name="chevronleft" />
+                        </div>}
                     <Title>{title}</Title>
-                    { subtitle && <Text>{subtitle}</Text> }
+                    {subtitle && <Text>{subtitle}</Text>}
                 </div>
 
                 <div className="flex mt4">
@@ -76,11 +74,10 @@ class NewQuestion extends Component {
                         <CurrentStep />
                     </div>
 
-                    { tip && (
+                    {tip &&
                         <Sidebar>
                             <Tip tip={tip} />
-                        </Sidebar>
-                    )}
+                        </Sidebar>}
                 </div>
             </div>
         );
