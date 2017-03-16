@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
 
@@ -11,6 +11,7 @@ export default ({ card, tableMetadata }) => {
     return {
         title: "Summarize by a metric in this segment",
         icon: "funnel", // FIXME: icon
+        // eslint-disable-next-line react/display-name
         popover: ({ onAction, onClose }) => (
             <AggregationPopover
                 tableMetadata={tableMetadata}

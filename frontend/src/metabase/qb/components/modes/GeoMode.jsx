@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import UnderlyingDataAction from "../actions/UnderlyingDataAction";
 import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";

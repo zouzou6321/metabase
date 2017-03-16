@@ -11,7 +11,6 @@ import Icon from "metabase/components/Icon.jsx";
 import IconBorder from 'metabase/components/IconBorder.jsx';
 import PopoverWithTrigger from "metabase/components/PopoverWithTrigger.jsx";
 
-import MetabaseAnalytics from 'metabase/lib/analytics';
 import Query from "metabase/lib/query";
 
 import cx from "classnames";

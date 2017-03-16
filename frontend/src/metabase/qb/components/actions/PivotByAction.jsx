@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import React from "react";
 
@@ -49,6 +49,7 @@ export default (name, icon, fieldFilter) => (
               </span>
             : <span>Pivot by <span className="text-dark">{name}</span></span>,
         icon: icon,
+        // eslint-disable-next-line react/display-name
         popover: ({ onAction, onClose }) => (
             <BreakoutPopover
                 tableMetadata={tableMetadata}

@@ -1,9 +1,11 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
 
 import PopoverWithTrigger from "metabase/components/PopoverWithTrigger";
 import Icon from "metabase/components/Icon";
+
+import GuiSection from "./GuiSection";
 
 import cx from "classnames";
 
@@ -18,9 +20,17 @@ const QBEditButton = props => <QBTextButton {...props}>Edit</QBTextButton>;
 
 class GuiClauseEditor extends Component {
     render() {
-        const { items, canAdd, onRemove, renderItem, renderEdit } = this.props;
+        const {
+            title,
+            titleClass,
+            items,
+            canAdd,
+            onRemove,
+            renderItem,
+            renderEdit
+        } = this.props;
         return (
-            <div>
+            <GuiSection title={title} titleClass={titleClass}>
                 {items && items.length > 0
                     ? items.map((item, index) => (
                           <div className="mb1 flex align-center">
@@ -69,7 +79,7 @@ class GuiClauseEditor extends Component {
                           </PopoverWithTrigger>
                       </div>
                     : null}
-            </div>
+            </GuiSection>
         );
     }
 }

@@ -24,7 +24,23 @@ export type HoverData = Array<{ key: string, value: any, col?: Column }>;
 export type HoverObject = {
     index?: number,
     axisIndex?: number,
-    data?: HoverData
+    data?: HoverData,
+    element?: HTMLElement,
+    event?: MouseEvent,
+}
+
+export type ClickObject = {
+    dimensionValue: Value,
+    dimensionColumn: Column,
+    metricValue: Value,
+    metricColumn: Column,
+    event?: MouseEvent,
+}
+
+export type DrillAction = {
+    title: any,
+    popoper?: any,
+    card?: Card | () => Card
 }
 
 // type Visualization = Component<*, VisualizationProps, *>;
@@ -52,6 +68,7 @@ export type VisualizationProps = {
 
     hovered: ?HoverObject,
     onHoverChange: (?HoverObject) => void,
+    onVisualizationClick: (?ClickObject) => void,
 
     onUpdateVisualizationSettings: ({ [key: string]: any }) => void
 }

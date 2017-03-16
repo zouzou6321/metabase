@@ -1,9 +1,6 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
-
-import * as Query from "metabase/lib/query/query";
-import * as Card from "metabase/meta/Card";
 
 import Sidebar from "./Sidebar";
 import SidebarHeader from "./SidebarHeader";
@@ -11,9 +8,6 @@ import SidebarSection from "./SidebarSection";
 import QueryBuilderSidebarSection from "./QueryBuilderSidebarSection";
 
 import Action from "../Action";
-
-import FilterWidget
-    from "metabase/query_builder/components/filters/FilterWidget";
 
 type Props = {};
 

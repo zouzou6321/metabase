@@ -1,7 +1,6 @@
 /* @flow */
 
 import React, { Component, PropTypes } from "react";
-import ReactDOM from "react-dom";
 
 import cx from "classnames";
 import styles from "./FunnelNormal.css";

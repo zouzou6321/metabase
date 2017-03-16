@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from "react";
 
 import FieldName from "./FieldName.jsx";
 
-import Query, { AggregationClause, NamedClause } from "metabase/lib/query";
+import { AggregationClause, NamedClause } from "metabase/lib/query";
 import { getAggregator } from "metabase/lib/schema_metadata";
 import { format } from "metabase/lib/expressions/formatter";
 
@@ -29,13 +29,8 @@ const StandardAggregation = ({ aggregation, tableMetadata, customFields }) => {
                 {fieldId &&
                     <FieldName
                         className="text-bold"
-                        tableMetadata={tableMetadata}
                         field={fieldId}
-                        fieldOptions={Query.getFieldOptions(
-                            tableMetadata.fields,
-                            true
-                        )}
-                        customFieldOptions={customFields}
+                        tableMetadata={tableMetadata}
                     />}
             </span>
         );

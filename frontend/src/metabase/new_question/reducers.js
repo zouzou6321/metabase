@@ -9,8 +9,6 @@ import {
     SELECT_METRIC_BREAKOUT
 } from "./actions";
 
-import Query from "metabase/lib/query";
-
 import QueryTypeList from "./components/QueryTypeList";
 
 import MetricLanding from "./containers/MetricLanding";

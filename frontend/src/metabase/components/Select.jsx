@@ -118,6 +118,11 @@ export const SelectButton = ({ hasValue, children }) =>
         <Icon className="AdminSelect-chevron flex-align-right" name="chevrondown" size={12} />
     </div>
 
+SelectButton.propTypes = {
+    hasValue: PropTypes.bool,
+    children: PropTypes.any,
+};
+
 export class Option extends Component {
     static propTypes = {
         children:   PropTypes.any,

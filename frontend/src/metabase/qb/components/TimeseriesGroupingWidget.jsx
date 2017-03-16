@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
 
@@ -11,8 +11,6 @@ import * as Query from "metabase/lib/query/query";
 import * as Card from "metabase/meta/Card";
 
 import { parseFieldBucketing, formatBucketing } from "metabase/lib/query_time";
-
-type Props = {};
 
 export default class TimeseriesGroupingWidget extends Component {
     render() {

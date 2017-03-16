@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
 
@@ -8,7 +8,7 @@ type Props = {};
 
 const BreakoutPopover = (
     {
-        field,
+        breakout,
         tableMetadata,
         fieldOptions,
         customFieldOptions,
@@ -19,7 +19,7 @@ const BreakoutPopover = (
     <FieldList
         className="text-green"
         tableMetadata={tableMetadata}
-        field={field}
+        field={breakout}
         fieldOptions={fieldOptions}
         customFieldOptions={customFieldOptions}
         onFieldChange={field => {

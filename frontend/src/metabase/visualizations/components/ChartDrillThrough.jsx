@@ -5,16 +5,24 @@ import React, { Component, PropTypes } from "react";
 import Button from "metabase/components/Button";
 import Popover from "metabase/components/Popover";
 
+import type { ClickObject, DrillAction } from "metabase/visualizations";
+import type { Card } from "metabase/meta/types/Card";
+
 type Props = {
+    clicked: ClickObject,
+    drillActions: ?DrillAction[],
+    onDrillThrough: (card: Card) => void,
+    onClose: () => void
 };
 
-export default class ChartDrillThrough extends Component<*, Props, *> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            popoverIndex: null
-        }
-    }
+type State = {
+    popoverIndex: ?number;
+}
+
+export default class ChartDrillThrough extends Component<*, Props, State> {
+    state: State = {
+        popoverIndex: null
+    };
 
     close = () => {
         this.setState({ popoverIndex: null });

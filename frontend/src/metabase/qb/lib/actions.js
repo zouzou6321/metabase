@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import moment from "moment";
 
@@ -166,14 +166,14 @@ export const pivot = (
     return newCard;
 };
 
-const VISUALIZATIONS_ONE_BREAKOUTS = new Set([
-    "bar",
-    "line",
-    "area",
-    "row",
-    "pie",
-    "map"
-]);
+// const VISUALIZATIONS_ONE_BREAKOUTS = new Set([
+//     "bar",
+//     "line",
+//     "area",
+//     "row",
+//     "pie",
+//     "map"
+// ]);
 const VISUALIZATIONS_TWO_BREAKOUTS = new Set(["bar", "line", "area"]);
 
 const guessVisualization = (card: Card, tableMetadata: TableMetadata) => {

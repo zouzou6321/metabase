@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import React, { Component, PropTypes } from "react";
 
@@ -9,8 +9,6 @@ import SidebarSection from "./SidebarSection";
 import Action from "../Action";
 
 import { getMetrics } from "metabase/qb/lib/modes";
-
-type Props = {};
 
 const QuestionSidebar = props => {
     const {

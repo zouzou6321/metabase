@@ -27,7 +27,7 @@ export const ERROR_MESSAGE_GENERIC = "There was a problem displaying this chart.
 export const ERROR_MESSAGE_PERMISSION = "Sorry, you don't have permission to see this card."
 
 import type { VisualizationSettings } from "metabase/meta/types/Card";
-import type { HoverObject, Series } from "metabase/visualizations";
+import type { HoverObject, ClickObject, Series } from "metabase/visualizations";
 
 type Props = {
     series: Series,
@@ -83,6 +83,8 @@ type State = {
     }),
 
     hovered: ?HoverObject,
+    clicked: ?ClickObject,
+
     error: ?Error,
     warnings: string[],
     yAxisSplit: ?number[][],
@@ -98,7 +100,7 @@ export default class Visualization extends Component<*, Props, State> {
 
         this.state = {
             hovered: null,
-            drill: null,
+            clicked: null,
             error: null,
             warnings: [],
             yAxisSplit: null,
@@ -156,7 +158,7 @@ export default class Visualization extends Component<*, Props, State> {
     transform(newProps) {
         this.setState({
             hovered: null,
-            drill: null,
+            clicked: null,
             error: null,
             warnings: [],
             yAxisSplit: null,
@@ -176,7 +178,7 @@ export default class Visualization extends Component<*, Props, State> {
         this.setState({ hovered });
     }
 
-    handleVisualizationClick = (clicked) => {
+    handleVisualizationClick = (clicked: ClickObject) => {
         // needs to be delayed so we don't clear it when switching from one drill through to another
         setTimeout(() => {
             this.setState({ clicked });

@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import { toUnderlyingData } from "metabase/qb/lib/actions";
 

@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 
 import { plotSegmentField } from "metabase/qb/lib/actions";
 

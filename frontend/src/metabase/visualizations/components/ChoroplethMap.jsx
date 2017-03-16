@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from "react";
-import ReactDOM from "react-dom";
 
 import LoadingSpinner from "metabase/components/LoadingSpinner.jsx";
 

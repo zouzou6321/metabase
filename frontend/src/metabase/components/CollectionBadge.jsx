@@ -6,7 +6,10 @@ import { Link } from "react-router";
 import Icon from "metabase/components/Icon";
 import Urls from "metabase/lib/urls";
 
+import type { Collection } from "metabase/meta/types/Collection";
+
 type Props = {
+    collection: Collection
 };
 
 const CollectionBadge = ({ collection }: Props) =>
