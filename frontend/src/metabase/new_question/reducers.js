@@ -82,14 +82,14 @@ const newMetricSteps = [
 const segmentTitle = "View a segment or table";
 const segment = [];
 
-const mapTitle = "Metric on a map";
-const map = [
+const geoTitle = "Metric on a map";
+const geo = [
     {
         title: "What kind of map would you like to see?",
         component: MapLanding
     },
     {
-        title: mapTitle,
+        title: geoTitle,
         component: MetricLanding,
         tip: tips["metric"]
     },
@@ -127,7 +127,7 @@ const timeseries = [
 ];
 
 const titles = {
-    map: mapTitle,
+    geo: geoTitle,
     metric: metricTitle,
     pivot: pivotTitle,
     segment: segmentTitle,
@@ -136,7 +136,7 @@ const titles = {
 
 const flows = {
     metric,
-    map,
+    geo,
     pivot,
     segment,
     timeseries
@@ -146,7 +146,7 @@ const setVizForFlow = flow => {
     switch (flow) {
         case "timeseries":
             return "line";
-        case "map":
+        case "geo":
             return "map";
         case "pivot":
         case "segment":
