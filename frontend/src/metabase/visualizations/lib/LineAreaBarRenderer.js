@@ -298,6 +298,10 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualiza
     chart.on("renderlet.tooltips", function(chart) {
         chart.selectAll(".bar, .dot, .area, .line, .bubble")
             .on("mousemove", function(d, i) {
+                if (!onHoverChange) {
+                    return;
+                }
+
                 const seriesIndex = determineSeriesIndexFromElement(this, isStacked);
                 const card = series[seriesIndex].card;
                 const isSingleSeriesBar = this.classList.contains("bar") && series.length === 1;
@@ -337,7 +341,7 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualiza
 
                 data = _.uniq(data, (d) => d.col);
 
-                onHoverChange && onHoverChange({
+                onHoverChange({
                     // for single series bar charts, fade the series and highlght the hovered element with CSS
                     index: isSingleSeriesBar ? -1 : seriesIndex,
                     // for area charts, use the mouse location rather than the DOM element
@@ -347,16 +351,28 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualiza
                 });
             })
             .on("mouseleave", function() {
-                onHoverChange && onHoverChange(null);
+                if (!onHoverChange) {
+                    return;
+                }
+                onHoverChange(null);
             })
             .on("mouseup", function(d) {
-                onVisualizationClick && onVisualizationClick({
-                    dimensionValue:  d.data.key,
-                    dimensionColumn: cols[0],
-                    metricValue:     d.data.value,
-                    metricColumn:    cols[1],
-                    event:           d3.event
-                })
+                if (!onVisualizationClick) {
+                    return;
+                }
+
+                // TODO: multiseries, scatter
+                if (d.data) {
+                    const isLine = this.classList.contains("dot");
+                    onVisualizationClick({
+                        dimensionValue:  d.data.key,
+                        dimensionColumn: cols[0],
+                        metricValue:     d.data.value,
+                        metricColumn:    cols[1],
+                        element:         isLine ? this : null,
+                        event:           isLine ? null : d3.event,
+                    });
+                }
             });
 
         chart.selectAll("title").remove();
@@ -495,6 +511,10 @@ function lineAndBarOnRender(chart, settings, onGoalHover, isSplitAxis, isStacked
                         let e = point[2];
                         dispatchUIEvent(e, "mouseleave");
                         d3.select(e).classed("hover", false);
+                    })
+                    .on("mouseup", ({ point }) => {
+                        let e = point[2];
+                        dispatchUIEvent(e, "mouseup");
                     })
                 .order();
 
