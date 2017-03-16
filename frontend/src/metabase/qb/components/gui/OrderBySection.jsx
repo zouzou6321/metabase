@@ -44,8 +44,6 @@ const OrderBySection = (
         canAdd = true;
     }
 
-    console.log("remainingFieldOptions", remainingFieldOptions);
-
     return (
         <GuiClauseEditor
             title="Sort"

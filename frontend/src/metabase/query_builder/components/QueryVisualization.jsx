@@ -22,8 +22,6 @@ import _ from "underscore";
 export default class QueryVisualization extends Component {
     constructor(props, context) {
         super(props, context);
-        this.runQuery = this.runQuery.bind(this);
-
         this.state = this._getStateFromProps(props);
     }
 
@@ -77,12 +75,8 @@ export default class QueryVisualization extends Component {
         return (display !== "table" && display !== "scalar");
     }
 
-    runQuery() {
-        this.props.runQueryFn();
-    }
-
     renderHeader() {
-        const { isObjectDetail, isRunning, isAdmin, card, result } = this.props;
+        const { isObjectDetail, isRunnable, isRunning, isAdmin, card, result, runQueryFn, cancelQueryFn } = this.props;
         const isDirty = this.queryIsDirty();
         const isSaved = card.id != null;
         const isPublicLinksEnabled = MetabaseSettings.get("public_sharing");
@@ -94,11 +88,11 @@ export default class QueryVisualization extends Component {
                 </span>
                 <div className="absolute flex layout-centered left right z3">
                     <RunButton
-                        canRun={this.props.isRunnable}
+                        isRunnable={isRunnable}
                         isDirty={isDirty}
                         isRunning={isRunning}
-                        runFn={this.runQuery}
-                        cancelFn={this.props.cancelQueryFn}
+                        onRun={runQueryFn}
+                        onCancel={cancelQueryFn}
                     />
                 </div>
                 <div className="absolute right z4 flex align-center" style={{ lineHeight: 0 /* needed to align icons :-/ */ }}>

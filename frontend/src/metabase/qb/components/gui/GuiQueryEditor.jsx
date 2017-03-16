@@ -10,6 +10,8 @@ import OrderBySection from "./OrderBySection";
 import ExpressionSection from "./ExpressionSection";
 import LimitSection from "./LimitSection";
 
+import RunButton from "metabase/query_builder/components/RunButton";
+
 import cx from "classnames";
 import _ from "underscore";
 
@@ -46,6 +48,9 @@ export default class GuiQueryEditor extends Component {
             return <div />;
         }
 
+        const { isRunning, isRunnable, runQueryFn, cancelQueryFn } = this.props;
+        const isDirty = true; // FIXME
+
         return (
             <div className={cx("p2", { disabled: readOnly })}>
                 {features.data && <DataSection {...this.props} />}
@@ -56,6 +61,13 @@ export default class GuiQueryEditor extends Component {
                 {features.expressions && <ExpressionSection {...this.props} />}
                 {features.limit && <LimitSection {...this.props} />}
                 {this.props.children}
+                <RunButton
+                    isRunnable={isRunnable}
+                    isDirty={isDirty}
+                    isRunning={isRunning}
+                    onRun={runQueryFn}
+                    onCancel={cancelQueryFn}
+                />
             </div>
         );
     }
