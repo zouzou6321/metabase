@@ -9,8 +9,8 @@ import {
 } from 'metabase/lib/card';
 
 import {
-    flowType,
-    selectedTable
+    getCurrentFlowType,
+    getSelectedTableMetadata
 } from './selectors';
 
 import { getMode } from 'metabase/qb/lib/modes';
@@ -44,15 +44,13 @@ export const CHECK_FLOW_COMPLETION = 'CHECK_FLOW_COMPLETION';
 export const checkFlowCompletion = createThunkAction(CHECK_FLOW_COMPLETION, () => {
     const isComplete = (flow, card, table) => {
         const wouldBeMode = getMode(card, table).name
-        console.log('mode', wouldBeMode, card)
         return wouldBeMode === flow
     }
 
     return (dispatch, getState) => {
-        const currentFlow = flowType(getState())
-        const table = selectedTable(getState())
+        const currentFlow = getCurrentFlowType(getState())
+        const table = getSelectedTableMetadata(getState())
         const card = getState().newQuestion.card // TODO this should be coming from the QB state eventually
-        console.log(currentFlow, table, card)
 
         // a flow can't be complete until a metric or a table has been selected
         // if it is, then check to see that it meets the requirements for the flow

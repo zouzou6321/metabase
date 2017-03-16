@@ -9,8 +9,10 @@ import Button from 'metabase/components/Button';
 
 import Text from '../components/Text';
 
+import { getMetricsForCurrentFlow } from "../selectors";
+
 const mapStateToProps = (state) => ({
-    metrics: state.metadata.metrics // TODO - use a selector here
+    metrics: getMetricsForCurrentFlow(state)
 })
 
 const mapDispatchToProps = ({
@@ -41,13 +43,13 @@ class MetricLanding extends Component {
                         </Button>
                     </div>
                     <ol>
-                        { Object.keys(metrics).map(metric =>
+                        { metrics.map(metric =>
                             <li
-                                onClick={() => selectAndAdvance(() => selectMetric(metrics[metric])) }
-                                key={metric}
+                                onClick={() => selectAndAdvance(() => selectMetric(metric)) }
+                                key={metric.id}
                             >
-                                <h2 className="link">{ metrics[metric].name }</h2>
-                                <Text>{ metrics[metric].description }</Text>
+                                <h2 className="link">{ metric.name }</h2>
+                                <Text>{ metric.description }</Text>
                             </li>
                         )}
                     </ol>
