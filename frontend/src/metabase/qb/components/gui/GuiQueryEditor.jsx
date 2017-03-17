@@ -48,8 +48,13 @@ export default class GuiQueryEditor extends Component {
             return <div />;
         }
 
-        const { isRunning, isRunnable, runQueryFn, cancelQueryFn } = this.props;
-        const isDirty = true; // FIXME
+        const {
+            isRunning,
+            isRunnable,
+            isResultDirty,
+            runQueryFn,
+            cancelQueryFn
+        } = this.props;
 
         return (
             <div className={cx("p2", { disabled: readOnly })}>
@@ -63,7 +68,7 @@ export default class GuiQueryEditor extends Component {
                 {this.props.children}
                 <RunButton
                     isRunnable={isRunnable}
-                    isDirty={isDirty}
+                    isDirty={isResultDirty}
                     isRunning={isRunning}
                     onRun={runQueryFn}
                     onCancel={cancelQueryFn}

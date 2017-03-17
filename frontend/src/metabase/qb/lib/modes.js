@@ -24,11 +24,13 @@ type QueryBuilderMode = {
 };
 
 export function getMode(card, tableMetadata): QueryBuilderMode {
-    if (!card || !tableMetadata) {
+    if (!card) {
         return DefaultMode;
     }
-
-    if (Card.isStructured(card)) {
+    if (Card.isNative(card)) {
+        return NativeMode;
+    }
+    if (Card.isStructured(card) && tableMetadata) {
         const query = Card.getQuery(card);
         const aggregations = Query.getAggregations(query);
         const breakouts = Query.getBreakouts(query);
@@ -65,9 +67,8 @@ export function getMode(card, tableMetadata): QueryBuilderMode {
                 return PivotMode;
             }
         }
-    } else if (Card.isNative(card)) {
-        return NativeMode;
     }
+
     return DefaultMode;
 }
 

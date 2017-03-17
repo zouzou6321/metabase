@@ -3,9 +3,9 @@
 import React, { Component, PropTypes } from "react";
 
 import QuerySidebar from "./sidebar/QuerySidebar";
-import QueryVisualization
-    from "metabase/query_builder/components/QueryVisualization";
-import Parameters from "metabase/dashboard/containers/Parameters";
+
+import QueryParameters from "./QueryParameters";
+import QueryResult from "./QueryResult";
 
 import { getMode } from "metabase/qb/lib/modes";
 
@@ -15,11 +15,7 @@ export default class QueryBuilder extends Component {
             card,
             databases,
             tableMetadata,
-            runQueryFn,
-            setCardAndRun,
-            location,
-            parameters,
-            setParameterValue
+            parameters
         } = this.props;
 
         if (!card || !databases) {
@@ -27,7 +23,13 @@ export default class QueryBuilder extends Component {
         }
 
         const mode = getMode(card, tableMetadata);
-        const { ModeFooter } = mode;
+        const { ModeLayout, ModeFooter } = mode;
+
+        if (ModeLayout) {
+            return (
+                <ModeLayout {...this.props} className="flex-full" mode={mode} />
+            );
+        }
 
         return (
             <div className="flex-full flex flex-row relative">
@@ -35,23 +37,9 @@ export default class QueryBuilder extends Component {
                 <div className="flex-full flex flex-column">
                     {parameters.length > 0 &&
                         <div className="flex layout-centered">
-                            <Parameters
-                                parameters={parameters}
-                                query={location.query}
-                                setParameterValue={(id, value) => {
-                                    setParameterValue(id, value);
-                                    runQueryFn();
-                                }}
-                                isQB
-                            />
+                            <QueryParameters {...this.props} mode={mode} />
                         </div>}
-                    <QueryVisualization
-                        {...this.props}
-                        noHeader
-                        className="flex-full"
-                        mode={mode}
-                        onDrillThrough={setCardAndRun}
-                    />
+                    <QueryResult {...this.props} mode={mode} />
                     {ModeFooter && <ModeFooter {...this.props} />}
                 </div>
                 <div className="absolute bottom right z4">{mode.name}</div>

@@ -40,6 +40,7 @@ import {
     getSampleDatasetId,
     getNativeDatabases,
     getIsRunnable,
+    getIsResultDirty,
 } from "../selectors";
 
 import { getUserIsAdmin } from "metabase/selectors/user";
@@ -98,6 +99,7 @@ const mapStateToProps = (state, props) => {
         isEditing:                 state.qb.uiControls.isEditing,
         isRunning:                 state.qb.uiControls.isRunning,
         isRunnable:                getIsRunnable(state),
+        isResultDirty:             getIsResultDirty(state),
 
         loadTableAndForeignKeysFn: loadTableAndForeignKeys,
         autocompleteResultsFn:     (prefix) => autocompleteResults(state.qb.card, prefix),
