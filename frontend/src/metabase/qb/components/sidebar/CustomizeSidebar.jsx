@@ -7,13 +7,10 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarSection from "./SidebarSection";
 import QueryBuilderSidebarSection from "./QueryBuilderSidebarSection";
 
-import { getMetricActions } from "./MetricActions";
-
 type Props = {};
 
-const MetricDetailSidebar = (props: Props) => {
+const CustomizeSidebar = (props: Props) => {
     const {
-        metric,
         onClose,
         ...rest
     } = props;
@@ -22,16 +19,12 @@ const MetricDetailSidebar = (props: Props) => {
         <Sidebar {...rest}>
             <SidebarSection>
                 <SidebarHeader onClose={onClose}>
-                    {metric.name}
+                    Customize
                 </SidebarHeader>
             </SidebarSection>
-            <QueryBuilderSidebarSection
-                {...props}
-                features={{ filter: true, breakout: true }}
-            />
-            {getMetricActions(props)}
+            <QueryBuilderSidebarSection {...props} />
         </Sidebar>
     );
 };
 
-export default MetricDetailSidebar;
+export default CustomizeSidebar;

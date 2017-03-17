@@ -25,12 +25,17 @@ type QueryBuilderMode = {
 
 export function getMode(card, tableMetadata): QueryBuilderMode {
     if (!card) {
-        return DefaultMode;
+        return null;
     }
+
     if (Card.isNative(card)) {
         return NativeMode;
     }
-    if (Card.isStructured(card) && tableMetadata) {
+    if (Card.isStructured(card)) {
+        if (!tableMetadata) {
+            return null;
+        }
+
         const query = Card.getQuery(card);
         const aggregations = Query.getAggregations(query);
         const breakouts = Query.getBreakouts(query);

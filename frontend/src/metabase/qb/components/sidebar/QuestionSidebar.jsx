@@ -5,6 +5,10 @@ import React, { Component, PropTypes } from "react";
 import Sidebar from "./Sidebar";
 import SidebarHeader from "./SidebarHeader";
 import SidebarSection from "./SidebarSection";
+import QueryBuilderSidebarSection from "./QueryBuilderSidebarSection";
+import AddMetricAndCustomizeSection from "./AddMetricAndCustomizeSection";
+
+import { getMetricActions } from "./MetricActions";
 
 import Action from "../Action";
 
@@ -17,10 +21,13 @@ const QuestionSidebar = props => {
         tableMetadata,
         onShowMetric,
         onShowQuestionDetails,
+        onShowCustomize,
         setCardAndRun,
         mode,
         ...rest
     } = props;
+    const metrics = getMetrics(card, tableMetadata);
+
     return (
         <Sidebar {...rest}>
             {card.id != null
@@ -40,22 +47,29 @@ const QuestionSidebar = props => {
                             </span>
                         </SidebarSection>
                       : null}
-            {getMetrics(card, tableMetadata).map((metric, metricIndex) => (
-                <SidebarSection
-                    className="h3 text-bold text-grey-4 cursor-pointer"
-                    onClick={() => onShowMetric(metricIndex)}
-                >
-                    {metric.name}
-                </SidebarSection>
-            ))}
+            {metrics.length !== 1
+                ? metrics.map((metric, metricIndex) => (
+                      <SidebarSection
+                          className="h3 text-bold text-grey-4 cursor-pointer"
+                          onClick={() => onShowMetric(metricIndex)}
+                      >
+                          {metric.name}
+                      </SidebarSection>
+                  ))
+                : [
+                      (
+                          <QueryBuilderSidebarSection
+                              {...props}
+                              features={{ filter: true, breakout: true }}
+                          />
+                      )
+                  ].concat(getMetricActions(props))}
             {mode.getMainSections
                 ? mode.getMainSections().map(Section => <Section {...props} />)
-                : <SidebarSection className="flex h5 text-bold text-grey-4">
-                      <div className="text-brand cursor-pointer">
-                          Add a metric
-                      </div>
-                      <div className="ml-auto cursor-pointer">Customize</div>
-                  </SidebarSection>}
+                : <AddMetricAndCustomizeSection
+                      {...props}
+                      onCustomize={onShowCustomize}
+                  />}
             {mode.getMainActions
                 ? mode
                       .getMainActions()

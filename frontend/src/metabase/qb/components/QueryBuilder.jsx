@@ -23,6 +23,10 @@ export default class QueryBuilder extends Component {
         }
 
         const mode = getMode(card, tableMetadata);
+        if (!mode) {
+            return <div>LOADING FIXME</div>;
+        }
+
         const { ModeLayout, ModeFooter } = mode;
 
         if (ModeLayout) {

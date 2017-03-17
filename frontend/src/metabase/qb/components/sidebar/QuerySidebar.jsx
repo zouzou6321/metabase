@@ -6,6 +6,7 @@ import Sidebar from "./Sidebar";
 
 import MetricDetailSidebar from "./MetricDetailSidebar";
 import QuestionDetailSidebar from "./QuestionDetailSidebar";
+import CustomizeSidebar from "./CustomizeSidebar";
 import QuestionSidebar from "./QuestionSidebar";
 
 import { getMetrics } from "metabase/qb/lib/modes";
@@ -21,9 +22,11 @@ export default class QuerySidebar extends Component<*, Props, State> {
 
     constructor(props: Props) {
         super(props);
+
         this.state = {
             showQuestionDetails: false,
-            showMetric: null
+            showMetric: null,
+            showCustomize: false
         };
     }
 
@@ -31,7 +34,7 @@ export default class QuerySidebar extends Component<*, Props, State> {
 
     render() {
         const { className, card, tableMetadata, mode } = this.props;
-        const { showQuestionDetails, showMetric } = this.state;
+        const { showQuestionDetails, showMetric, showCustomize } = this.state;
 
         const { ModeSidebarFooter } = mode;
         const metric = showMetric != null
@@ -40,30 +43,45 @@ export default class QuerySidebar extends Component<*, Props, State> {
 
         return (
             <div className={cx(className, "flex flex-column p2")}>
-                {showQuestionDetails
-                    ? <QuestionDetailSidebar
+                {showCustomize
+                    ? <CustomizeSidebar
                           {...this.props}
-                          className="scroll-y"
                           onClose={() =>
-                              this.setState({ showQuestionDetails: false })}
+                              this.setState({ showCustomize: false })}
                       />
-                    : metric != null
-                          ? <MetricDetailSidebar
+                    : showQuestionDetails
+                          ? <QuestionDetailSidebar
                                 {...this.props}
                                 className="scroll-y"
-                                metric={metric}
                                 onClose={() =>
-                                    this.setState({ showMetric: null })}
+                                    this.setState({
+                                        showQuestionDetails: false
+                                    })}
                             />
-                          : <QuestionSidebar
-                                {...this.props}
-                                className="scroll-y"
-                                onShowQuestionDetails={() => this.setState({
-                                    showQuestionDetails: true
-                                })}
-                                onShowMetric={metricIndex =>
-                                    this.setState({ showMetric: metricIndex })}
-                            />}
+                          : metric != null
+                                ? <MetricDetailSidebar
+                                      {...this.props}
+                                      className="scroll-y"
+                                      metric={metric}
+                                      onClose={() =>
+                                          this.setState({ showMetric: null })}
+                                  />
+                                : <QuestionSidebar
+                                      {...this.props}
+                                      className="scroll-y"
+                                      onShowQuestionDetails={() =>
+                                          this.setState({
+                                              showQuestionDetails: true
+                                          })}
+                                      onShowMetric={metricIndex =>
+                                          this.setState({
+                                              showMetric: metricIndex
+                                          })}
+                                      onShowCustomize={() =>
+                                          this.setState({
+                                              showCustomize: true
+                                          })}
+                                  />}
 
                 <div className="flex-full my1" />
 
