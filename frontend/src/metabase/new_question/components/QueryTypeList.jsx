@@ -7,7 +7,7 @@ import { selectFlow } from "../actions";
 
 const queryTypes = [
     { name: "A metric", type: "metric" },
-    { name: "A metric on a map", type: "map" },
+    { name: "A metric on a map", type: "geo" },
     { name: "Segment or table", type: "segment" },
     { name: "A metric on a timeseries", type: "timeseries" },
     { name: "Pivot a metric", type: "pivot" },

@@ -4,12 +4,12 @@ import { connect } from "react-redux";
 
 import Card from "../components/Card";
 
-import { setTip, selectAndAdvance } from "../actions";
+import { setTip, selectAndAdvance, setDatabase } from "../actions";
 
-import { setQueryDatabase } from "metabase/query_builder/actions";
+import { getDatabases } from "metabase/selectors/metadata";
 
 const mapStateToProps = state => ({
-    databases: state.metadata.databases, // TODO use a selector here
+    databases: getDatabases(state),
     title: state.newQuestion.currentStep.title,
     tip: state.newQuestion.currentStep.tip
 });
@@ -17,7 +17,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
     setTip,
     selectAndAdvance,
-    setQueryDatabase
+    setDatabase
 };
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -33,27 +33,26 @@ class MetricBuilder extends Component {
             databases,
             setTip,
             selectAndAdvance,
-            setQueryDatabase,
+            setDatabase,
             title
         } = this.props;
         return (
             <div>
                 <h2>{title}</h2>
-                <ol className={cxs({ display: "flex" })}>
-                    {Object.keys(databases).map(dbKey => (
+                <ol className={cxs({ display: "flex", flexWrap: "wrap" })}>
+                    {databases.map(db => (
                         <li
                             className={cxs({ flex: "0 0 33.33%" })}
-                            key={dbKey}
+                            key={db.id}
                             onMouseEnter={() => setTip({
-                                title: databases[dbKey].name,
-                                text: databases[dbKey].description
+                                title: db.name,
+                                text: db.description
                             })}
                             onMouseLeave={() => setTip(this.tip)}
-                            onClick={() => selectAndAdvance(() => {
-                                setQueryDatabase(databases[dbKey].id);
-                            })}
+                            onClick={() =>
+                                selectAndAdvance(() => setDatabase(db.id))}
                         >
-                            <Card name={databases[dbKey].name} />
+                            <Card name={db.name} />
                         </li>
                     ))}
                 </ol>

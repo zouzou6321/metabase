@@ -4,6 +4,8 @@ import {
     NEW_METRIC,
     RESET_NEW_QUESTION_FLOW,
     SELECT_FLOW,
+    SET_DATABASE,
+    SET_TABLE,
     SET_TIP,
     SELECT_METRIC,
     SELECT_METRIC_BREAKOUT
@@ -12,7 +14,10 @@ import {
 import QueryTypeList from "./components/QueryTypeList";
 
 import MetricLanding from "./containers/MetricLanding";
-import MetricBuilder from "./containers/MetricBuilder";
+import MetricBuilderDatabases from "./containers/MetricBuilderDatabases";
+import MetricBuilderSchemas from "./containers/MetricBuilderSchemas";
+import MetricBuilderTables from "./containers/MetricBuilderTables";
+
 import MapLanding from "./containers/MapLanding";
 import BreakoutSelection from "./containers/BreakoutSelection";
 
@@ -31,6 +36,10 @@ const tips = {
     },
     schemas: {
         title: "Schemas",
+        text: "All metrics start their lives as a table of data. Here are a few of the most used in your company. After you pick a table, you can pick what you want to know about it, like the how many total entries exist or what the average of a particular value is"
+    },
+    tables: {
+        title: "Tables",
         text: "All metrics start their lives as a table of data. Here are a few of the most used in your company. After you pick a table, you can pick what you want to know about it, like the how many total entries exist or what the average of a particular value is"
     },
     breakout: {
@@ -64,32 +73,49 @@ const metric = [
 const newMetricSteps = [
     {
         title: "Pick a database",
-        component: MetricBuilder,
-        tip: tips["database"]
+        component: MetricBuilderDatabases,
+        tip: tips["database"],
+        skip: {
+            resource: "databases",
+            resolve: databases => databases.length > 0
+        }
     },
+    /*
     {
         title: "Pick a schema",
-        component: MetricBuilder,
-        tip: tips["schema"]
+        component: MetricBuilderSchemas,
+        tip: tips["schemas"],
+        skip: {
+            resource: 'schemas',
+            resolve: (schemas) => schemas.length > 0
+        }
     },
+    */
     {
         title: "Pick a table",
-        component: MetricBuilder,
-        tip: tips["schema"]
+        component: MetricBuilderTables,
+        tip: tips["tables"],
+        skip: false
+    },
+    {
+        title: "Pick an aggregation",
+        component: MetricBuilderTables,
+        tip: tips["tables"],
+        skip: false
     }
 ];
 
 const segmentTitle = "View a segment or table";
-const segment = [];
+const segment = newMetricSteps;
 
-const mapTitle = "Metric on a map";
-const map = [
+const geoTitle = "Metric on a map";
+const geo = [
     {
         title: "What kind of map would you like to see?",
         component: MapLanding
     },
     {
-        title: mapTitle,
+        title: geoTitle,
         component: MetricLanding,
         tip: tips["metric"]
     },
@@ -127,7 +153,7 @@ const timeseries = [
 ];
 
 const titles = {
-    map: mapTitle,
+    geo: geoTitle,
     metric: metricTitle,
     pivot: pivotTitle,
     segment: segmentTitle,
@@ -136,7 +162,7 @@ const titles = {
 
 const flows = {
     metric,
-    map,
+    geo,
     pivot,
     segment,
     timeseries
@@ -146,7 +172,7 @@ const setVizForFlow = flow => {
     switch (flow) {
         case "timeseries":
             return "line";
-        case "map":
+        case "geo":
             return "map";
         case "pivot":
         case "segment":
@@ -227,12 +253,36 @@ export default function(state = initialState, { type, payload, error }) {
                 currentStep: flows[flow.type][currentStepIndex + 1],
                 currentStepIndex: currentStepIndex + 1
             };
+        case SET_TABLE:
+            return {
+                ...state,
+                card: {
+                    ...state.card,
+                    dataset_query: {
+                        ...state.card.dataset_query,
+                        query: {
+                            ...state.card.dataset_query.query,
+                            source_table: payload
+                        }
+                    }
+                }
+            };
+
+        case SET_DATABASE:
+            return {
+                ...state,
+                card: {
+                    ...state.card,
+                    ...payload
+                }
+            };
         case SELECT_FLOW:
             return {
                 ...state,
                 flow: {
                     type: payload,
-                    title: titles[payload]
+                    title: titles[payload],
+                    steps: flows[payload]
                 },
                 currentStep: flows[payload][state.currentStepIndex],
                 card: {
