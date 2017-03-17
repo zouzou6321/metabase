@@ -153,6 +153,7 @@ export default class QueryVisualization extends Component {
                         onUpdateWarnings={(warnings) => this.setState({ warnings })}
                         onOpenChartSettings={() => this.refs.settings.open()}
                         {...this.props}
+                        className="spread"
                     />
                 );
             }
@@ -163,7 +164,7 @@ export default class QueryVisualization extends Component {
             'flex-column': !isObjectDetail
         });
 
-        const visualizationClasses = cx('flex flex-full Visualization z1', {
+        const visualizationClasses = cx('flex flex-full Visualization z1 relative', {
             'Visualization--errors': (result && result.error),
             'Visualization--loading': isRunning
         });

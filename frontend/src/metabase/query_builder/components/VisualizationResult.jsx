@@ -29,7 +29,6 @@ const VisualizationResult = ({card, isObjectDetail, lastRunDatasetQuery, result,
             dataset_query: lastRunDatasetQuery
         };
         return <Visualization
-                  className="full"
                   series={[{ card: vizCard, data: result.data }]}
                   isEditing={true}
                   // Table:
