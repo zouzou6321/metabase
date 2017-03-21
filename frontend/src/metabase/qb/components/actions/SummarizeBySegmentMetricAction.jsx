@@ -12,13 +12,15 @@ export default ({ card, tableMetadata }) => {
         title: "Summarize by a metric in this segment",
         icon: "funnel", // FIXME: icon
         // eslint-disable-next-line react/display-name
-        popover: ({ onAction, onClose }) => (
+        popover: ({ onChangeCardAndRun, onClose }) => (
             <AggregationPopover
                 tableMetadata={tableMetadata}
                 customFields={Query.getExpressions(card.dataset_query.query)}
                 availableAggregations={tableMetadata.aggregation_options}
                 onCommitAggregation={aggregation => {
-                    onAction(summarize(card, aggregation, tableMetadata));
+                    onChangeCardAndRun(
+                        summarize(card, aggregation, tableMetadata)
+                    );
                     onClose && onClose();
                 }}
             />

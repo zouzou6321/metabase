@@ -11,7 +11,6 @@ const QueryResult = props => (
         noHeader
         className="flex-full"
         mode={props.mode}
-        onDrillThrough={props.setCardAndRun}
     />
 );
 

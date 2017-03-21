@@ -368,7 +368,7 @@ export default class Visualization extends Component<*, Props, State> {
                 <ChartDrillThrough
                     clicked={clicked}
                     drillActions={drillActions}
-                    onDrillThrough={this.props.onDrillThrough}
+                    onChangeCardAndRun={this.props.onChangeCardAndRun}
                     onClose={() => this.setState({ clicked: null })}
                 />
             </div>

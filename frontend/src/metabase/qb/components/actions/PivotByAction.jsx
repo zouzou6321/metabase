@@ -50,7 +50,7 @@ export default (name, icon, fieldFilter) => (
             : <span>Pivot by <span className="text-dark">{name}</span></span>,
         icon: icon,
         // eslint-disable-next-line react/display-name
-        popover: ({ onAction, onClose }) => (
+        popover: ({ onChangeCardAndRun, onClose }) => (
             <BreakoutPopover
                 tableMetadata={tableMetadata}
                 fieldOptions={fieldOptions}
@@ -58,7 +58,9 @@ export default (name, icon, fieldFilter) => (
                     card.dataset_query.query
                 )}
                 onCommitBreakout={breakout => {
-                    onAction(pivot(card, breakout, tableMetadata, clicked));
+                    onChangeCardAndRun(
+                        pivot(card, breakout, tableMetadata, clicked)
+                    );
                     onClose && onClose();
                 }}
             />

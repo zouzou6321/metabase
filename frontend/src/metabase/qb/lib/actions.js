@@ -4,6 +4,8 @@ import moment from "moment";
 
 import Q from "metabase/lib/query"; // legacy query lib
 import * as Query from "metabase/lib/query/query";
+import * as Field from "metabase/lib/query/field";
+import * as Filter from "metabase/lib/query/filter";
 import { startNewCard } from "metabase/lib/card";
 import { isDate, isState, isCountry } from "metabase/lib/schema_metadata";
 
@@ -58,11 +60,27 @@ const drillFilter = (card, dimensionValue, dimensionColumn) => {
         filter = ["=", getFieldClauseFromCol(dimensionColumn), dimensionValue];
     }
 
+    // replace existing filter, if it exists
+    let filters = Query.getFilters(newCard.dataset_query.query);
+    for (let index = 0; index < filters.length; index++) {
+        if (
+            Filter.isFieldFilter(filters[index]) &&
+            Field.getFieldTargetId(filters[index][1]) === dimensionColumn.id
+        ) {
+            newCard.dataset_query.query = Query.updateFilter(
+                newCard.dataset_query.query,
+                index,
+                filter
+            );
+            return newCard;
+        }
+    }
+
+    // otherwise add a new filter
     newCard.dataset_query.query = Query.addFilter(
         newCard.dataset_query.query,
         filter
     );
-
     return newCard;
 };
 

@@ -16,6 +16,7 @@ import QueryVisualization from "../components/QueryVisualization.jsx";
 import DataReference from "../components/dataref/DataReference.jsx";
 import TagEditorSidebar from "../components/template_tags/TagEditorSidebar.jsx";
 import SavedQuestionIntroModal from "../components/SavedQuestionIntroModal.jsx";
+import ActionsWidget from "../components/ActionsWidget.jsx";
 
 import Toggle from "metabase/components/Toggle";
 
@@ -41,6 +42,7 @@ import {
     getNativeDatabases,
     getIsRunnable,
     getIsResultDirty,
+    getMode,
 } from "../selectors";
 
 import { getUserIsAdmin } from "metabase/selectors/user";
@@ -75,6 +77,7 @@ const mapStateToProps = (state, props) => {
         isAdmin:                   getUserIsAdmin(state, props),
         fromUrl:                   props.location.query.from,
 
+        mode:                      getMode(state),
         card:                      card(state),
         originalCard:              originalCard(state),
         query:                     state.qb.card && state.qb.card.dataset_query,  // TODO: EOL, redundant
@@ -126,7 +129,7 @@ export default class QueryBuilder extends Component {
         this.forceUpdateDebounced = _.debounce(this.forceUpdate.bind(this), 400);
 
         this.state = {
-            legacy: false
+            legacy: true
         }
     }
 
@@ -182,9 +185,9 @@ export default class QueryBuilder extends Component {
     render() {
         return (
             <div className="flex-full flex relative">
-                <div className="absolute bottom right p2 flex align-center z4">
+                {/* <div className="absolute bottom right p2 flex align-center z4">
                     <Toggle value={this.state.legacy} onChange={() => this.setState({ legacy: !this.state.legacy })} />
-                </div>
+                </div> */}
                 { this.state.legacy ?
                     <LegacyQueryBuilder {...this.props} />
                 :
@@ -197,7 +200,7 @@ export default class QueryBuilder extends Component {
 
 class LegacyQueryBuilder extends Component {
     render() {
-        const { card, isDirty, databases, uiControls } = this.props;
+        const { card, isDirty, databases, uiControls, mode } = this.props;
 
         // if we don't have a card at all or no databases then we are initializing, so keep it simple
         if (!card || !databases) {
@@ -207,6 +210,8 @@ class LegacyQueryBuilder extends Component {
         }
 
         const showDrawer = uiControls.isShowingDataReference || uiControls.isShowingTemplateTagsEditor;
+        const { ModeFooter } = mode;
+
         return (
             <div className="flex-full relative">
                 <div className={cx("QueryBuilder flex flex-column bg-white spread", {"QueryBuilder--showSideDrawer": showDrawer})}>
@@ -227,6 +232,10 @@ class LegacyQueryBuilder extends Component {
                     <div ref="viz" id="react_qb_viz" className="flex z1" style={{ "transition": "opacity 0.25s ease-in-out" }}>
                         <QueryVisualization {...this.props} className="full wrapper mb2 z1" />
                     </div>
+
+                    { ModeFooter &&
+                        <ModeFooter {...this.props} className="flex-no-shrink" />
+                    }
                 </div>
 
                 <div className={cx("SideDrawer", { "SideDrawer--show": showDrawer })}>
@@ -246,6 +255,8 @@ class LegacyQueryBuilder extends Component {
                 { uiControls.isShowingNewbModal &&
                     <SavedQuestionIntroModal onClose={() => this.props.closeQbNewbModal()} />
                 }
+
+                <ActionsWidget {...this.props} className="z2 absolute bottom right" />
             </div>
         );
     }

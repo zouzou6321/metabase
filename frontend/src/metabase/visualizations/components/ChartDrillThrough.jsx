@@ -11,7 +11,7 @@ import type { Card } from "metabase/meta/types/Card";
 type Props = {
     clicked: ClickObject,
     drillActions: ?DrillAction[],
-    onDrillThrough: (card: Card) => void,
+    onChangeCardAndRun: (card: Card) => void,
     onClose: () => void
 };
 
@@ -32,7 +32,7 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
     }
 
     render() {
-        const { clicked, drillActions, onDrillThrough } = this.props;
+        const { clicked, drillActions, onChangeCardAndRun } = this.props;
 
         if (!clicked || !drillActions || drillActions.length === 0) {
             return null;
@@ -44,7 +44,7 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
             const PopoverContent = drillActions[popoverIndex].popover;
             popover = (
                 <PopoverContent
-                    onAction={onDrillThrough}
+                    onChangeCardAndRun={onChangeCardAndRun}
                     onClose={this.close}
                 />
             );
@@ -69,7 +69,7 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
                                     if (action.popover) {
                                         this.setState({ popoverIndex: index });
                                     } else {
-                                        onDrillThrough(typeof action.card === "function" ? action.card() : action.card);
+                                        onChangeCardAndRun(typeof action.card === "function" ? action.card() : action.card);
                                         this.close();
                                     }
                                 }}

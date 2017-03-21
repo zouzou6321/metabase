@@ -15,7 +15,7 @@ export function getMetricActions({ mode, card, tableMetadata, setCardAndRun }) {
                     action={action}
                     card={card}
                     tableMetadata={tableMetadata}
-                    onAction={setCardAndRun}
+                    onChangeCardAndRun={setCardAndRun}
                 />
             ));
 }

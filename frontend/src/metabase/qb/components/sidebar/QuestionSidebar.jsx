@@ -80,7 +80,7 @@ const QuestionSidebar = props => {
                               action={action}
                               card={card}
                               tableMetadata={tableMetadata}
-                              onAction={setCardAndRun}
+                              onChangeCardAndRun={setCardAndRun}
                           />
                       ))
                 : null}

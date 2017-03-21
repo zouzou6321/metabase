@@ -7,6 +7,8 @@ import CustomizeSettingsWidget
     from "metabase/qb/components/CustomizeSettingsWidget";
 import TimeseriesGroupingWidget
     from "metabase/qb/components/TimeseriesGroupingWidget";
+import TimeseriesFilterWidget
+    from "metabase/qb/components/TimeseriesFilterWidget";
 
 import SidebarSection from "metabase/qb/components/sidebar/SidebarSection";
 
@@ -37,7 +39,8 @@ export const ModeSidebarFooter = props => (
 export const ModeFooter = props => {
     return (
         <div className="flex layout-centered">
-            <TimeseriesGroupingWidget {...props} />
+            <TimeseriesFilterWidget {...props} className="mr1" />
+            <TimeseriesGroupingWidget {...props} className="mr1" />
         </div>
     );
 };

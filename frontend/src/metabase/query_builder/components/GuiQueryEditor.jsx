@@ -92,7 +92,7 @@ export default class GuiQueryEditor extends Component {
                         filters={filters}
                         tableMetadata={this.props.tableMetadata}
                         removeFilter={this.props.removeQueryFilter}
-                        updateFilter={this.props.setQueryFilter}
+                        updateFilter={this.props.updateQueryFilter}
                     />
                 );
             }
@@ -163,7 +163,7 @@ export default class GuiQueryEditor extends Component {
                         aggregation={aggregation}
                         tableMetadata={tableMetadata}
                         customFields={Query.getExpressions(this.props.query.query)}
-                        updateAggregation={(aggregation) => this.props.setQueryAggregation(index, aggregation)}
+                        updateAggregation={(aggregation) => this.props.updateQueryAggregation(index, aggregation)}
                         removeAggregation={canRemoveAggregation ? this.props.removeQueryAggregation.bind(null, index) : null}
                         addButton={this.renderAdd(null)}
                     />
@@ -223,7 +223,7 @@ export default class GuiQueryEditor extends Component {
                         customFieldOptions={Query.getExpressions(query)}
                         tableMetadata={tableMetadata}
                         field={breakout}
-                        setField={(field) => this.props.setQueryBreakout(i, field)}
+                        setField={(field) => this.props.updateQueryBreakout(i, field)}
                         addButton={this.renderAdd(i === 0 ? "Add a grouping" : null)}
                     />
                 );
