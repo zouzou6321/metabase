@@ -42,9 +42,9 @@
 (defendpoint GET "/"
   "Fetch *all* `Metrics`."
   [id]
-  (filter mi/can-read? (-> (db/select Metric, :is_active true)
-                           add-db-ids
-                           (hydrate :creator))))
+  (filter mi/can-read? (-> (db/select Metric, :is_active true, {:order-by [:%lower.name]})
+                           (hydrate :creator)
+                           add-db-ids)))
 
 
 (defendpoint PUT "/:id"

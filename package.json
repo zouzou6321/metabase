@@ -155,7 +155,7 @@
     "start": "yarn run build && lein ring server",
     "storybook": "start-storybook -p 9001",
     "precommit": "lint-staged",
-    "preinstall": "ps -fp $PPID | grep -q yarn || echo '\\033[0;33mSorry, npm is not supported. Please use Yarn (https://yarnpkg.com/).\\033[0m'",
+    "preinstall": "echo $npm_execpath | grep -q yarn || echo '\\033[0;33mSorry, npm is not supported. Please use Yarn (https://yarnpkg.com/).\\033[0m'",
     "prettier": "prettier --tab-width 4 --write 'frontend/src/metabase/qb/**/*.js*' 'frontend/src/metabase/new_question/**/*.js*'",
     "test-jest": "jest"
   },

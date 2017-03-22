@@ -97,7 +97,7 @@ const getDate = (value) => {
     return value;
 }
 
-const hasTime = (value) => /T\d{2}:\d{2}:\d{2}$/.test(value);
+const hasTime = (value) => typeof value === "string" && /T\d{2}:\d{2}:\d{2}$/.test(value);
 
 function getDateTimeField(field: ConcreteField, bucketing: ?DatetimeUnit): ConcreteField {
     let target = getDateTimeFieldTarget(field);
@@ -119,6 +119,7 @@ function getDateTimeFieldTarget(field: ConcreteField): LocalFieldReference|Forei
     }
 }
 
+// wraps values in "datetime-field" is any of them have a time component
 function getDateTimeFieldAndValues(filter: FieldFilter, count: number): [ConcreteField, any] {
     const values = filter.slice(2, 2 + count).map(value => value && getDate(value));
     const bucketing = _.any(values, hasTime) ? "minute" : null;
