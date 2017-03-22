@@ -203,6 +203,7 @@ export default class FieldList extends Component {
                 renderItemExtra={this.renderItemExtra}
                 renderItemIcon={this.renderItemIcon}
                 getItemClasses={this.getItemClasses}
+                alwaysExpanded={this.props.alwaysExpanded}
             />
         )
     }
