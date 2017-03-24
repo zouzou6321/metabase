@@ -10,6 +10,10 @@ import { pivot } from "metabase/qb/lib/actions";
 export default (name, icon, fieldFilter) => (
     { card, tableMetadata, clicked }
 ) => {
+    if (clicked && (!clicked.column || clicked.column.id == null)) {
+        return;
+    }
+
     const breakouts = Query.getBreakouts(card.dataset_query.query);
     const usedFields = {};
     for (const breakout of breakouts) {
@@ -29,7 +33,7 @@ export default (name, icon, fieldFilter) => (
         usedFields
     );
 
-    if (fieldOptions.length === 0) {
+    if (fieldOptions.count === 0) {
         return null;
     }
 
@@ -39,8 +43,7 @@ export default (name, icon, fieldFilter) => (
                   View this
                   {" "}
                   <span className="text-dark">
-                      {clicked.dimensionColumn.unit ||
-                          clicked.dimensionColumn.display_name}
+                      {clicked.column.unit || clicked.column.display_name}
                   </span>
                   {" "}
                   by

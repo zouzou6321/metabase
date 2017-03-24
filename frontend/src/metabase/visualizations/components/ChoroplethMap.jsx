@@ -163,11 +163,11 @@ export default class ChoroplethMap extends Component {
             const row = _.find(rows, row => getRowKey(row) === featureKey);
             if (onVisualizationClick && row !== undefined) {
                 onVisualizationClick({
-                    metricValue:     row[metricIndex],
-                    metricColumn:    cols[metricIndex],
-                    dimensionValue:  row[dimensionIndex],
-                    dimensionColumn: cols[dimensionIndex],
-                    event:           click.event
+                    value:        row[dimensionIndex],
+                    column:       cols[dimensionIndex],
+                    metricValue:  row[metricIndex],
+                    metricColumn: cols[metricIndex],
+                    event:        click.event
                 });
             }
         }

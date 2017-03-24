@@ -6,12 +6,12 @@ import PivotByCategoryAction from "../actions/PivotByCategoryAction";
 import PivotByLocationAction from "../actions/PivotByLocationAction";
 import PivotByTimeAction from "../actions/PivotByTimeAction";
 
-import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
+import { DEFAULT_DRILLS } from "../drill";
 
 export default {
     name: "pivot",
 
-    getMetricActions() {
+    getActions() {
         return [
             UnderlyingDataAction,
             UnderlyingRecordsAction,
@@ -21,7 +21,7 @@ export default {
         ];
     },
 
-    getDrillThroughActions() {
-        return [UnderlyingRecordsDrill];
+    getDrills() {
+        return DEFAULT_DRILLS;
     }
 };

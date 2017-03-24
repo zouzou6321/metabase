@@ -365,12 +365,12 @@ function applyChartTooltips(chart, series, isStacked, onHoverChange, onVisualiza
                 if (d.data) {
                     const isLine = this.classList.contains("dot");
                     onVisualizationClick({
-                        dimensionValue:  d.data.key,
-                        dimensionColumn: cols[0],
-                        metricValue:     d.data.value,
-                        metricColumn:    cols[1],
-                        element:         isLine ? this : null,
-                        event:           isLine ? null : d3.event,
+                        value:        d.data.key,
+                        column:       cols[0],
+                        metricValue:  d.data.value,
+                        metricColumn: cols[1],
+                        element:      isLine ? this : null,
+                        event:        isLine ? null : d3.event,
                     });
                 }
             });

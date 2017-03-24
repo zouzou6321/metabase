@@ -8,7 +8,7 @@ import SidebarSection from "./SidebarSection";
 import QueryBuilderSidebarSection from "./QueryBuilderSidebarSection";
 import AddMetricAndCustomizeSection from "./AddMetricAndCustomizeSection";
 
-import { getMetricActions } from "./MetricActions";
+import { getActions } from "./MetricActions";
 
 import Action from "../Action";
 
@@ -63,16 +63,16 @@ const QuestionSidebar = props => {
                               features={{ filter: true, breakout: true }}
                           />
                       )
-                  ].concat(getMetricActions(props))}
+                  ].concat(getActions(props))}
             {mode.getMainSections
                 ? mode.getMainSections().map(Section => <Section {...props} />)
                 : <AddMetricAndCustomizeSection
                       {...props}
                       onCustomize={onShowCustomize}
                   />}
-            {mode.getMainActions
+            {mode.getActions
                 ? mode
-                      .getMainActions()
+                      .getActions()
                       .map(getAction => getAction({ card, tableMetadata }))
                       .filter(action => action)
                       .map(action => (

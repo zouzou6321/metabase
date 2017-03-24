@@ -254,44 +254,28 @@ export default class TableInteractive extends Component<*, Props, State> {
     }
 
     cellRenderer = ({ key, style, rowIndex, columnIndex }: CellRendererProps) => {
-        const { data: { cols, rows }} = this.props;
+        const { data: { cols, rows }, onVisualizationClick} = this.props;
         const column = cols[columnIndex];
-        const cellData = rows[rowIndex][columnIndex];
-        if (this.props.cellIsClickableFn(rowIndex, columnIndex)) {
-            return (
-                <div
-                    key={key} style={style}
-                    className={cx("TableInteractive-cellWrapper cellData", {
-                        "TableInteractive-cellWrapper--firstColumn": columnIndex === 0
-                    })}
-                    onClick={this.cellClicked.bind(this, rowIndex, columnIndex)}
-                >
-                    <Value className="link" value={cellData} column={column} onResize={this.onCellResize.bind(this, columnIndex)} />
-                </div>
-            );
-        } else {
-            const { popover } = this.state;
-            const isFilterable = column.source !== "aggregation";
-            return (
-                <div
-                    key={key} style={style}
-                    className={cx("TableInteractive-cellWrapper cellData", {
-                        "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
-                        "cursor-pointer": isFilterable
-                    })}
-                    onClick={isFilterable && this.showPopover.bind(this, rowIndex, columnIndex)}
-                >
-                    <Value value={cellData} column={column} onResize={this.onCellResize.bind(this, columnIndex)} />
-                    { popover && popover.rowIndex === rowIndex && popover.columnIndex === columnIndex &&
-                        <QuickFilterPopover
-                            column={cols[popover.columnIndex]}
-                            onFilter={this.popoverFilterClicked.bind(this, rowIndex, columnIndex)}
-                            onClose={this.onClosePopover}
-                        />
-                    }
-                </div>
-            );
-        }
+        const value = rows[rowIndex][columnIndex];
+        const hasActions = column.source !== "aggregation";
+        return (
+            <div
+                key={key} style={style}
+                className={cx("TableInteractive-cellWrapper cellData", {
+                    "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
+                    "cursor-pointer": hasActions
+                })}
+                onClick={hasActions && ((e) => {
+                    onVisualizationClick({
+                        value: value,
+                        column: column,
+                        element: e.currentTarget
+                    })
+                })}
+            >
+                <Value className="link" value={value} column={column} onResize={this.onCellResize.bind(this, columnIndex)} />
+            </div>
+        );
     }
 
     tableHeaderRenderer = ({ key, style, columnIndex }: CellRendererProps) => {

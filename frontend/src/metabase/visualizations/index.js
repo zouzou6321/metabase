@@ -30,16 +30,17 @@ export type HoverObject = {
 }
 
 export type ClickObject = {
-    dimensionValue: Value,
-    dimensionColumn: Column,
-    metricValue: Value,
-    metricColumn: Column,
+    value: Value,
+    column: Column,
+    metricValue?: Value,
+    metricColumn?: Column,
     event?: MouseEvent,
+    element?: HTMLElement,
 }
 
 export type DrillAction = {
     title: any,
-    popoper?: any,
+    popover?: any,
     card?: Card | () => Card
 }
 

@@ -210,7 +210,7 @@ class LegacyQueryBuilder extends Component {
         }
 
         const showDrawer = uiControls.isShowingDataReference || uiControls.isShowingTemplateTagsEditor;
-        const { ModeFooter } = mode;
+        const ModeFooter = mode && mode.ModeFooter;
 
         return (
             <div className="flex-full relative">

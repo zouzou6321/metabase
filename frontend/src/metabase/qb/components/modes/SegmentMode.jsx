@@ -4,11 +4,12 @@ import React from "react";
 
 import QueryBuilderSidebarSection from "../sidebar/QueryBuilderSidebarSection";
 
+import { DEFAULT_ACTIONS } from "../actions";
+import { DEFAULT_DRILLS } from "../drill";
+
 import SummarizeBySegmentMetricAction
     from "../actions/SummarizeBySegmentMetricAction";
 import PlotSegmentField from "../actions/PlotSegmentField";
-import UnderlyingDataAction from "../actions/UnderlyingDataAction";
-import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
 
 export default {
     name: "segment",
@@ -17,16 +18,15 @@ export default {
         return [SegmentMainView];
     },
 
-    getMainActions() {
-        return [
+    getActions() {
+        return DEFAULT_ACTIONS.concat([
             SummarizeBySegmentMetricAction,
-            PlotSegmentField,
-            UnderlyingDataAction
-        ];
+            PlotSegmentField
+        ]);
     },
 
-    getDrillThroughActions() {
-        return [UnderlyingRecordsDrill];
+    getDrills() {
+        return DEFAULT_DRILLS;
     }
 };
 

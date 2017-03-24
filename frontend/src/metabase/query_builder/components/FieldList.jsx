@@ -81,7 +81,12 @@ export default class FieldList extends Component {
             })
         }));
 
-        let sections = [mainSection].concat(fkSections);
+        let sections = []
+        if (mainSection.items.length > 0) {
+            sections.push(mainSection);
+        }
+        sections.push(...fkSections);
+
         let fieldTarget = parseFieldTarget(field);
 
         this.setState({ sections, fieldTarget });

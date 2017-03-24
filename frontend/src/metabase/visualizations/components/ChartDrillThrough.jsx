@@ -38,7 +38,11 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
             return null;
         }
 
-        const { popoverIndex } = this.state;
+        let { popoverIndex } = this.state;
+        if (drillActions.length === 1 && drillActions[0].popover) {
+            popoverIndex = 0;
+        }
+
         let popover;
         if (popoverIndex != null) {
             const PopoverContent = drillActions[popoverIndex].popover;
@@ -56,6 +60,7 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
                 targetEvent={clicked.event}
                 onClose={this.close}
                 verticalAttachments={["bottom", "top"]}
+                sizeToFit
             >
                 { popover ?
                     popover
@@ -69,7 +74,7 @@ export default class ChartDrillThrough extends Component<*, Props, State> {
                                     if (action.popover) {
                                         this.setState({ popoverIndex: index });
                                     } else {
-                                        onChangeCardAndRun(typeof action.card === "function" ? action.card() : action.card);
+                                        onChangeCardAndRun(action.card());
                                         this.close();
                                     }
                                 }}

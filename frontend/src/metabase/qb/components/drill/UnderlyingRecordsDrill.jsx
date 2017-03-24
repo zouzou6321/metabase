@@ -5,7 +5,7 @@ import React from "react";
 import { drillUnderlyingRecords } from "metabase/qb/lib/actions";
 
 export default ({ card, tableMetadata, clicked }) => {
-    if (!clicked) {
+    if (!clicked || !clicked.column || clicked.column.id == null) {
         return;
     }
 
@@ -17,11 +17,6 @@ export default ({ card, tableMetadata, clicked }) => {
                 <span className="text-dark">{tableMetadata.display_name}</span>
             </span>
         ),
-        card: () =>
-            drillUnderlyingRecords(
-                card,
-                clicked.dimensionValue,
-                clicked.dimensionColumn
-            )
+        card: () => drillUnderlyingRecords(card, clicked.value, clicked.column)
     };
 };

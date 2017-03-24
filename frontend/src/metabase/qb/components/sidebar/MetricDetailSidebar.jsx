@@ -7,7 +7,7 @@ import SidebarHeader from "./SidebarHeader";
 import SidebarSection from "./SidebarSection";
 import QueryBuilderSidebarSection from "./QueryBuilderSidebarSection";
 
-import { getMetricActions } from "./MetricActions";
+import { getActions } from "./MetricActions";
 
 type Props = {};
 
@@ -29,7 +29,7 @@ const MetricDetailSidebar = (props: Props) => {
                 {...props}
                 features={{ filter: true, breakout: true }}
             />
-            {getMetricActions(props)}
+            {getActions(props)}
         </Sidebar>
     );
 };

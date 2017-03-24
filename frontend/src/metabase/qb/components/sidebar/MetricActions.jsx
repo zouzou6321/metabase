@@ -4,10 +4,10 @@ import React from "react";
 
 import Action from "../Action";
 
-export function getMetricActions({ mode, card, tableMetadata, setCardAndRun }) {
-    return mode.getMetricActions &&
+export function getActions({ mode, card, tableMetadata, setCardAndRun }) {
+    return mode.getActions &&
         mode
-            .getMetricActions()
+            .getActions()
             .map(getAction => getAction({ card, tableMetadata }))
             .filter(action => action)
             .map(action => (

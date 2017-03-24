@@ -37,27 +37,44 @@ const getFieldClauseFromCol = col => {
     }
 };
 
-const drillFilter = (card, dimensionValue, dimensionColumn) => {
+const clone = card => {
     const newCard = startNewCard("query");
 
     newCard.display = card.display;
     newCard.dataset_query = card.dataset_query;
     newCard.visualization_settings = card.visualization_settings;
 
+    return newCard;
+};
+
+// Adds a new filter with the specified operator, column, and value
+export const filter = (card, operator, column, value) => {
+    let newCard = clone(card);
+    newCard.dataset_query.query = Query.addFilter(newCard.dataset_query.query, [
+        operator,
+        getFieldClauseFromCol(column),
+        value
+    ]);
+    return newCard;
+};
+
+const drillFilter = (card, value, column) => {
+    let newCard = clone(card);
+
     let filter;
-    if (isDate(dimensionColumn)) {
+    if (isDate(column)) {
         filter = [
             "=",
             [
                 "datetime-field",
-                getFieldClauseFromCol(dimensionColumn),
+                getFieldClauseFromCol(column),
                 "as",
-                dimensionColumn.unit
+                column.unit
             ],
-            moment(dimensionValue).toISOString()
+            moment(value).toISOString()
         ];
     } else {
-        filter = ["=", getFieldClauseFromCol(dimensionColumn), dimensionValue];
+        filter = ["=", getFieldClauseFromCol(column), value];
     }
 
     // replace existing filter, if it exists
@@ -65,7 +82,7 @@ const drillFilter = (card, dimensionValue, dimensionColumn) => {
     for (let index = 0; index < filters.length; index++) {
         if (
             Filter.isFieldFilter(filters[index]) &&
-            Field.getFieldTargetId(filters[index][1]) === dimensionColumn.id
+            Field.getFieldTargetId(filters[index][1]) === column.id
         ) {
             newCard.dataset_query.query = Query.updateFilter(
                 newCard.dataset_query.query,
@@ -86,14 +103,10 @@ const drillFilter = (card, dimensionValue, dimensionColumn) => {
 
 const UNITS = ["minute", "hour", "day", "week", "month", "quarter", "year"];
 
-export const drillTimeseriesFilter = (
-    card,
-    dimensionValue,
-    dimensionColumn
-) => {
-    const newCard = drillFilter(card, dimensionValue, dimensionColumn);
+export const drillTimeseriesFilter = (card, value, column) => {
+    const newCard = drillFilter(card, value, column);
 
-    let nextUnit = UNITS[Math.max(0, UNITS.indexOf(dimensionColumn.unit) - 1)];
+    let nextUnit = UNITS[Math.max(0, UNITS.indexOf(column.unit) - 1)];
 
     newCard.dataset_query.query.breakout[0] = [
         "datetime-field",
@@ -105,14 +118,18 @@ export const drillTimeseriesFilter = (
     return newCard;
 };
 
-export const drillUnderlyingRecords = (
-    card,
-    dimensionValue,
-    dimensionColumn
-) => {
-    return toUnderlyingRecords(
-        drillFilter(card, dimensionValue, dimensionColumn)
-    );
+export const drillUnderlyingRecords = (card, value, column) => {
+    return toUnderlyingRecords(drillFilter(card, value, column));
+};
+
+export const drillRecord = (databaseId, tableId, fieldId, value) => {
+    const newCard = startNewCard("query", databaseId, tableId);
+    newCard.dataset_query.query = Query.addFilter(newCard.dataset_query.query, [
+        "=",
+        fieldId,
+        value
+    ]);
+    return newCard;
 };
 
 export const plotSegmentField = card => {
@@ -136,11 +153,12 @@ export const summarize = (card, aggregation, tableMetadata) => {
 import { Value, Column } from "metabase/meta/types/Dataset";
 
 type DrillClick = {
-    dimensionValue: Value,
-    dimensionColumn: Column,
-    metricValue: Value,
-    metricColumn: Column,
-    event: MouseEvent
+    value: Value,
+    column: Column,
+    metricValue?: Value,
+    metricColumn?: Column,
+    event?: MouseEvent,
+    element?: HTMLElement
 };
 
 export const pivot = (
@@ -152,17 +170,13 @@ export const pivot = (
     let newCard;
 
     if (clicked) {
-        newCard = drillFilter(
-            card,
-            clicked.dimensionValue,
-            clicked.dimensionColumn
-        );
+        newCard = drillFilter(card, clicked.value, clicked.column);
         const breakoutFields = Query.getBreakoutFields(
             newCard.dataset_query.query,
             tableMetadata
         );
         for (const [index, field] of breakoutFields.entries()) {
-            if (field && field.id === clicked.dimensionColumn.id) {
+            if (field && field.id === clicked.column.id) {
                 newCard.dataset_query.query = Query.removeBreakout(
                     newCard.dataset_query.query,
                     index

@@ -1,17 +1,16 @@
 /* @flow weak */
 
-import UnderlyingDataAction from "../actions/UnderlyingDataAction";
-import UnderlyingRecordsAction from "../actions/UnderlyingRecordsAction";
-import UnderlyingRecordsDrill from "../drill/UnderlyingRecordsDrill";
+import { DEFAULT_ACTIONS } from "../actions";
+import { DEFAULT_DRILLS } from "../drill";
 
 export default {
     name: "default",
 
-    getMainActions() {
-        return [UnderlyingDataAction, UnderlyingRecordsAction];
+    getActions() {
+        return DEFAULT_ACTIONS;
     },
 
-    getDrillThroughActions() {
-        return [UnderlyingRecordsDrill];
+    getDrills() {
+        return DEFAULT_DRILLS;
     }
 };

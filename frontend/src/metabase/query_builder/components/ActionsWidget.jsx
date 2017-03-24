@@ -69,11 +69,11 @@ export default class ActionsWidget extends Component<*, Props, *> {
 
     getActions() {
         const { mode, card, tableMetadata } = this.props;
-        if (!mode || !mode.getMetricActions) {
+        if (!mode || !mode.getActions) {
             return [];
         }
         return mode
-            .getMetricActions()
+            .getActions()
             .map(getAction => getAction({ card, tableMetadata }))
             .filter(action => action);
     }
@@ -94,12 +94,13 @@ export default class ActionsWidget extends Component<*, Props, *> {
         return (
             <div className={cx(className, "relative")}>
                 <div
-                    className="circular bg-brand flex layout-centered shadowed m4 cursor-pointer"
+                    className="circular bg-brand flex layout-centered m4 cursor-pointer"
                     style={{
                         width: CIRCLE_SIZE,
                         height: CIRCLE_SIZE,
                         transition: "opacity 300ms ease-in-out",
-                        opacity: isOpen || isVisible ? 1 : 0
+                        opacity: isOpen || isVisible ? 1 : 0,
+                        boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.2)"
                     }}
                     onClick={this.toggle}
                 >
