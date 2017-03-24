@@ -23,6 +23,7 @@
                                                DateTimeField
                                                DateTimeValue
                                                Field
+                                               FieldLiteral
                                                Expression
                                                ExpressionRef
                                                JoinTable
@@ -86,6 +87,10 @@
         (isa? special-type :type/UNIXTimestampSeconds)      (sql/unix-timestamp->timestamp (driver) field :seconds)
         (isa? special-type :type/UNIXTimestampMilliseconds) (sql/unix-timestamp->timestamp (driver) field :milliseconds)
         :else                                               field)))
+
+  FieldLiteral
+  (formatted [{:keys [field-name]}]
+    (keyword field-name))
 
   DateTimeField
   (formatted [{unit :unit, field :field}]
@@ -253,16 +258,27 @@
       (h/limit items)
       (h/offset (* items (dec page)))))
 
-(defn- apply-source-table [_ honeysql-form {{table-name :name, schema :schema} :source-table}]
+(defn- apply-source-table [honeysql-form {{table-name :name, schema :schema} :source-table}]
   {:pre [table-name]}
   (h/from honeysql-form (hx/qualify-and-escape-dots schema table-name)))
+
+(declare apply-clauses)
+
+(defn- apply-source-query [driver honeysql-form {{:keys [native], :as source-query} :source-query}]
+  ;; TODO - what alias should we give the source query?
+  (assoc honeysql-form
+    :from [[(if native
+              (hsql/raw (str "(" native ")"))
+              (apply-clauses driver {} source-query))
+            :source]]))
 
 (def ^:private clause-handlers
   ;; 1) Use the vars rather than the functions themselves because them implementation
   ;;    will get swapped around and  we'll be left with old version of the function that nobody implements
   ;; 2) This is a vector rather than a map because the order the clauses get handled is important for some drivers.
   ;;    For example, Oracle needs to wrap the entire query in order to apply its version of limit (`WHERE ROWNUM`).
-  [:source-table apply-source-table
+  [:source-table (u/drop-first-arg apply-source-table)
+   :source-query apply-source-query
    :aggregation  #'sql/apply-aggregation
    :breakout     #'sql/apply-breakout
    :fields       #'sql/apply-fields
@@ -281,7 +297,8 @@
                           honeysql-form)]
       (if (seq more)
         (recur honeysql-form more)
-        honeysql-form))))
+        ;; ok, we're done; if no `:select` clause was specified (for whatever reason) put a default (`SELECT *`) one in
+        (update honeysql-form :select #(if (seq %) % [:*]))))))
 
 
 (defn build-honeysql-form
@@ -298,6 +315,8 @@
   (binding [*query* outer-query]
     (let [honeysql-form (build-honeysql-form driver outer-query)
           [sql & args]  (sql/honeysql-form->sql+args driver honeysql-form)]
+      (println "(u/pprint-to-str 'blue honeysql-form):" (u/pprint-to-str 'blue honeysql-form)) ; NOCOMMIT
+      (println "(u/pprint-to-str 'red (conj sql args)):" (u/pprint-to-str 'red (cons sql args))) ; NOCOMMIT
       {:query  sql
        :params args})))
 

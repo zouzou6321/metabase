@@ -18,6 +18,7 @@
                                                EqualityFilter
                                                Expression
                                                ExpressionRef
+                                               FieldLiteral
                                                FieldPlaceholder
                                                NotFilter
                                                RelativeDatetime
@@ -58,6 +59,12 @@
     (do (log/warn (u/format-color 'yellow "Referring to fields by their bare ID (%d) is deprecated in MBQL '98. Please use [:field-id %d] instead." f f))
         (field-id f))
     f))
+
+(s/defn ^:ql ^:always-validate field-literal
+  "Generic reference to a Field by FIELD-NAME. This is intended for use when using nested queries so as to allow one to refer to the fields coming back from
+   the source query."
+  [field-name :- su/KeywordOrString, field-type :- su/KeywordOrString] :- FieldLiteral
+  (i/strict-map->FieldLiteral {:field-name (u/keyword->qualified-name field-name), :base-type (keyword field-type)}))
 
 (s/defn ^:ql ^:always-validate named :- i/Aggregation
   "Specify a CUSTOM-NAME to use for a top-level AGGREGATION-OR-EXPRESSION in the results.
@@ -393,11 +400,22 @@
 ;;; ## source-table
 
 (s/defn ^:ql ^:always-validate source-table
-  "Specify the ID of the table to query (required).
+  "Specify the ID of the table to query.
+   Queries must specify *either* `:source-table` or `:source-query`.
 
      (source-table {} 100)"
   [query, table-id :- s/Int]
   (assoc query :source-table table-id))
+
+(s/defn ^:ql ^:always-validate source-query
+  "Specify a query to use as the source for this query (e.g., as a `SUBSELECT`).
+   Queries must specify *either* `:source-table` or `:source-query`.
+
+     (source-query {} (-> (source-table {} 100)
+                          (limit 10)))"
+  {:added "0.24.0"}
+  [query, source-query :- i/SourceQuery]
+  (assoc query :source-query source-query))
 
 
 
