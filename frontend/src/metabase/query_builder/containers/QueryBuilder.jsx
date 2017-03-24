@@ -18,10 +18,6 @@ import TagEditorSidebar from "../components/template_tags/TagEditorSidebar.jsx";
 import SavedQuestionIntroModal from "../components/SavedQuestionIntroModal.jsx";
 import ActionsWidget from "../components/ActionsWidget.jsx";
 
-import Toggle from "metabase/components/Toggle";
-
-import NewQueryBuilder from "metabase/qb/components/QueryBuilder.jsx";
-
 import {
     card,
     originalCard,
@@ -185,14 +181,7 @@ export default class QueryBuilder extends Component {
     render() {
         return (
             <div className="flex-full flex relative">
-                {/* <div className="absolute bottom right p2 flex align-center z4">
-                    <Toggle value={this.state.legacy} onChange={() => this.setState({ legacy: !this.state.legacy })} />
-                </div> */}
-                { this.state.legacy ?
-                    <LegacyQueryBuilder {...this.props} />
-                :
-                    <NewQueryBuilder {...this.props} />
-                }
+                <LegacyQueryBuilder {...this.props} />
             </div>
         )
     }

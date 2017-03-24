@@ -8,7 +8,6 @@ import "./TableInteractive.css";
 import Icon from "metabase/components/Icon.jsx";
 
 import Value from "metabase/components/Value.jsx";
-import QuickFilterPopover from "metabase/query_builder/components/QuickFilterPopover.jsx";
 
 import MetabaseAnalytics from "metabase/lib/analytics";
 import { capitalize } from "metabase/lib/formatting";
