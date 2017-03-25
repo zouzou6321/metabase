@@ -6,6 +6,9 @@ import { DEFAULT_DRILLS } from "../drill";
 import PivotByCategoryAction from "../actions/PivotByCategoryAction";
 import PivotByTimeAction from "../actions/PivotByTimeAction";
 
+import PivotByCategoryDrill from "../drill/PivotByCategoryDrill";
+import PivotByTimeDrill from "../drill/PivotByTimeDrill";
+
 export default {
     name: "geo",
 
@@ -17,6 +20,6 @@ export default {
     },
 
     getDrills() {
-        return DEFAULT_DRILLS;
+        return DEFAULT_DRILLS.concat([PivotByCategoryDrill, PivotByTimeDrill]);
     }
 };

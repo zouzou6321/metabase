@@ -10,8 +10,12 @@ import { pivot } from "metabase/qb/lib/actions";
 export default (name, icon, fieldFilter) => (
     { card, tableMetadata, clicked }
 ) => {
-    if (clicked && (!clicked.column || clicked.column.id == null)) {
+    if (clicked && !clicked.column) {
         return;
+    }
+
+    if (clicked && clicked.column.id == null) {
+        clicked = null;
     }
 
     const breakouts = Query.getBreakouts(card.dataset_query.query);

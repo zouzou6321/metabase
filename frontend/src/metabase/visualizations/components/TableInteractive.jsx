@@ -256,15 +256,15 @@ export default class TableInteractive extends Component<*, Props, State> {
         const { data: { cols, rows }, onVisualizationClick} = this.props;
         const column = cols[columnIndex];
         const value = rows[rowIndex][columnIndex];
-        const hasActions = column.source !== "aggregation";
+        const isClickable = onVisualizationClick && column.source !== "aggregation"
         return (
             <div
                 key={key} style={style}
                 className={cx("TableInteractive-cellWrapper cellData", {
                     "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
-                    "cursor-pointer": hasActions
+                    "cursor-pointer": isClickable
                 })}
-                onClick={hasActions && ((e) => {
+                onClick={isClickable && ((e) => {
                     onVisualizationClick({
                         value: value,
                         column: column,
