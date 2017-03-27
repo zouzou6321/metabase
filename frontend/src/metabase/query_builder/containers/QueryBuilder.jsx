@@ -76,7 +76,6 @@ const mapStateToProps = (state, props) => {
         mode:                      getMode(state),
         card:                      card(state),
         originalCard:              originalCard(state),
-        query:                     state.qb.card && state.qb.card.dataset_query,  // TODO: EOL, redundant
         parameterValues:           parameterValues(state),
         databases:                 databases(state),
         nativeDatabases:           getNativeDatabases(state),
@@ -210,10 +209,17 @@ class LegacyQueryBuilder extends Component {
 
                     <div id="react_qb_editor" className="z2">
                         { card && card.dataset_query && card.dataset_query.type === "native" ?
-                            <NativeQueryEditor {...this.props} isOpen={!card.dataset_query.native.query || isDirty} />
+                            <NativeQueryEditor
+                                {...this.props}
+                                isOpen={!card.dataset_query.native.query || isDirty}
+                                datasetQuery={card && card.dataset_query}
+                            />
                         :
                             <div className="wrapper">
-                                <GuiQueryEditor {...this.props}/>
+                                <GuiQueryEditor
+                                    {...this.props}
+                                    datasetQuery={card && card.dataset_query}
+                                />
                             </div>
                         }
                     </div>

@@ -9,14 +9,19 @@ import Query from "metabase/lib/query";
 import ExpressionPopover from "./ExpressionPopover";
 
 const ExpressionSection = (
-    { query, tableMetadata, updateQueryExpression, removeQueryExpression }
+    {
+        datasetQuery,
+        tableMetadata,
+        updateQueryExpression,
+        removeQueryExpression
+    }
 ) => {
-    const expressions = Query.getExpressionsList(query.query);
+    const expressions = Query.getExpressionsList(datasetQuery.query);
     return (
         <GuiClauseEditor
             title="Custom Fields"
             items={expressions}
-            canAdd={Query.canAddFilter(query.query)}
+            canAdd={Query.canAddFilter(datasetQuery.query)}
             onRemove={({ item, index }) => removeQueryExpression(item.name)}
             renderItem={({ item, index, ...props }) => (
                 <div className="text-bold">{item.name}</div>

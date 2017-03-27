@@ -9,9 +9,14 @@ import AggregationPopover from "./AggregationPopover";
 import Query from "metabase/lib/query";
 
 const AggregationSection = (
-    { query, tableMetadata, updateQueryAggregation, removeQueryAggregation }
+    {
+        datasetQuery,
+        tableMetadata,
+        updateQueryAggregation,
+        removeQueryAggregation
+    }
 ) => {
-    let aggregations = Query.getAggregations(query.query);
+    let aggregations = Query.getAggregations(datasetQuery.query);
     return (
         <GuiClauseEditor
             title="Metrics"
@@ -23,7 +28,7 @@ const AggregationSection = (
                     {...props}
                     aggregation={item}
                     tableMetadata={tableMetadata}
-                    customFields={Query.getExpressions(query.query)}
+                    customFields={Query.getExpressions(datasetQuery.query)}
                 />
             )}
             renderEdit={({ item, index, ...props }) => (
@@ -31,7 +36,7 @@ const AggregationSection = (
                     {...props}
                     aggregation={item}
                     tableMetadata={tableMetadata}
-                    customFields={Query.getExpressions(query.query)}
+                    customFields={Query.getExpressions(datasetQuery.query)}
                     availableAggregations={tableMetadata.aggregation_options}
                     onCommitAggregation={aggregation =>
                         updateQueryAggregation(index, aggregation)}

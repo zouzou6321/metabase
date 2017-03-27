@@ -18,7 +18,7 @@ import _ from "underscore";
 export default class GuiQueryEditor extends Component {
     static propTypes = {
         databases: PropTypes.array,
-        query: PropTypes.object.isRequired,
+        datasetQuery: PropTypes.object.isRequired,
         tableMetadata: PropTypes.object, // can't be required, sometimes null
         isShowingDataReference: PropTypes.bool.isRequired,
         setQueryFn: PropTypes.func.isRequired,
@@ -40,9 +40,9 @@ export default class GuiQueryEditor extends Component {
     };
 
     render() {
-        const { query, databases, features } = this.props;
-        const readOnly = query.database != null &&
-            !_.findWhere(databases, { id: query.database });
+        const { datasetQuery, databases, features } = this.props;
+        const readOnly = datasetQuery.database != null &&
+            !_.findWhere(databases, { id: datasetQuery.database });
 
         if (readOnly) {
             return <div />;

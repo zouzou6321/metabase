@@ -26,15 +26,15 @@ export default class PartialQueryBuilder extends Component {
         });
     }
 
-    setQuery = (query) => {
-        this.props.onChange(query.query);
-        this.props.updatePreviewSummary(query);
+    setQuery = (datasetQuery) => {
+        this.props.onChange(datasetQuery.query);
+        this.props.updatePreviewSummary(datasetQuery);
     }
 
     render() {
         let { features, value, tableMetadata, previewSummary } = this.props;
 
-        let dataset_query = {
+        let datasetQuery = {
             type: "query",
             database: tableMetadata.db_id,
             query: {
@@ -45,12 +45,12 @@ export default class PartialQueryBuilder extends Component {
 
         let previewCard = {
             dataset_query: {
-                ...dataset_query,
+                ...datasetQuery,
                 query: {
                     aggregation: ["rows"],
                     breakout: [],
                     filter: [],
-                    ...dataset_query.query
+                    ...datasetQuery.query
                 }
             }
         };
@@ -59,8 +59,8 @@ export default class PartialQueryBuilder extends Component {
         return (
             <div className="py1">
                 <GuiQueryEditor
-                    query={dataset_query}
                     features={features}
+                    datasetQuery={datasetQuery}
                     tableMetadata={tableMetadata}
                     databases={tableMetadata && [tableMetadata.db]}
                     setQueryFn={this.setQuery}

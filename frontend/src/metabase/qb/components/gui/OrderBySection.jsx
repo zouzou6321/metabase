@@ -11,10 +11,10 @@ import Query from "metabase/lib/query";
 import _ from "underscore";
 
 const OrderBySection = (
-    { query, tableMetadata, updateQueryOrderBy, removeQueryOrderBy }
+    { datasetQuery, tableMetadata, updateQueryOrderBy, removeQueryOrderBy }
 ) => {
-    const sorts = Query.getOrderBys(query.query);
-    const expressions = Query.getExpressions(query.query);
+    const sorts = Query.getOrderBys(datasetQuery.query);
+    const expressions = Query.getExpressions(datasetQuery.query);
 
     const usedFields = {};
     const usedExpressions = {};
@@ -29,7 +29,7 @@ const OrderBySection = (
     const remainingFieldOptions = Query.getFieldOptions(
         tableMetadata.fields,
         true,
-        Query.getSortableFields.bind(null, query.query),
+        Query.getSortableFields.bind(null, datasetQuery.query),
         usedFields
     );
     const remainingExpressions = Object.keys(
@@ -55,7 +55,7 @@ const OrderBySection = (
                     className="text-bold"
                     orderBy={item}
                     tableMetadata={tableMetadata}
-                    datasetQuery={query}
+                    datasetQuery={datasetQuery}
                 />
             )}
             renderEdit={({ item, index, ...props }) => (
@@ -66,7 +66,7 @@ const OrderBySection = (
                     fieldOptions={Query.getFieldOptions(
                         tableMetadata.fields,
                         true,
-                        Query.getSortableFields.bind(null, query.query)
+                        Query.getSortableFields.bind(null, datasetQuery.query)
                     )}
                     customFieldOptions={expressions}
                     onCommitOrderBy={orderBy =>

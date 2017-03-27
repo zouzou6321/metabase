@@ -7,7 +7,7 @@ import DataSelector from "metabase/query_builder/components/DataSelector.jsx";
 
 const DataSection = (
     {
-        query,
+        datasetQuery,
         databases,
         tables,
         setDatabaseFn,
@@ -19,13 +19,13 @@ const DataSection = (
         <DataSelector
             className="text-bold"
             includeTables={true}
-            query={query}
+            datasetQuery={datasetQuery}
             databases={databases}
             tables={tables}
             setDatabaseFn={setDatabaseFn}
             setSourceTableFn={setSourceTableFn}
             isInitiallyOpen={
-                (!query.database || !query.query.source_table) &&
+                (!datasetQuery.database || !datasetQuery.query.source_table) &&
                     !isShowingTutorial
             }
         />

@@ -11,12 +11,12 @@ import Query from "metabase/lib/query";
 import _ from "underscore";
 
 const BreakoutSection = (
-    { query, tableMetadata, updateQueryBreakout, removeQueryBreakout }
+    { datasetQuery, tableMetadata, updateQueryBreakout, removeQueryBreakout }
 ) => {
     if (!tableMetadata || !tableMetadata.breakout_options.fields.length === 0) {
         return null;
     }
-    const breakouts = Query.getBreakouts(query.query);
+    const breakouts = Query.getBreakouts(datasetQuery.query);
     const usedFields = {};
     for (const breakout of breakouts) {
         usedFields[breakout] = true;
@@ -39,7 +39,7 @@ const BreakoutSection = (
                     className="text-bold"
                     breakout={item}
                     tableMetadata={tableMetadata}
-                    customFields={Query.getExpressions(query.query)}
+                    customFields={Query.getExpressions(datasetQuery.query)}
                 />
             )}
             renderEdit={({ item, index, ...props }) => (
@@ -53,7 +53,9 @@ const BreakoutSection = (
                         tableMetadata.breakout_options.validFieldsFilter,
                         _.omit(usedFields, item)
                     )}
-                    customFieldOptions={Query.getExpressions(query)}
+                    customFieldOptions={Query.getExpressions(
+                        datasetQuery.query
+                    )}
                     onCommitBreakout={breakout =>
                         updateQueryBreakout(index, breakout)}
                 />
