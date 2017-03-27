@@ -142,5 +142,8 @@ export const selectMetric = createAction(SELECT_METRIC, ({
     return card;
 });
 
+export const SET_AGGREGATION = "SET_AGGREGATION";
+export const setAggregation = createAction(SET_AGGREGATION);
+
 export const SET_TABLE = "SET_TABLE";
 export const setTable = createAction(SET_TABLE);

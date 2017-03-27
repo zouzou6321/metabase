@@ -65,6 +65,12 @@ export const breakoutsByCategory = state => {
     };
 };
 
+export const getMetricsForCurrentTable = createSelector(
+    [getSelectedTable, state => state.metadata.metrics],
+    (tableId, metrics) =>
+        Object.values(metrics).filter(metric => metric.table_id === tableId)
+);
+
 export const breakoutsForDisplay = state => {
     const categories = breakoutsByCategory(state);
 
