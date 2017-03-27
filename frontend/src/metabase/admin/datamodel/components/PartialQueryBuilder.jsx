@@ -6,6 +6,8 @@ import { serializeCardForUrl } from "metabase/lib/card";
 
 import cx from "classnames";
 
+import * as Query from "metabase/lib/query/query";
+
 export default class PartialQueryBuilder extends Component {
     static propTypes = {
         onChange: PropTypes.func.isRequired,
@@ -56,6 +58,11 @@ export default class PartialQueryBuilder extends Component {
         };
         let previewUrl = "/q#" + serializeCardForUrl(previewCard);
 
+        const onChange = (query) => {
+            this.props.onChange(query);
+            this.props.updatePreviewSummary({ ...datasetQuery, query });
+        }
+
         return (
             <div className="py1">
                 <GuiQueryEditor
@@ -67,6 +74,12 @@ export default class PartialQueryBuilder extends Component {
                     isShowingDataReference={false}
                     setDatabaseFn={null}
                     setSourceTableFn={null}
+                    addQueryFilter={(filter) => onChange(Query.addFilter(datasetQuery.query, filter))}
+                    updateQueryFilter={(index, filter) => onChange(Query.updateFilter(datasetQuery.query, index, filter))}
+                    removeQueryFilter={(index) => onChange(Query.removeFilter(datasetQuery.query, index))}
+                    addQueryAggregation={(aggregation) => onChange(Query.addAggregation(datasetQuery.query, aggregation))}
+                    updateQueryAggregation={(index, aggregation) => onChange(Query.updateAggregation(datasetQuery.query, index, aggregation))}
+                    removeQueryAggregation={(index) => onChange(Query.removeAggregation(datasetQuery.query, index))}
                 >
                     <div className="flex align-center mx2 my2">
                         <span className="text-bold px3">{previewSummary}</span>
