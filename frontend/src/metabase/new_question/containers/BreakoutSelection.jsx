@@ -40,6 +40,7 @@ class BreakoutSelection extends Component {
                 <ol>
                     {breakouts.map(
                         breakout => breakout.fields.length > 0 &&
+                        breakout.show() &&
                         <li
                             className={cxs({ marginBottom: "2em" })}
                             key={breakouts.display_name}

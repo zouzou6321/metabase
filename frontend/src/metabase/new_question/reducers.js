@@ -242,7 +242,6 @@ export default function(state = initialState, { type, payload, error }) {
                 }
             };
         case SET_AGGREGATION:
-            console.log(payload);
             return {
                 ...state,
                 card: {

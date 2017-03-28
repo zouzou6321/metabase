@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { currentStepTitle, getTablesForDatabase } from "../selectors";
+import { currentStepTitle, getTablesForFlow } from "../selectors";
 
 import { selectAndAdvance, setTable } from "../actions";
 
 const mapStateToProps = state => ({
     title: currentStepTitle(state),
-    tables: getTablesForDatabase(state)
+    tables: getTablesForFlow(state)
 });
 
 const mapDispatchToProps = {

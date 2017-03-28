@@ -64,6 +64,21 @@ export const getSelectedTableMetadata = createSelector(
 
 export const getCurrentFlowType = state => state.newQuestion.flow.type;
 
+export const getBreakoutsForFlow = createSelector(
+    [getCurrentFlowType, getSelectedTable],
+    (flowType, selectedTable) => {
+        const fields = Object.values(selectedTable.fields_lookup);
+        switch (flowType) {
+            case "timeseries":
+                return fields.filter(field => isDate(field));
+            case "map":
+                return fields.filter(field => isDate(field));
+            default:
+                return fields;
+        }
+    }
+);
+
 export const breakoutsByCategory = state => {
     const rawFields = state.metadata.tables[
         getSelectedTable(state)
@@ -84,25 +99,29 @@ export const getMetricsForCurrentTable = createSelector(
 
 export const breakoutsForDisplay = state => {
     const categories = breakoutsByCategory(state);
+    const flow = getCurrentFlowType(state);
 
     return [
         {
             display_name: "Dates",
             fields: categories["date"],
             displayColor: normal.blue,
-            iconName: "calendar"
+            iconName: "calendar",
+            show: () => flow === "timeseries"
         },
         {
             display_name: "Numbers",
             fields: categories["number"],
             displayColor: normal.green,
-            iconName: "int"
+            iconName: "int",
+            show: () => flow === "metric"
         },
         {
             display_name: "Categories",
             fields: categories["category"],
             displayColor: normal.indigo,
-            iconName: "label"
+            iconName: "label",
+            show: () => flow === "metric"
         }
     ];
 };
@@ -128,6 +147,25 @@ export const getTablesForDatabase = state =>
             state.newQuestion.card.dataset_query.database
         ].tables_lookup
     );
+
+export const getTablesForFlow = createSelector(
+    [getTablesForDatabase, getCurrentFlowType],
+    (tables, flowType) => tables.filter(table => {
+        const fields = Object.values(table.fields_lookup).filter(field => {
+            switch (flowType) {
+                case "timeseries":
+                    return isDate(field);
+                case "map":
+                    return field;
+                default:
+                    return field;
+            }
+        });
+        if (fields.length > 0) {
+            return table;
+        }
+    })
+);
 
 export const getMetricsForCurrentFlow = createSelector(
     [getCurrentFlowType, getMetrics, getTables, getFields],
