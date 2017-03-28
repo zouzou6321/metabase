@@ -28,10 +28,10 @@ export default class GuiQueryEditor extends Component {
 
     static propTypes = {
         databases: PropTypes.array,
-        query: PropTypes.object.isRequired,
+        datasetQuery: PropTypes.object.isRequired,
         tableMetadata: PropTypes.object, // can't be required, sometimes null
         isShowingDataReference: PropTypes.bool.isRequired,
-        setQueryFn: PropTypes.func.isRequired,
+        setDatasetQuery: PropTypes.func.isRequired,
         setDatabaseFn: PropTypes.func,
         setSourceTableFn: PropTypes.func,
         features: PropTypes.object
@@ -85,7 +85,7 @@ export default class GuiQueryEditor extends Component {
         if (this.props.tableMetadata) {
             enabled = true;
 
-            let filters = Query.getFilters(this.props.query.query);
+            let filters = Query.getFilters(this.props.datasetQuery.query);
             if (filters && filters.length > 0) {
                 filterList = (
                     <FilterList
@@ -97,7 +97,7 @@ export default class GuiQueryEditor extends Component {
                 );
             }
 
-            if (Query.canAddFilter(this.props.query.query)) {
+            if (Query.canAddFilter(this.props.datasetQuery.query)) {
                 addFilterButton = this.renderAdd((filterList ? null : "Add filters to narrow your answer"), null, "addFilterTarget");
             }
         } else {
@@ -122,7 +122,7 @@ export default class GuiQueryEditor extends Component {
                         <FilterPopover
                             isNew={true}
                             tableMetadata={this.props.tableMetadata || {}}
-                            customFields={Query.getExpressions(this.props.query.query)}
+                            customFields={Query.getExpressions(this.props.datasetQuery.query)}
                             onCommitFilter={this.props.addQueryFilter}
                             onClose={() => this.refs.filterPopover.close()}
                         />
@@ -133,7 +133,7 @@ export default class GuiQueryEditor extends Component {
     }
 
     renderAggregation() {
-        const { query: { query }, tableMetadata } = this.props;
+        const { datasetQuery: { query }, tableMetadata } = this.props;
 
         if (!this.props.features.aggregation) {
             return;
@@ -162,7 +162,7 @@ export default class GuiQueryEditor extends Component {
                         key={"agg"+index}
                         aggregation={aggregation}
                         tableMetadata={tableMetadata}
-                        customFields={Query.getExpressions(this.props.query.query)}
+                        customFields={Query.getExpressions(this.props.datasetQuery.query)}
                         updateAggregation={(aggregation) => this.props.updateQueryAggregation(index, aggregation)}
                         removeAggregation={canRemoveAggregation ? this.props.removeQueryAggregation.bind(null, index) : null}
                         addButton={this.renderAdd(null)}
@@ -186,7 +186,7 @@ export default class GuiQueryEditor extends Component {
     }
 
     renderBreakouts() {
-        const { query: { query }, tableMetadata, features } = this.props;
+        const { datasetQuery: { query }, tableMetadata, features } = this.props;
 
         if (!features.breakout) {
             return;
@@ -251,12 +251,12 @@ export default class GuiQueryEditor extends Component {
                     <DataSelector
                         ref="dataSection"
                         includeTables={true}
-                        query={this.props.query}
+                        datasetQuery={this.props.datasetQuery}
                         databases={this.props.databases}
                         tables={this.props.tables}
                         setDatabaseFn={this.props.setDatabaseFn}
                         setSourceTableFn={this.props.setSourceTableFn}
-                        isInitiallyOpen={(!this.props.query.database || !this.props.query.query.source_table) && !this.props.isShowingTutorial}
+                        isInitiallyOpen={(!this.props.datasetQuery.database || !this.props.datasetQuery.query.source_table) && !this.props.isShowingTutorial}
                     />
                     :
                     <span className="flex align-center px2 py2 text-bold text-grey">
@@ -328,8 +328,8 @@ export default class GuiQueryEditor extends Component {
     }
 
     render() {
-        const { query, databases } = this.props;
-        const readOnly = query.database != null && !_.findWhere(databases, { id: query.database });
+        const { datasetQuery, databases } = this.props;
+        const readOnly = datasetQuery.database != null && !_.findWhere(databases, { id: datasetQuery.database });
         if (readOnly) {
             return <div className="border-bottom border-med" />
         }
@@ -347,7 +347,6 @@ export default class GuiQueryEditor extends Component {
                     {this.props.children}
                     <ExtendedOptions
                         {...this.props}
-                        setQuery={(query) => this.props.setQueryFn(query)}
                     />
                 </div>
             </div>

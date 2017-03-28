@@ -43,6 +43,7 @@ VisualizationResult.propTypes = {
     isObjectDetail:         PropTypes.bool.isRequired,
     lastRunDatasetQuery:    PropTypes.object.isRequired,
     result:                 PropTypes.object.isRequired,
+    setCardAndRun:          PropTypes.func,
 }
 
 export default VisualizationResult;

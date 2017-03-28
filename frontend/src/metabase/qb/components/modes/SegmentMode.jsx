@@ -20,8 +20,9 @@ export default {
 
     getActions() {
         return DEFAULT_ACTIONS.concat([
-            SummarizeBySegmentMetricAction,
-            PlotSegmentField
+            SummarizeBySegmentMetricAction
+            // commenting this out until we sort out viz settings in QB2
+            // PlotSegmentField
         ]);
     },
 

@@ -9,7 +9,7 @@ import { summarize } from "metabase/qb/lib/actions";
 
 export default ({ card, tableMetadata }) => {
     return {
-        title: "Summarize by a metric in this segment",
+        title: "Summarize this segment",
         icon: "funnel", // FIXME: icon
         // eslint-disable-next-line react/display-name
         popover: ({ onChangeCardAndRun, onClose }) => (

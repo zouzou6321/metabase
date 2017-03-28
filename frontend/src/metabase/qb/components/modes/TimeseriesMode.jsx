@@ -18,9 +18,10 @@ import { DEFAULT_DRILLS } from "../drill";
 import PivotByCategoryAction from "../actions/PivotByCategoryAction";
 import PivotByLocationAction from "../actions/PivotByLocationAction";
 
-import TimeseriesFilterDrill from "../drill/TimeseriesFilterDrill";
 import PivotByCategoryDrill from "../drill/PivotByCategoryDrill";
 import PivotByLocationDrill from "../drill/PivotByLocationDrill";
+
+import TimeseriesFilterDrill from "../drill/TimeseriesFilterDrill";
 
 import { getTimeseriesParameters } from "metabase/meta/Parameter";
 

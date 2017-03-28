@@ -9,13 +9,13 @@ import FilterPopover from "./FilterPopover.jsx";
 import Query from "metabase/lib/query";
 
 const FilterSection = (
-    { query, tableMetadata, updateQueryFilter, removeQueryFilter }
+    { datasetQuery, tableMetadata, updateQueryFilter, removeQueryFilter }
 ) => (
     <GuiClauseEditor
         title="Filters"
         titleClass="text-purple"
-        items={Query.getFilters(query.query)}
-        canAdd={Query.canAddFilter(query.query)}
+        items={Query.getFilters(datasetQuery.query)}
+        canAdd={Query.canAddFilter(datasetQuery.query)}
         onRemove={({ item, index }) => removeQueryFilter(index)}
         renderItem={({ item, index, ...props }) => (
             <FilterName
@@ -29,7 +29,7 @@ const FilterSection = (
                 {...props}
                 filter={item}
                 tableMetadata={tableMetadata}
-                customFields={Query.getExpressions(query.query)}
+                customFields={Query.getExpressions(datasetQuery.query)}
                 onCommitFilter={filter => updateQueryFilter(index, filter)}
             />
         )}

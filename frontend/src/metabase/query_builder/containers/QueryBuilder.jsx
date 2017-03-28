@@ -18,10 +18,6 @@ import TagEditorSidebar from "../components/template_tags/TagEditorSidebar.jsx";
 import SavedQuestionIntroModal from "../components/SavedQuestionIntroModal.jsx";
 import ActionsWidget from "../components/ActionsWidget.jsx";
 
-import Toggle from "metabase/components/Toggle";
-
-import NewQueryBuilder from "metabase/qb/components/QueryBuilder.jsx";
-
 import {
     card,
     originalCard,
@@ -80,7 +76,6 @@ const mapStateToProps = (state, props) => {
         mode:                      getMode(state),
         card:                      card(state),
         originalCard:              originalCard(state),
-        query:                     state.qb.card && state.qb.card.dataset_query,  // TODO: EOL, redundant
         parameterValues:           parameterValues(state),
         databases:                 databases(state),
         nativeDatabases:           getNativeDatabases(state),
@@ -185,14 +180,7 @@ export default class QueryBuilder extends Component {
     render() {
         return (
             <div className="flex-full flex relative">
-                {/* <div className="absolute bottom right p2 flex align-center z4">
-                    <Toggle value={this.state.legacy} onChange={() => this.setState({ legacy: !this.state.legacy })} />
-                </div> */}
-                { this.state.legacy ?
-                    <LegacyQueryBuilder {...this.props} />
-                :
-                    <NewQueryBuilder {...this.props} />
-                }
+                <LegacyQueryBuilder {...this.props} />
             </div>
         )
     }
@@ -221,10 +209,17 @@ class LegacyQueryBuilder extends Component {
 
                     <div id="react_qb_editor" className="z2">
                         { card && card.dataset_query && card.dataset_query.type === "native" ?
-                            <NativeQueryEditor {...this.props} isOpen={!card.dataset_query.native.query || isDirty} />
+                            <NativeQueryEditor
+                                {...this.props}
+                                isOpen={!card.dataset_query.native.query || isDirty}
+                                datasetQuery={card && card.dataset_query}
+                            />
                         :
                             <div className="wrapper">
-                                <GuiQueryEditor {...this.props}/>
+                                <GuiQueryEditor
+                                    {...this.props}
+                                    datasetQuery={card && card.dataset_query}
+                                />
                             </div>
                         }
                     </div>
