@@ -12,7 +12,7 @@ export default ({ card, tableMetadata, clicked }) => {
     return {
         title: (
             <span>
-                View this
+                Drill into this
                 {" "}
                 <span className="text-dark">
                     {clicked.column.unit}

@@ -12,9 +12,11 @@ export default ({ card, tableMetadata, clicked }) => {
     return {
         title: (
             <span>
-                View these
+                Filter
                 {" "}
                 <span className="text-dark">{tableMetadata.display_name}</span>
+                {" "}
+                by this value
             </span>
         ),
         card: () => drillUnderlyingRecords(card, clicked.value, clicked.column)

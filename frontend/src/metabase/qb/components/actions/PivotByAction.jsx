@@ -44,7 +44,7 @@ export default (name, icon, fieldFilter) => (
     return {
         title: clicked
             ? <span>
-                  View this
+                  Pivot this
                   {" "}
                   <span className="text-dark">
                       {clicked.column.unit || clicked.column.display_name}
