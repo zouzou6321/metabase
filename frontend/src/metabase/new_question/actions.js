@@ -28,6 +28,9 @@ export const setTip = createAction(SET_TIP);
 export const BACK = "BACK";
 export const back = createAction(BACK);
 
+export const ADD_BREAKOUT_STEP = "ADD_BREAKOUT_STEP";
+export const addBreakoutStep = createAction(ADD_BREAKOUT_STEP);
+
 export const NEW_METRIC = "NEW_METRIC";
 export const newMetric = createThunkAction(
     NEW_METRIC,
@@ -77,6 +80,10 @@ export const selectAndAdvance = createThunkAction(
 
             dispatch(selectionAction());
             dispatch(checkFlowCompletion());
+
+            if (!nextStep) {
+                dispatch(addBreakoutStep());
+            }
 
             if (isSkippable) {
                 console.log("next step is skippable");

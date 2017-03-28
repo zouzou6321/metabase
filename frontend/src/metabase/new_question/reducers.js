@@ -1,4 +1,5 @@
 import {
+    ADD_BREAKOUT_STEP,
     ADVANCE_STEP,
     BACK,
     NEW_METRIC,
@@ -24,6 +25,12 @@ import MapLanding from "./containers/MapLanding";
 import BreakoutSelection from "./containers/BreakoutSelection";
 import tips from "./tips";
 
+const breakoutStep = {
+    title: "How do you want to see this metric?",
+    component: BreakoutSelection,
+    tip: tips["breakout"]
+};
+
 const initialStep = {
     subtitle: "What would you like to see #user.firstName",
     component: QueryTypeList,
@@ -39,11 +46,7 @@ const metric = [
         component: MetricLanding,
         tip: tips["metric"]
     },
-    {
-        title: "How do you want to see this metric?",
-        component: BreakoutSelection,
-        tip: tips["breakout"]
-    }
+    breakoutStep
 ];
 
 const newMetricSteps = [
@@ -95,11 +98,7 @@ const geo = [
         component: MetricLanding,
         tip: tips["metric"]
     },
-    {
-        title: "How do you want to see this metric?",
-        component: BreakoutSelection,
-        tip: tips["breakout"]
-    }
+    breakoutStep
 ];
 
 const pivotTitle = "Pivot a metric";
@@ -121,11 +120,7 @@ const timeseries = [
         component: MetricLanding,
         tip: tips["metric"]
     },
-    {
-        title: "What time field would you like to use?",
-        component: BreakoutSelection,
-        tip: tips["breakout"]
-    }
+    breakoutStep
 ];
 
 const titles = {
@@ -219,6 +214,7 @@ export default function(state = initialState, { type, payload, error }) {
         case NEW_METRIC:
             return {
                 ...state,
+                newMetric: true,
                 currentStep: newMetricSteps[0],
                 flow: {
                     ...state.flow,
@@ -246,6 +242,7 @@ export default function(state = initialState, { type, payload, error }) {
                 }
             };
         case SET_AGGREGATION:
+            console.log(payload);
             return {
                 ...state,
                 card: {
@@ -259,7 +256,14 @@ export default function(state = initialState, { type, payload, error }) {
                     }
                 }
             };
-
+        case ADD_BREAKOUT_STEP:
+            return {
+                ...state,
+                flow: {
+                    ...state.flow,
+                    steps: state.flow.steps.concat([breakoutStep])
+                }
+            };
         case SET_DATABASE:
             return {
                 ...state,

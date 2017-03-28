@@ -52,18 +52,28 @@ class AggBasics extends Component {
         const { table, onClick, setTip, clearTip } = this.props;
         return (
             <div>
-                <ol className={cxs({ display: "flex", flexWrap: "wrap" })}>
+                <ol
+                    className={cxs({
+                        display: this.state.fields ? "block" : "flex",
+                        flexWrap: "wrap"
+                    })}
+                >
                     {this.state.fields
                         ? this.state.fields.map(field => (
-                              <div>{field.display_name}</div>
+                              <div
+                                  onClick={() =>
+                                      onClick([
+                                          this.state.option,
+                                          ["field-id", field.id]
+                                      ])}
+                              >
+                                  {field.display_name}
+                              </div>
                           ))
                         : Object.values(
                               table.aggregation_options
                           ).map(option => (
                               <li
-                                  onMouseEnter={() =>
-                                      setTip(option.description)}
-                                  onMouseLeave={() => clearTip()}
                                   className={cxs({
                                       flex: "0 1 25%",
                                       padding: "1em"
@@ -75,11 +85,14 @@ class AggBasics extends Component {
                                               option: option.short
                                           });
                                       } else {
-                                          selectAndAdvance;
+                                          const aggregation = option.short;
+                                          onClick([aggregation]);
                                       }
                                   }}
                               >
-                                  <Card>{option.name}</Card>
+                                  <Card>
+                                      <h3>{option.name}</h3>
+                                  </Card>
                               </li>
                           ))}
                 </ol>
@@ -164,9 +177,9 @@ class MetricBuilderAggregation extends Component {
                     <AggBasics
                         table={table}
                         setTip={this.props.setTip}
+                        clearTip={() => this.props.setTip(this.tip)}
                         onClick={aggregation =>
                             selectAndAdvance(() => setAggregation(aggregation))}
-                        clearTip={() => this.props.setTip(this.tip)}
                     />
                 );
         }
