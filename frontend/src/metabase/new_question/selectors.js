@@ -47,8 +47,19 @@ export const getSelectedTable = state => {
 
 export const getSelectedTableMetadata = createSelector(
     [getSelectedTable, getTables],
-    (selectedTable, tables) =>
-        selectedTable != null ? tables[selectedTable] : null
+    (selectedTable, tables) => {
+        const table = selectedTable != null ? tables[selectedTable] : null;
+        if (table) {
+            return {
+                ...table,
+                fields: table.fields.map(
+                    fieldId => table.fields_lookup[fieldId]
+                )
+            };
+        } else {
+            return null;
+        }
+    }
 );
 
 export const getCurrentFlowType = state => state.newQuestion.flow.type;

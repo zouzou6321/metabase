@@ -98,16 +98,31 @@ const SavedAggregations = ({ aggregations, onClick }) => (
     </div>
 );
 
-const CustomAggregation = ({ table }) => (
-    <div>
-        <ExpressionEditorTextfield
-            tableMetadata={table}
-            onChange={() => console.log("changed")}
-            onError={() => console.log("error")}
-            startrule="aggregation"
-        />
-    </div>
-);
+class CustomAggregation extends Component {
+    constructor() {
+        super();
+        this.state = {
+            error: undefined
+        };
+    }
+    render() {
+        const { table, onClick } = this.props;
+        return (
+            <div>
+                <ExpressionEditorTextfield
+                    tableMetadata={table}
+                    expression={null}
+                    onChange={aggregation => this.setState({ aggregation })}
+                    onError={error => this.setState({ error })}
+                    startRule="aggregation"
+                />
+                <button onClick={() => onClick(this.state.aggregation)}>
+                    Next
+                </button>
+            </div>
+        );
+    }
+}
 
 @connect(mapStateToProps, mapDispatchToProps)
 class MetricBuilderAggregation extends Component {
@@ -137,7 +152,13 @@ class MetricBuilderAggregation extends Component {
                     />
                 );
             case "custom":
-                return <CustomAggregation table={table} />;
+                return (
+                    <CustomAggregation
+                        table={table}
+                        onClick={aggregation =>
+                            selectAndAdvance(() => setAggregation(aggregation))}
+                    />
+                );
             default:
                 return (
                     <AggBasics

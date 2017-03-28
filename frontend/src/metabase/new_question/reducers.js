@@ -6,6 +6,7 @@ import {
     SELECT_FLOW,
     SET_DATABASE,
     SET_TABLE,
+    SET_AGGREGATION,
     SET_TIP,
     SELECT_METRIC,
     SELECT_METRIC_BREAKOUT
@@ -240,6 +241,20 @@ export default function(state = initialState, { type, payload, error }) {
                         query: {
                             ...state.card.dataset_query.query,
                             source_table: payload
+                        }
+                    }
+                }
+            };
+        case SET_AGGREGATION:
+            return {
+                ...state,
+                card: {
+                    ...state.card,
+                    dataset_query: {
+                        ...state.card.dataset_query,
+                        query: {
+                            ...state.card.dataset_query.query,
+                            aggregation: payload
                         }
                     }
                 }
