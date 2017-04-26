@@ -20,12 +20,15 @@ import ExplicitSize from "metabase/components/ExplicitSize.jsx";
 import { Grid, ScrollSync } from "react-virtualized";
 import Draggable from "react-draggable";
 
-const HEADER_HEIGHT = 50;
-const ROW_HEIGHT = 35;
+const HEADER_HEIGHT = 36;
+const ROW_HEIGHT = 28;
 const MIN_COLUMN_WIDTH = ROW_HEIGHT;
 const RESIZE_HANDLE_WIDTH = 5;
 
 import type { VisualizationProps } from "metabase/meta/types/Visualization";
+
+import { isNumeric } from "metabase/lib/schema_metadata";
+import { isPK, isFK } from "metabase/lib/types";
 
 type Props = VisualizationProps & {
     width: number,
@@ -33,6 +36,7 @@ type Props = VisualizationProps & {
     sort: any,
     isPivoted: boolean,
 }
+
 type State = {
     columnWidths: number[],
     contentWidths: ?number[]
@@ -248,10 +252,13 @@ export default class TableInteractive extends Component<*, Props, State> {
 
         return (
             <div
-                key={key} style={style}
-                className={cx("TableInteractive-cellWrapper cellData", {
+                key={key}
+                style={style}
+                className={cx(
+                    "TableInteractive-cellWrapper cellData flex align-center", {
                     "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
-                    "cursor-pointer": isClickable
+                    "cursor-pointer": isClickable,
+                    "justify-end pr4": isNumeric(column) && (!isFK(column) || !isPK(column))
                 })}
                 onClick={isClickable && ((e) => {
                     onVisualizationClick({ ...clicked, element: e.currentTarget });
@@ -293,9 +300,10 @@ export default class TableInteractive extends Component<*, Props, State> {
             <div
                 key={key}
                 style={{ ...style, overflow: "visible" /* ensure resize handle is visible */ }}
-                className={cx("TableInteractive-cellWrapper TableInteractive-headerCellData", {
+                className={cx("TableInteractive-cellWrapper TableInteractive-headerCellData border-bottom text-bold flex align-center", {
                     "TableInteractive-cellWrapper--firstColumn": columnIndex === 0,
                     "TableInteractive-headerCellData--sorted": (sort && sort[0] && sort[0][0] === column.id),
+                    "justify-end pr4": isNumeric(column)
                 })}
             >
                 <div
