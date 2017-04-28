@@ -78,6 +78,7 @@
                  [prismatic/schema "1.1.5"]                           ; Data schema declaration and validation library
                  [ring/ring-jetty-adapter "1.5.1"]                    ; Ring adapter using Jetty webserver (used to run a Ring server for unit tests)
                  [ring/ring-json "0.4.0"]                             ; Ring middleware for reading/writing JSON automatically
+                 [robert/hooke "1.3.0"]                               ; for hooking a cancel function into JDBC
                  [stencil "0.5.0"]                                    ; Mustache templates for Clojure
                  [toucan "1.0.2"                                      ; Model layer, hydration, and DB utilities
                   :exclusions [honeysql]]]

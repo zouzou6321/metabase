@@ -14,7 +14,8 @@
              [query :as query]]
             [metabase.query-processor.util :as qputil]
             [metabase.util.schema :as su]
-            [schema.core :as s])
+            [schema.core :as s]
+            [metabase.driver :as driver])
   (:import [java.io ByteArrayInputStream ByteArrayOutputStream]))
 
 (def ^:private ^:const max-results-bare-rows
@@ -29,6 +30,16 @@
   "Default map of constraints that we apply on dataset queries executed by the api."
   {:max-results           max-results
    :max-results-bare-rows max-results-bare-rows})
+
+(api/defendpoint POST "/cancel"
+  "cancel a running query by passing the UUID that was passed to it's invocation"
+  [:as {{:keys [database id] :as body} :body}]
+  (let [driver (driver/database-id->driver database)
+        supports-cancelation (contains? (driver/features driver) :cancel-query)]
+    (api/read-check Database database)
+    (if supports-cancelation
+      (driver/cancel-query driver id)
+      (throw (Exception. "This Database Driver does not support query cancelation")))))
 
 (api/defendpoint POST "/"
   "Execute a query and retrieve the results in the usual format."

@@ -14,9 +14,11 @@
              [annotate :as annotate]
              [interface :as i]
              [util :as qputil]]
-            [metabase.util.honeysql-extensions :as hx])
+            [metabase.util.honeysql-extensions :as hx]
+            [robert.hooke :as hooke])
   (:import clojure.lang.Keyword
            java.sql.SQLException
+           java.util.UUID
            [metabase.query_processor.interface AgFieldRef DateTimeField DateTimeValue Expression ExpressionRef Field RelativeDateTimeValue Value]))
 
 (def ^:dynamic *query*
@@ -352,14 +354,47 @@
       (log/error "Failed to set timezone:\n" (.getMessage e))
       (run-query-without-timezone driver settings connection query))))
 
+(def ^:private ^:dynamic query-id nil)
+(def ^:private query-id->running-query (atom {}))
+
+(defn cancel-query
+  "Cancel a query by ID"
+  [driver id]
+  (do-with-try-catch
+    (fn []
+      (when-let [stmt (get @query-id->running-query id)]
+        (do (log/debug (u/format-color 'green "found running query to cancel: %s %s" id stmt)))
+        (.cancel stmt))
+      (log/info (u/format-color 'orange "requested cancelation of non running query %s" id)))))
+
+(hooke/clear-hooks #'clojure.java.jdbc/prepare-statement)
+(hooke/add-hook #'clojure.java.jdbc/prepare-statement
+                (fn [f & args]
+                  (let [stmt (apply f args)]
+                    (when query-id
+                      (clojure.tools.logging/errorf "intercepted querry %s" stmt)
+                      (swap! query-id->running-query assoc query-id stmt)
+                      (clojure.tools.logging/errorf "adding [%s ->  %s] to running queries" query-id stmt))
+                    stmt)))
 
 (defn execute-query
   "Process and run a native (raw SQL) QUERY."
-  [driver {:keys [database settings], query :native, :as outer-query}]
-  (let [query (assoc query :remark (qputil/query->remark outer-query))]
-    (do-with-try-catch
-      (fn []
-        (let [db-connection (sql/db->jdbc-connection-spec database)]
-          ((if (seq (:report-timezone settings))
-             run-query-with-timezone
-             run-query-without-timezone) driver settings db-connection query))))))
+  [driver {:keys [database settings query-uuid], query :native, :as outer-query}]
+  (let [;; dummy-id (UUID/randomUUID) remove before flight
+        query (assoc query :remark (qputil/query->remark outer-query))]
+    (binding [query-id query-uuid]
+      (try
+        (let [result
+              (do-with-try-catch
+                (fn []
+                  (let [db-connection (sql/db->jdbc-connection-spec database)
+                        query-result ((if (seq (:report-timezone settings))
+                                        run-query-with-timezone
+                                        run-query-without-timezone) driver settings db-connection query)]
+                    query-result)))]
+          result)
+        (finally
+          (if-let [running-query (get @query-id->running-query query-uuid)]
+            (log/debug (u/format-color 'blue "found connection %s %s " query-uuid running-query))
+            (log/warn (u/format-color 'red "No open connection found for query id %s " query-uuid)))
+          (swap! query-id->running-query dissoc query-id query-uuid))))))
