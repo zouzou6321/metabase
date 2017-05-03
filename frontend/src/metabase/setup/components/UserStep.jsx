@@ -165,7 +165,7 @@ export default class UserStep extends Component {
 
                         <FormField fieldName="site_name" formError={formError}>
                             <FormLabel title="Your company or team name" fieldName="site_name" formError={formError}></FormLabel>
-                            <input ref="siteName" className="Form-input Form-offset full" name="siteName" type="text" defaultValue={(userDetails) ? userDetails.site_name : ""} placeholder="Department of awesome" required onChange={this.onChange.bind(this)} />
+                            <input ref="siteName" className="Form-input Form-offset full" name="siteName" type="text" defaultValue={(userDetails) ? userDetails.site_name : ""} placeholder="Department of awesome" minLength={1} required onChange={this.onChange.bind(this)} />
                             <span className="Form-charm"></span>
                         </FormField>
 
