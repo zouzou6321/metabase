@@ -241,7 +241,11 @@ export default class FilterPopover extends Component<*, Props, State> {
         let { filter } = this.state;
         if (filter[0] === "SEGMENT" || filter[1] == undefined) {
             return (
-                <div className="FilterPopover">
+                <div
+                    className="FilterPopover"
+                    style={{
+                      maxWidth: 500  
+                }}>
                     <FieldList
                         className="text-purple"
                         field={this.state.filter[1]}
