@@ -10,7 +10,8 @@
             [metabase.util :as u]
             [metabase.util.schema :as su]
             [schema.core :as s])
-  (:import [metabase.query_processor.interface AgFieldRef BetweenFilter ComparisonFilter CompoundFilter EqualityFilter Expression ExpressionRef FieldLiteral FieldPlaceholder RelativeDatetime StringFilter ValuePlaceholder]))
+  (:import [metabase.query_processor.interface AgFieldRef BetweenFilter ComparisonFilter CompoundFilter Expression ExpressionRef
+            FieldLiteral FieldPlaceholder RelativeDatetime StringFilter ValuePlaceholder]))
 
 ;;; # ------------------------------------------------------------ Token dispatch ------------------------------------------------------------
 

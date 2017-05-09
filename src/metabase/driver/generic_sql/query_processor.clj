@@ -17,7 +17,7 @@
             [metabase.util.honeysql-extensions :as hx])
   (:import clojure.lang.Keyword
            java.sql.SQLException
-           [metabase.query_processor.interface AgFieldRef DateTimeField DateTimeValue Expression ExpressionRef Field FieldLiteral JoinTable RelativeDateTimeValue Value]))
+           [metabase.query_processor.interface AgFieldRef DateTimeField DateTimeValue Expression ExpressionRef Field FieldLiteral RelativeDateTimeValue Value]))
 
 (def ^:dynamic *query*
   "The outer query currently being processed."
