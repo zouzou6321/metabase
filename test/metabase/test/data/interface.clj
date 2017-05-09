@@ -4,14 +4,16 @@
    Objects that implement `IDatasetLoader` know how to load a `DatabaseDefinition` into an
    actual physical RDMS database. This functionality allows us to easily test with multiple datasets."
   (:require [clojure.string :as str]
-            [schema.core :as s]
-            (metabase [db :as db]
-                      [driver :as driver])
-            (metabase.models [database :refer [Database]]
-                             [field :refer [Field] :as field]
-                             [table :refer [Table]])
-            [metabase.util :as u]
-            [metabase.util.schema :as su])
+            [metabase
+             [db :as db]
+             [driver :as driver]
+             [util :as u]]
+            [metabase.models
+             [database :refer [Database]]
+             [field :as field :refer [Field]]
+             [table :refer [Table]]]
+            [metabase.util.schema :as su]
+            [schema.core :as s])
   (:import clojure.lang.Keyword))
 
 (s/defrecord FieldDefinition [field-name      :- su/NonBlankString
@@ -30,8 +32,9 @@
 
 (defn escaped-name
   "Return escaped version of database name suitable for use as a filename / database name / etc."
-  ^String [^DatabaseDefinition database-definition]
-  (str/replace (:database-name database-definition) #"\s+" "_"))
+  ^String [^DatabaseDefinition {:keys [database-name]}]
+  {:pre [(string? database-name)]}
+  (str/replace database-name #"\s+" "_"))
 
 (defn db-qualified-table-name
   "Return a combined table name qualified with the name of its database, suitable for use as an identifier.

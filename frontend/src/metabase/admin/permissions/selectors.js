@@ -27,14 +27,14 @@ import {
     diffPermissions,
 } from "metabase/lib/permissions";
 
-const getPermissions = (state) => state.permissions.permissions;
-const getOriginalPermissions = (state) => state.permissions.originalPermissions;
+const getPermissions = (state) => state.admin.permissions.permissions;
+const getOriginalPermissions = (state) => state.admin.permissions.originalPermissions;
 
 const getDatabaseId = (state, props) => props.params.databaseId ? parseInt(props.params.databaseId) : null
 const getSchemaName = (state, props) => props.params.schemaName
 
-const getMetadata = createSelector(
-    [(state) => state.permissions.databases],
+const getMeta = createSelector(
+    [(state) => state.admin.permissions.databases],
     (databases) => databases && new Metadata(databases)
 );
 
@@ -43,7 +43,7 @@ const SPECIAL_GROUP_FILTERS = [isAdminGroup, isDefaultGroup, isMetaBotGroup].rev
 
 function getTooltipForGroup(group) {
     if (isAdminGroup(group)) {
-        return "Administrators always have the highest level of acess to everything in Metabase."
+        return "Administrators always have the highest level of access to everything in Metabase."
     } else if (isDefaultGroup(group)) {
         return "Every Metabase user belongs to the All Users group. If you want to limit or restrict a group's access to something, make sure the All Users group has an equal or lower level of access.";
     } else if (isMetaBotGroup(group)) {
@@ -53,7 +53,7 @@ function getTooltipForGroup(group) {
 }
 
 export const getGroups = createSelector(
-    (state) => state.permissions.groups,
+    (state) => state.admin.permissions.groups,
     (groups) => {
         let orderedGroups = groups ? [...groups] : [];
         for (let groupFilter of SPECIAL_GROUP_FILTERS) {
@@ -75,7 +75,7 @@ export const getIsDirty = createSelector(
         JSON.stringify(permissions) !== JSON.stringify(originalPermissions)
 )
 
-export const getSaveError = (state) => state.permissions.saveError;
+export const getSaveError = (state) => state.admin.permissions.saveError;
 
 
 // these are all the permission levels ordered by level of access
@@ -204,7 +204,7 @@ const OPTION_COLLECTION_READ = {
 };
 
 export const getTablesPermissionsGrid = createSelector(
-    getMetadata, getGroups, getPermissions, getDatabaseId, getSchemaName,
+    getMeta, getGroups, getPermissions, getDatabaseId, getSchemaName,
     (metadata: Metadata, groups: Array<Group>, permissions: GroupsPermissions, databaseId: DatabaseId, schemaName: SchemaName) => {
         const database = metadata && metadata.database(databaseId);
 
@@ -264,7 +264,7 @@ export const getTablesPermissionsGrid = createSelector(
 );
 
 export const getSchemasPermissionsGrid = createSelector(
-    getMetadata, getGroups, getPermissions, getDatabaseId,
+    getMeta, getGroups, getPermissions, getDatabaseId,
     (metadata: Metadata, groups: Array<Group>, permissions: GroupsPermissions, databaseId: DatabaseId) => {
         const database = metadata && metadata.database(databaseId);
 
@@ -283,8 +283,8 @@ export const getSchemasPermissionsGrid = createSelector(
             ],
             groups,
             permissions: {
-                header: "Data Access",
                 "tables": {
+                    header: "Data Access",
                     options(groupId, entityId) {
                         return [OPTION_ALL, OPTION_CONTROLLED, OPTION_NONE]
                     },
@@ -324,7 +324,7 @@ export const getSchemasPermissionsGrid = createSelector(
 );
 
 export const getDatabasesPermissionsGrid = createSelector(
-    getMetadata, getGroups, getPermissions,
+    getMeta, getGroups, getPermissions,
     (metadata: Metadata, groups: Array<Group>, permissions: GroupsPermissions) => {
         if (!groups || !permissions || !metadata) {
             return null;
@@ -418,7 +418,7 @@ export const getDatabasesPermissionsGrid = createSelector(
     }
 );
 
-const getCollections = (state) => state.permissions.collections;
+const getCollections = (state) => state.admin.permissions.collections;
 const getCollectionPermission = (permissions, groupId, { collectionId }) =>
     getIn(permissions, [groupId, collectionId])
 
@@ -469,7 +469,7 @@ export const getCollectionsPermissionsGrid = createSelector(
 
 
 export const getDiff = createSelector(
-    getMetadata, getGroups, getPermissions, getOriginalPermissions,
+    getMeta, getGroups, getPermissions, getOriginalPermissions,
     (metadata: Metadata, groups: Array<Group>, permissions: GroupsPermissions, originalPermissions: GroupsPermissions) =>
         diffPermissions(permissions, originalPermissions, groups, metadata)
 );

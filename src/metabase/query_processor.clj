@@ -1,30 +1,35 @@
 (ns metabase.query-processor
   "Preprocessor that does simple transformations to all incoming queries, simplifing the driver-specific implementations."
   (:require [clojure.tools.logging :as log]
-            [schema.core :as s]
-            [toucan.db :as db]
-            [metabase.driver :as driver]
-            [metabase.models.query-execution :refer [QueryExecution], :as query-execution]
+            [metabase
+             [driver :as driver]
+             [util :as u]]
+            [metabase.models
+             [query :as query]
+             [query-execution :as query-execution :refer [QueryExecution]]]
+            [metabase.query-processor.middleware
+             [add-implicit-clauses :as implicit-clauses]
+             [add-row-count-and-status :as row-count-and-status]
+             [add-settings :as add-settings]
+             [annotate-and-sort :as annotate-and-sort]
+             [cache :as cache]
+             [catch-exceptions :as catch-exceptions]
+             [cumulative-aggregations :as cumulative-ags]
+             [dev :as dev]
+             [driver-specific :as driver-specific]
+             [expand-macros :as expand-macros]
+             [expand-resolve :as expand-resolve]
+             [format-rows :as format-rows]
+             [limit :as limit]
+             [log :as log-query]
+             [mbql-to-native :as mbql-to-native]
+             [parameters :as parameters]
+             [permissions :as perms]
+             [resolve-driver :as resolve-driver]]
             [metabase.query-processor.util :as qputil]
-            (metabase.query-processor.middleware [add-implicit-clauses :as implicit-clauses]
-                                                 [add-row-count-and-status :as row-count-and-status]
-                                                 [add-settings :as add-settings]
-                                                 [annotate-and-sort :as annotate-and-sort]
-                                                 [catch-exceptions :as catch-exceptions]
-                                                 [cumulative-aggregations :as cumulative-ags]
-                                                 [dev :as dev]
-                                                 [driver-specific :as driver-specific]
-                                                 [expand-macros :as expand-macros]
-                                                 [expand-resolve :as expand-resolve]
-                                                 [format-rows :as format-rows]
-                                                 [limit :as limit]
-                                                 [log :as log-query]
-                                                 [mbql-to-native :as mbql-to-native]
-                                                 [parameters :as parameters]
-                                                 [permissions :as perms]
-                                                 [resolve-driver :as resolve-driver])
-            [metabase.util :as u]
-            [metabase.util.schema :as su]))
+            [metabase.util.schema :as su]
+            [schema.core :as s]
+            [toucan.db :as db]))
 
 ;;; +-------------------------------------------------------------------------------------------------------+
 ;;; |                                           QUERY PROCESSOR                                             |
@@ -79,8 +84,9 @@
        driver-specific/process-query-in-context      ; (drivers can inject custom middleware if they implement IDriver's `process-query-in-context`)
        add-settings/add-settings
        resolve-driver/resolve-driver                 ; ▲▲▲ DRIVER RESOLUTION POINT ▲▲▲ All functions *above* will have access to the driver during PRE- *and* POST-PROCESSING
-       catch-exceptions/catch-exceptions
-       log-query/log-initial-query)
+       log-query/log-initial-query
+       cache/maybe-return-cached-results
+       catch-exceptions/catch-exceptions)
    query))
 ;; ▲▲▲ PRE-PROCESSING ▲▲▲ happens from BOTTOM-TO-TOP, e.g. the results of `expand-macros` are (eventually) passed to `expand-resolve`
 
@@ -100,9 +106,10 @@
 ;;; +----------------------------------------------------------------------------------------------------+
 
 (defn- save-query-execution!
-  "Save (or update) a `QueryExecution`."
+  "Save a `QueryExecution` and update the average execution time for the corresponding `Query`."
   [query-execution]
   (u/prog1 query-execution
+    (query/update-average-execution-time! (:hash query-execution) (:running_time query-execution))
     (db/insert! QueryExecution (dissoc query-execution :json_query))))
 
 (defn- save-and-return-failed-query!
@@ -126,17 +133,20 @@
 (defn- save-and-return-successful-query!
   "Save QueryExecution state and construct a completed (successful) query response"
   [query-execution query-result]
-  ;; record our query execution and format response
-  (-> (assoc query-execution
-        :running_time (- (System/currentTimeMillis)
-                         (:start_time_millis query-execution))
-        :result_rows  (get query-result :row_count 0))
-      (dissoc :start_time_millis)
-      save-query-execution!
-      ;; at this point we've saved and we just need to massage things into our final response format
-      (dissoc :error :result_rows :hash :executor_id :native :card_id :dashboard_id :pulse_id)
-      (merge query-result)
-      (assoc :status :completed)))
+  (let [query-execution (-> (assoc query-execution
+                              :running_time (- (System/currentTimeMillis)
+                                               (:start_time_millis query-execution))
+                              :result_rows  (get query-result :row_count 0))
+                            (dissoc :start_time_millis))]
+    ;; only insert a new record into QueryExecution if the results *were not* cached (i.e., only if a Query was actually ran)
+    (when-not (:cached query-result)
+      (save-query-execution! query-execution))
+    ;; ok, now return the results in the normal response format
+    (merge (dissoc query-execution :error :result_rows :hash :executor_id :native :card_id :dashboard_id :pulse_id)
+           query-result
+           {:status                 :completed
+            :average_execution_time (when (:cached query-result)
+                                      (query/average-execution-time-ms (:hash query-execution)))})))
 
 
 (defn- assert-query-status-successful
@@ -208,6 +218,7 @@
   For the purposes of tracking we record each call to this function as a QueryExecution in the database.
 
   OPTIONS must conform to the `DatasetQueryOptions` schema; refer to that for more details."
+  {:style/indent 1}
   [query, options :- DatasetQueryOptions]
   (run-and-save-query! (assoc query :info (assoc options
                                             :query-hash (qputil/query-hash query)

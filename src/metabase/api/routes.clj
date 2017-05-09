@@ -1,34 +1,36 @@
 (ns metabase.api.routes
-  (:require [compojure.core :refer [context defroutes GET]]
-            [compojure.route :as route]
-            (metabase.api [activity :as activity]
-                          [card :as card]
-                          [collection :as collection]
-                          [dashboard :as dashboard]
-                          [database :as database]
-                          [dataset :as dataset]
-                          [email :as email]
-                          [embed :as embed]
-                          [field :as field]
-                          [getting-started :as getting-started]
-                          [geojson :as geojson]
-                          [label :as label]
-                          [metric :as metric]
-                          [notify :as notify]
-                          [permissions :as permissions]
-                          [preview-embed :as preview-embed]
-                          [public :as public]
-                          [pulse :as pulse]
-                          [revision :as revision]
-                          [segment :as segment]
-                          [session :as session]
-                          [setting :as setting]
-                          [setup :as setup]
-                          [slack :as slack]
-                          [table :as table]
-                          [tiles :as tiles]
-                          [user :as user]
-                          [util :as util])
+  (:require [compojure
+             [core :refer [context defroutes]]
+             [route :as route]]
+            [metabase.api
+             [activity :as activity]
+             [card :as card]
+             [collection :as collection]
+             [dashboard :as dashboard]
+             [database :as database]
+             [dataset :as dataset]
+             [email :as email]
+             [embed :as embed]
+             [field :as field]
+             [geojson :as geojson]
+             [getting-started :as getting-started]
+             [label :as label]
+             [metric :as metric]
+             [notify :as notify]
+             [permissions :as permissions]
+             [preview-embed :as preview-embed]
+             [public :as public]
+             [pulse :as pulse]
+             [revision :as revision]
+             [segment :as segment]
+             [session :as session]
+             [setting :as setting]
+             [setup :as setup]
+             [slack :as slack]
+             [table :as table]
+             [tiles :as tiles]
+             [user :as user]
+             [util :as util]]
             [metabase.middleware :as middleware]))
 
 (def ^:private +generic-exceptions
@@ -60,9 +62,6 @@
   (context "/field"           [] (+auth field/routes))
   (context "/getting_started" [] (+auth getting-started/routes))
   (context "/geojson"         [] (+auth geojson/routes))
-  (GET     "/health"          [] (if ((resolve 'metabase.core/initialized?))
-                                   {:status 200, :body {:status "ok"}}
-                                   {:status 503, :body {:status "initializing", :progress ((resolve 'metabase.core/initialization-progress))}}))
   (context "/label"           [] (+auth label/routes))
   (context "/metric"          [] (+auth metric/routes))
   (context "/notify"          [] (+apikey notify/routes))

@@ -2,29 +2,15 @@
   "Converts a Query Dict as received by the API into an *expanded* one that contains extra information that will be needed to
    construct the appropriate native Query, and perform various post-processing steps such as Field ordering."
   (:refer-clojure :exclude [< <= > >= = != and or not filter count distinct sum min max + - / *])
-  (:require (clojure [core :as core]
-                     [string :as str])
+  (:require [clojure
+             [core :as core]
+             [string :as str]]
             [clojure.tools.logging :as log]
-            [schema.core :as s]
-            [toucan.db :as db]
-            [metabase.models.table :refer [Table]]
             [metabase.query-processor.interface :as i]
             [metabase.util :as u]
-            [metabase.util.schema :as su])
-  (:import (metabase.query_processor.interface AgFieldRef
-                                               BetweenFilter
-                                               ComparisonFilter
-                                               CompoundFilter
-                                               EqualityFilter
-                                               Expression
-                                               ExpressionRef
-                                               FieldLiteral
-                                               FieldPlaceholder
-                                               NotFilter
-                                               RelativeDatetime
-                                               StringFilter
-                                               ValuePlaceholder)))
-
+            [metabase.util.schema :as su]
+            [schema.core :as s])
+  (:import [metabase.query_processor.interface AgFieldRef BetweenFilter ComparisonFilter CompoundFilter EqualityFilter Expression ExpressionRef FieldLiteral FieldPlaceholder RelativeDatetime StringFilter ValuePlaceholder]))
 
 ;;; # ------------------------------------------------------------ Token dispatch ------------------------------------------------------------
 
@@ -116,7 +102,7 @@
      (relative-datetime -31 :day)"
   ([n]                (s/validate (s/eq :current) (normalize-token n))
                       (relative-datetime 0 nil))
-  ([n :- s/Int, unit] (i/map->RelativeDatetime {:amount n, :unit (if (zero? n)
+  ([n :- s/Int, unit] (i/map->RelativeDatetime {:amount n, :unit (if (nil? unit)
                                                                    :day                        ; give :unit a default value so we can simplify the schema a bit and require a :unit
                                                                    (normalize-token unit))})))
 
@@ -314,7 +300,7 @@
       :next    (recur f  1 unit))
     (let [f (datetime-field f unit)]
       (cond
-        (core/= n  0) (= f (value f (relative-datetime :current)))
+        (core/= n  0) (= f (value f (relative-datetime  0 unit)))
         (core/= n -1) (= f (value f (relative-datetime -1 unit)))
         (core/= n  1) (= f (value f (relative-datetime  1 unit)))
         (core/< n -1) (between f (value f (relative-datetime  n unit))

@@ -1,34 +1,23 @@
 (ns metabase.driver.generic-sql.query-processor
   "The Query Processor is responsible for translating the Metabase Query Language into HoneySQL SQL forms."
   (:require [clojure.java.jdbc :as jdbc]
-            (clojure [string :as s]
-                     [walk :as walk])
             [clojure.tools.logging :as log]
-            (honeysql [core :as hsql]
-                      [format :as hformat]
-                      [helpers :as h]
-                      types)
-            (metabase [config :as config]
-                      [driver :as driver])
+            [honeysql
+             [core :as hsql]
+             [format :as hformat]
+             [helpers :as h]]
+            [metabase
+             [driver :as driver]
+             [util :as u]]
             [metabase.driver.generic-sql :as sql]
-            (metabase.query-processor [annotate :as annotate]
-                                      [interface :as i]
-                                      [util :as qputil])
-            [metabase.util :as u]
+            [metabase.query-processor
+             [annotate :as annotate]
+             [interface :as i]
+             [util :as qputil]]
             [metabase.util.honeysql-extensions :as hx])
-  (:import java.sql.Timestamp
-           java.util.Date
-           clojure.lang.Keyword
-           (metabase.query_processor.interface AgFieldRef
-                                               DateTimeField
-                                               DateTimeValue
-                                               Field
-                                               FieldLiteral
-                                               Expression
-                                               ExpressionRef
-                                               JoinTable
-                                               RelativeDateTimeValue
-                                               Value)))
+  (:import clojure.lang.Keyword
+           java.sql.SQLException
+           [metabase.query_processor.interface AgFieldRef DateTimeField DateTimeValue Expression ExpressionRef Field FieldLiteral JoinTable RelativeDateTimeValue Value]))
 
 (def ^:dynamic *query*
   "The outer query currently being processed."
@@ -156,7 +145,7 @@
 
 (defn- apply-expression-aggregation [driver honeysql-form expression]
   (h/merge-select honeysql-form [(expression-aggregation->honeysql driver expression)
-                                 (hx/escape-dots (annotate/aggregation-name expression))]))
+                                 (hx/escape-dots (driver/format-custom-field-name driver (annotate/aggregation-name expression)))]))
 
 (defn- apply-single-aggregation [driver honeysql-form {:keys [aggregation-type field], :as aggregation}]
   (h/merge-select honeysql-form [(aggregation->honeysql driver aggregation-type field)
@@ -329,7 +318,7 @@
     {:rows    (or rows [])
      :columns columns}))
 
-(defn- exception->nice-error-message ^String [^java.sql.SQLException e]
+(defn- exception->nice-error-message ^String [^SQLException e]
   (or (->> (.getMessage e)     ; error message comes back like 'Column "ZID" not found; SQL statement: ... [error-code]' sometimes
            (re-find #"^(.*);") ; the user already knows the SQL, and error code is meaningless
            second)             ; so just return the part of the exception that is relevant
@@ -337,7 +326,7 @@
 
 (defn- do-with-try-catch {:style/indent 0} [f]
   (try (f)
-       (catch java.sql.SQLException e
+       (catch SQLException e
          (log/error (jdbc/print-sql-exception-chain e))
          (throw (Exception. (exception->nice-error-message e))))))
 
@@ -359,10 +348,12 @@
 (defn- set-timezone!
   "Set the timezone for the current connection."
   [driver settings connection]
-  (let [timezone (:report-timezone settings)
-        sql      (sql/set-timezone-sql driver)]
-    (log/debug (u/pprint-to-str 'green [sql timezone]))
-    (jdbc/db-do-prepared connection [sql timezone])))
+  (let [timezone      (u/prog1 (:report-timezone settings)
+                        (assert (re-matches #"[A-Za-z\/_]+" <>)))
+        format-string (sql/set-timezone-sql driver)
+        sql           (format format-string (str \' timezone \'))]
+    (log/debug (u/format-color 'green "Setting timezone with statement: %s" sql))
+    (jdbc/db-do-prepared connection [sql])))
 
 (defn- run-query-without-timezone [driver settings connection query]
   (do-in-transaction connection (partial run-query query)))
@@ -372,8 +363,11 @@
     (do-in-transaction connection (fn [transaction-connection]
                                     (set-timezone! driver settings transaction-connection)
                                     (run-query query transaction-connection)))
-    (catch java.sql.SQLException e
+    (catch SQLException e
       (log/error "Failed to set timezone:\n" (with-out-str (jdbc/print-sql-exception-chain e)))
+      (run-query-without-timezone driver settings connection query))
+    (catch Throwable e
+      (log/error "Failed to set timezone:\n" (.getMessage e))
       (run-query-without-timezone driver settings connection query))))
 
 

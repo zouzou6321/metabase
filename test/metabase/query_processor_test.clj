@@ -4,12 +4,11 @@
    Event-based DBs such as Druid are tested in `metabase.driver.event-query-processor-test`."
   (:require [clojure.set :as set]
             [clojure.tools.logging :as log]
-            [expectations :refer :all]
-            [metabase.driver :as driver]
+            [metabase
+             [driver :as driver]
+             [util :as u]]
             [metabase.test.data :as data]
-            [metabase.test.data.datasets :as datasets]
-            metabase.test.data.interface
-            [metabase.util :as u]))
+            [metabase.test.data.datasets :as datasets]))
 
 ;; make sure all the driver test extension namespaces are loaded <3
 ;; if this isn't done some things will get loaded at the wrong time which can end up causing test databases to be created more than once, which fails
@@ -294,7 +293,7 @@
   {:style/indent 0}
   [results]
   (vec (or (get-in results [:data :rows])
-           (println (u/pprint-to-str 'red results))
+           (println (u/pprint-to-str 'red results)) ; DEBUG
            (throw (Exception. "Error!")))))
 
 (defn rows+column-names

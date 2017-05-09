@@ -1,6 +1,6 @@
 /* @flow */
 
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
 
 import { MinRowsError, ChartSettingsError } from "metabase/visualizations/lib/errors";
 
@@ -15,7 +15,7 @@ import LegendHeader from "../components/LegendHeader";
 import _ from "underscore";
 import cx from "classnames";
 
-import type { VisualizationProps } from "..";
+import type { VisualizationProps } from "metabase/meta/types/Visualization";
 
 export default class Funnel extends Component<*, VisualizationProps, *> {
     static uiName = "Funnel";
@@ -33,7 +33,12 @@ export default class Funnel extends Component<*, VisualizationProps, *> {
         return cols.length === 2;
     }
 
-    static checkRenderable([{ data: { cols, rows} }], settings) {
+    static checkRenderable(series, settings) {
+        const [{ data: { rows} }] = series;
+        if (series.length > 1) {
+            return;
+        }
+
         if (rows.length < 1) {
             throw new MinRowsError(1, rows.length);
         }
@@ -46,14 +51,14 @@ export default class Funnel extends Component<*, VisualizationProps, *> {
         "funnel.dimension": {
             section: "Data",
             title: "Step",
-            ...dimensionSetting("pie.dimension"),
+            ...dimensionSetting("funnel.dimension"),
             dashboard: false,
             useRawSeries: true,
         },
         "funnel.metric": {
             section: "Data",
             title: "Measure",
-            ...metricSetting("pie.metric"),
+            ...metricSetting("funnel.metric"),
             dashboard: false,
             useRawSeries: true,
         },
@@ -104,14 +109,14 @@ export default class Funnel extends Component<*, VisualizationProps, *> {
         if (settings["funnel.type"] === "bar") {
             return <FunnelBar {...this.props} />
         } else {
-            const { actionButtons, className, linkToCard, series } = this.props;
+            const { actionButtons, className, onChangeCardAndRun, series } = this.props;
             return (
                 <div className={cx(className, "flex flex-column p1")}>
                     <LegendHeader
                         className="flex-no-shrink"
                         series={series._raw || series}
                         actionButtons={actionButtons}
-                        linkToCard={linkToCard}
+                        onChangeCardAndRun={onChangeCardAndRun}
                     />
                     <FunnelNormal {...this.props} className="flex-full" />
                 </div>

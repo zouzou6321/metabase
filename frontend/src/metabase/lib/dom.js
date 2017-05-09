@@ -90,7 +90,8 @@ export function getSelectionPosition(element) {
     else {
         try {
             const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
+            // Clone the Range otherwise setStart/setEnd will mutate the actual selection in Chrome 58+ and Firefox!
+            const range = selection.getRangeAt(0).cloneRange();
             const { startContainer, startOffset } = range;
             range.setStart(element, 0);
             const end = range.toString().length;
@@ -178,7 +179,7 @@ var STYLE_SHEET = (function() {
     return style.sheet;
 })();
 
-export function addCSSRule(selector, rules, index) {
+export function addCSSRule(selector, rules, index = 0) {
     if("insertRule" in STYLE_SHEET) {
         STYLE_SHEET.insertRule(selector + "{" + rules + "}", index);
     }

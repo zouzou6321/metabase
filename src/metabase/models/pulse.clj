@@ -1,17 +1,20 @@
 (ns metabase.models.pulse
   (:require [clojure.set :as set]
             [medley.core :as m]
+            [metabase
+             [db :as mdb]
+             [events :as events]
+             [util :as u]]
             [metabase.api.common :refer [*current-user*]]
-            (toucan [db :as db]
-                    [hydrate :refer [hydrate]]
-                    [models :as models])
-            [metabase.db :as mdb]
-            [metabase.events :as events]
-            (metabase.models [card :refer [Card]]
-                             [interface :as i]
-                             [pulse-card :refer [PulseCard]]
-                             [pulse-channel :refer [PulseChannel] :as pulse-channel])
-            [metabase.util :as u]))
+            [metabase.models
+             [card :refer [Card]]
+             [interface :as i]
+             [pulse-card :refer [PulseCard]]
+             [pulse-channel :as pulse-channel :refer [PulseChannel]]]
+            [toucan
+             [db :as db]
+             [hydrate :refer [hydrate]]
+             [models :as models]]))
 
 ;;; ------------------------------------------------------------ Perms Checking ------------------------------------------------------------
 
@@ -168,7 +171,7 @@
   `PulseCards`, `PulseChannels`, and `PulseChannelRecipients`.
 
    Returns the newly created `Pulse` or throws an Exception."
-  [pulse-name creator-id card-ids channels]
+  [pulse-name creator-id card-ids channels skip-if-empty?]
   {:pre [(string? pulse-name)
          (integer? creator-id)
          (sequential? card-ids)
@@ -179,7 +182,8 @@
   (db/transaction
     (let [{:keys [id] :as pulse} (db/insert! Pulse
                                    :creator_id creator-id
-                                   :name pulse-name)]
+                                   :name pulse-name
+                                   :skip_if_empty skip-if-empty?)]
       ;; add card-ids to the Pulse
       (update-pulse-cards! pulse card-ids)
       ;; add channels to the Pulse
@@ -192,7 +196,7 @@
   "Update an existing `Pulse`, including all associated data such as: `PulseCards`, `PulseChannels`, and `PulseChannelRecipients`.
 
    Returns the updated `Pulse` or throws an Exception."
-  [{:keys [id name cards channels] :as pulse}]
+  [{:keys [id name cards channels skip-if-empty?] :as pulse}]
   {:pre [(integer? id)
          (string? name)
          (sequential? cards)
@@ -202,7 +206,7 @@
          (every? map? channels)]}
   (db/transaction
     ;; update the pulse itself
-    (db/update! Pulse id, :name name)
+    (db/update! Pulse id, :name name, :skip_if_empty skip-if-empty?)
     ;; update cards (only if they changed)
     (when (not= cards (map :card_id (db/select [PulseCard :card_id], :pulse_id id, {:order-by [[:position :asc]]})))
       (update-pulse-cards! pulse cards))
