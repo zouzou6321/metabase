@@ -76,6 +76,8 @@
                  [postgresql "9.3-1102.jdbc41"]                       ; Postgres driver
                  [io.crate/crate-jdbc "2.1.6"]                        ; Crate JDBC driver
                  [prismatic/schema "1.1.5"]                           ; Data schema declaration and validation library
+                 [org.clojure/tools.trace "0.7.9"]  ;; <---- REMOVE BEFORE MERGE
+                 [meitner "0.1.0"]
                  [ring/ring-jetty-adapter "1.5.1"]                    ; Ring adapter using Jetty webserver (used to run a Ring server for unit tests)
                  [ring/ring-json "0.4.0"]                             ; Ring middleware for reading/writing JSON automatically
                  [stencil "0.5.0"]                                    ; Mustache templates for Clojure
@@ -84,7 +86,8 @@
   :repositories [["bintray" "https://dl.bintray.com/crate/crate"]]    ; Repo for Crate JDBC driver
   :plugins [[lein-environ "1.1.0"]                                    ; easy access to environment variables
             [lein-ring "0.11.0"                                       ; start the HTTP server with 'lein ring server'
-             :exclusions [org.clojure/clojure]]]                      ; TODO - should this be a dev dependency ?
+             :exclusions [org.clojure/clojure]]
+            [ns-graph "0.1.2"]] ; TODO - should this be a dev dependency ?
   :main ^:skip-aot metabase.core
   :manifest {"Liquibase-Package" "liquibase.change,liquibase.changelog,liquibase.database,liquibase.parser,liquibase.precondition,liquibase.datatype,liquibase.serializer,liquibase.sqlgenerator,liquibase.executor,liquibase.snapshot,liquibase.logging,liquibase.diff,liquibase.structure,liquibase.structurecompare,liquibase.lockservice,liquibase.sdk,liquibase.ext"}
   :target-path "target/%s"
@@ -161,4 +164,9 @@
                               :jar-exclusions [#"^(?!metabase/reset_password).*$"]
                               :target-path "reset-password-artifacts/%s"} ; different than ./target because otherwise lein uberjar will delete our artifacts and vice versa
              ;; get the H2 shell with 'lein h2'
-             :h2-shell {:main org.h2.tools.Shell}})
+             :h2-shell {:main org.h2.tools.Shell}}
+  :ns-graph {:name "My project"
+             :abbrev-ns false
+             :source-paths ["src/metabase/task/analyze_databases.clj" "src/metabase/task/sync_databases.clj"
+                            "src/metabase/analyze_database.clj" "src/metabase/sync_database.clj" "src/metabase/sync_database"] #_(get-env :source-paths)
+             :exclude ["java.*" ".#*" "clojure.*"]})

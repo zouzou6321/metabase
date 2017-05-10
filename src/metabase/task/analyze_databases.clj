@@ -1,4 +1,4 @@
-(ns metabase.task.sync-databases
+(ns metabase.task.analyze-databases
   (:require [clj-time.core :as t]
             [clojure.tools.logging :as log]
             [clojurewerkz.quartzite
@@ -6,8 +6,8 @@
              [triggers :as triggers]]
             [clojurewerkz.quartzite.schedule.cron :as cron]
             [metabase
+             [analyze-database :as analyze-database]
              [driver :as driver]
-             [sync-database :as sync-database]
              [task :as task]]
             [metabase.models.database :refer [Database]]
             [toucan.db :as db]))
@@ -25,7 +25,11 @@
       ;; NOTE: this happens synchronously for now to avoid excessive load if there are lots of databases
       (if-not (and (zero? (t/hour (t/now)))
                    (driver/driver-supports? (driver/engine->driver (:engine database)) :dynamic-schema))
-        (sync-database/sync-database! database))
+        ;; most of the time we do a quick sync and avoid the lengthy analysis process
+        #_(sync-database/sync-database! database :full-sync? false)
+        ;; at midnight we run the full sync
+
+        (analyze-database/analyze-database! database :full-sync? true))
       (catch Throwable e
         (log/error (format "Error syncing database %d: " (:id database)) e)))))
 

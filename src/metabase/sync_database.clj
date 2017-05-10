@@ -10,7 +10,6 @@
              [table :as table]]
             [metabase.query-processor.interface :as i]
             [metabase.sync-database
-             [analyze :as analyze]
              [introspect :as introspect]
              [sync :as sync]
              [sync-dynamic :as sync-dynamic]]
@@ -20,7 +19,6 @@
          sync-table-with-tracking!)
 
 (defonce ^:private currently-syncing-dbs (atom #{}))
-
 
 (defn sync-database!
   "Sync DATABASE and all its Tables and Fields.
@@ -48,10 +46,7 @@
 
 (defn sync-table!
   "Sync a *single* TABLE and all of its Fields.
-   This is used *instead* of `sync-database!` when syncing just one Table is desirable.
-
-   Takes an optional kwarg `:full-sync?` which determines if we execute our table analysis work.  If this is not specified
-   then we default to using the `:is_full_sync` attribute of the tables parent database."
+   This is used *instead* of `sync-database!` when syncing just one Table is desirable."
   [table & {:keys [full-sync?]}]
   {:pre [(map? table)]}
   (binding [i/*disable-qp-logging* true]
@@ -61,7 +56,6 @@
                        full-sync?
                        (:is_full_sync database))]
       (driver/sync-in-context db-driver database (partial sync-table-with-tracking! db-driver database table full-sync?)))))
-
 
 ;;; ## ---------------------------------------- IMPLEMENTATION ----------------------------------------
 
@@ -80,11 +74,7 @@
       ;; use the introspected schema information and update our working data models
       (if (driver/driver-supports? driver :dynamic-schema)
         (sync-dynamic/scan-database-and-update-data-model! driver database)
-        (sync/update-data-models-from-raw-tables! database))
-
-      ;; now do any in-depth data analysis which requires querying the tables (if enabled)
-      (when full-sync?
-        (analyze/analyze-data-shape-for-tables! driver database)))
+        (sync/update-data-models-from-raw-tables! database)))
 
     (events/publish-event! :database-sync-end {:database_id  (:id database)
                                               :custom_id    tracking-hash
@@ -106,11 +96,7 @@
 
       ;; if this table comes from a dynamic schema db then run that sync process now
       (when (driver/driver-supports? driver :dynamic-schema)
-        (sync-dynamic/scan-table-and-update-data-model! driver database table))
-
-      ;; analyze if we are supposed to
-      (when full-sync?
-        (analyze/analyze-table-data-shape! driver table)))
+        (sync-dynamic/scan-table-and-update-data-model! driver database table)))
 
     (events/publish-event! :table-sync {:table_id (:id table)})
     (log/info (u/format-color 'magenta "Finished syncing table '%s' from %s database '%s'. (%s)" (:display_name table) (name driver) (:name database)
