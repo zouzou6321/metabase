@@ -12,7 +12,7 @@
             [schema.core :as schema]
             [toucan.db :as db]))
 
-(defn analyze-table-data-shape!
+(defn cache-table-data-shape!
   "Analyze the data shape for a single `Table`."
   [driver {table-id :id, :as table}]
   (let [new-field-ids (db/select-ids field/Field, :table_id table-id, :visibility_type [:not= "retired"], :last_analyzed nil)]
@@ -21,28 +21,24 @@
                              (when <>
                                (schema/validate i/AnalyzeTable <>)))]
       ;; update table row count
-      (when (:row_count table-stats)
+      #_(when (:row_count table-stats)
         (db/update! table/Table table-id, :rows (:row_count table-stats)))
 
       ;; update individual fields
       (doseq [{:keys [id preview-display special-type values]} (:fields table-stats)]
         ;; set Field metadata we may have detected
-        (when (and id (or preview-display special-type))
-          (db/update-non-nil-keys! field/Field id
-            ;; if a field marked `preview-display` as false then set the visibility type to `:details-only` (see models.field/visibility-types)
-            :visibility_type (when (false? preview-display) :details-only)
-            :special_type    special-type))
+        (log/error (u/format-color 'red (with-out-str (clojure.pprint/pprint {:special-type special-type :values values}))))      
         ;; handle field values, setting them if applicable otherwise clearing them
         (if (and id values (pos? (count (filter identity values))))
           (field-values/save-field-values! id values)
           (field-values/clear-field-values! id))))
 
-    ;; update :last_analyzed for all fields in the table
-    (db/update-where! field/Field {:table_id        table-id
+    ;; Keep track of how old the cache is on these fields
+    #_(db/update-where! field/Field {:table_id        table-id
                                    :visibility_type [:not= "retired"]}
-      :last_analyzed (u/new-sql-timestamp))))
+      :last_cached (u/new-sql-timestamp))))
 
-(defn analyze-data-shape-for-tables!
+(defn cache-data-shape-for-tables!
   "Perform in-depth analysis on the data shape for all `Tables` in a given DATABASE.
    This is dependent on what each database driver supports, but includes things like cardinality testing and table row counting.
    The bulk of the work is done by the `(analyze-table ...)` function on the IDriver protocol."
@@ -55,7 +51,7 @@
         finished-tables-count (atom 0)]
     (doseq [{table-name :name, :as table} tables]
       (try
-        (analyze-table-data-shape! driver table)
+        (cache-table-data-shape! driver table)
         (catch Throwable t
           (log/error "Unexpected error analyzing table" t))
         (finally

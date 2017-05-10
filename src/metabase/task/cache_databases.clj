@@ -1,4 +1,4 @@
-(ns metabase.task.analyze-databases
+(ns metabase.task.cache-databases
   (:require [clj-time.core :as t]
             [clojure.tools.logging :as log]
             [clojurewerkz.quartzite
@@ -6,14 +6,14 @@
              [triggers :as triggers]]
             [clojurewerkz.quartzite.schedule.cron :as cron]
             [metabase
-             [analyze-database :as analyze-database]
+             [cache-database :as cache-database]
              [driver :as driver]
              [task :as task]]
             [metabase.models.database :refer [Database]]
             [toucan.db :as db]))
 
-(def ^:private ^:const sync-databases-job-key     "metabase.task.sync-databases.job")
-(def ^:private ^:const sync-databases-trigger-key "metabase.task.sync-databases.trigger")
+(def ^:private ^:const sync-databases-job-key     "metabase.task.cache-databases.job")
+(def ^:private ^:const sync-databases-trigger-key "metabase.task.cache-databases.trigger")
 
 (defonce ^:private sync-databases-job (atom nil))
 (defonce ^:private sync-databases-trigger (atom nil))
@@ -29,7 +29,7 @@
         #_(sync-database/sync-database! database :full-sync? false)
         ;; at midnight we run the full sync
 
-        (analyze-database/analyze-database! database :full-sync? true))
+        (cache-database/cache-database! database :full-sync? true))
       (catch Throwable e
         (log/error (format "Error syncing database %d: " (:id database)) e)))))
 

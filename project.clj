@@ -125,7 +125,8 @@
                              [lein-instant-cheatsheet "2.2.1"         ; use awesome instant cheatsheet created by yours truly w/ 'lein instant-cheatsheet'
                               :exclusions [org.clojure/clojure
                                            org.clojure/tools.namespace]]]
-                   :env {:mb-run-mode "dev"}
+                   :env {:mb-run-mode "dev"
+                         :mb-jetty-join "false"}
                    :jvm-opts ["-Dlogfile.path=target/log"
                               "-Xms1024m"                             ; give JVM a decent heap size to start with
                               "-Xmx2048m"]                            ; hard limit of 2GB so we stop hitting the 4GB container limit on CircleCI
