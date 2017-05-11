@@ -29,7 +29,7 @@ export default class PulseListItem extends Component {
         let { pulse, formInput, user } = this.props;
 
         return (
-            <div ref="pulseListItem" className={cx("PulseListItem bordered rounded mb2 pt3", {"PulseListItem--focused": this.props.scrollTo})}>
+            <div ref="pulseListItem" className={cx("bordered bg-white rounded mb2 pt3", {"PulseListItem--focused": this.props.scrollTo})}>
                 <div className="flex px4 mb2">
                     <div>
                         <h2 className="mb1">{pulse.name}</h2>

@@ -6,7 +6,6 @@ import Collapse from "react-collapse";
 import Icon from "metabase/components/Icon";
 import Button from "metabase/components/Button";
 import DisclosureTriangle from "metabase/components/DisclosureTriangle";
-import TitleAndDescription from "metabase/components/TitleAndDescription";
 import ExpandingSearchField from "../components/ExpandingSearchField";
 import CollectionActions from "../components/CollectionActions";
 
@@ -59,61 +58,57 @@ export default class QuestionIndex extends Component {
         const showQuestions = hasQuestions || !showCollections || location.query.f != null;
         return (
             <Page>
-                <div className="relative">
-                    <div className="flex align-center">
-                        <PageHeader
-                            title={ showCollections ? "Collections of Questions" : "Saved Questions" }
-                            actions={[
-                                <ExpandingSearchField className="mr2" onSearch={this.props.search} />,
-                                <CollectionActions>
-                                    { isAdmin && hasCollections &&
-                                        <Link to="/collections/permissions">
-                                            <Icon name="lock" tooltip="Set permissions for collections" />
-                                        </Link>
-                                    }
-                                    <Link to="/questions/archive">
-                                        <Icon name="viewArchive" tooltip="View the archive" />
-                                    </Link>
-                                </CollectionActions>
-                            ]}
+                <PageHeader
+                    title={ showCollections ? "Collections of Questions" : "Saved Questions" }
+                    actions={[
+                        <ExpandingSearchField className="mr2" onSearch={this.props.search} />,
+                        <CollectionActions>
+                            { isAdmin && hasCollections &&
+                                <Link to="/collections/permissions">
+                                    <Icon name="lock" tooltip="Set permissions for collections" />
+                                </Link>
+                            }
+                            <Link to="/questions/archive">
+                                <Icon name="viewArchive" tooltip="View the archive" />
+                            </Link>
+                        </CollectionActions>
+                    ]}
+                />
+                <PageContent>
+                    { showCollections &&
+                        <div>
+                            { collections.length > 0 ?
+                                <CollectionButtons collections={collections} isAdmin={isAdmin} push={push} />
+                                :
+                                <CollectionEmptyState />
+                            }
+                        </div>
+                    }
+                    {/* only show title if we're showing the questions AND collections, otherwise title goes in the main header */}
+                    { showQuestions && showCollections &&
+                        <div
+                            className="inline-block mt2 mb2 cursor-pointer text-brand-hover"
+                            onClick={() => this.setState({ questionsExpanded: !questionsExpanded })}
+                        >
+                            <div className="flex align-center">
+                                <DisclosureTriangle open={questionsExpanded} />
+                                <h2>Everything Else</h2>
+                            </div>
+                        </div>
+                    }
+                    <Collapse isOpened={showQuestions && (questionsExpanded || !showCollections)} keepCollapsedContent={true}>
+                        <EntityList
+                            entityType="cards"
+                            entityQuery={{ f: "all", collection: "", ...location.query }}
+                            // use replace when changing sections so back button still takes you back to collections page
+                            onChangeSection={(section) => replace({
+                                ...location,
+                                query: { ...location.query, f: section }
+                            })}
+                            defaultEmptyState="Questions that aren’t in a collection will be shown here"
                         />
-                    </div>
-                    <PageContent>
-                        { showCollections &&
-                            <div>
-                                { collections.length > 0 ?
-                                    <CollectionButtons collections={collections} isAdmin={isAdmin} push={push} />
-                                    :
-                                    <CollectionEmptyState />
-                                }
-                            </div>
-                        }
-                        {/* only show title if we're showing the questions AND collections, otherwise title goes in the main header */}
-                        { showQuestions && showCollections &&
-                            <div
-                                className="inline-block mt2 mb2 cursor-pointer text-brand-hover"
-                                onClick={() => this.setState({ questionsExpanded: !questionsExpanded })}
-                            >
-                                <div className="flex align-center">
-                                    <DisclosureTriangle open={questionsExpanded} />
-                                    <h2>Everything Else</h2>
-                                </div>
-                            </div>
-                        }
-                        <Collapse isOpened={showQuestions && (questionsExpanded || !showCollections)} keepCollapsedContent={true}>
-                            <EntityList
-                                entityType="cards"
-                                entityQuery={{ f: "all", collection: "", ...location.query }}
-                                // use replace when changing sections so back button still takes you back to collections page
-                                onChangeSection={(section) => replace({
-                                    ...location,
-                                    query: { ...location.query, f: section }
-                                })}
-                                defaultEmptyState="Questions that aren’t in a collection will be shown here"
-                            />
-                        </Collapse>
-                    </PageContent>
-                </div>
+                    </Collapse>
+                </PageContent>
             </Page>
         )
     }

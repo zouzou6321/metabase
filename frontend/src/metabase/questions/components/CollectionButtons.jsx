@@ -5,7 +5,7 @@ import cx from "classnames";
 import Icon from "metabase/components/Icon";
 import ArchiveCollectionWidget from "../containers/ArchiveCollectionWidget";
 
-const COLLECTION_ICON_SIZE = 64;
+const COLLECTION_ICON_SIZE = 32;
 
 const COLLECTION_BOX_CLASSES = "relative block p4 hover-parent hover--visibility cursor-pointer text-centered transition-background";
 
@@ -40,8 +40,6 @@ class CollectionButton extends Component {
                 <div
                     className={cx(COLLECTION_BOX_CLASSES, 'text-white-hover')}
                     style={{
-                        width: 290,
-                        height: 180,
                         borderRadius: 10,
                         backgroundColor: this.state.hovered ? color : '#fafafa'
                     }}

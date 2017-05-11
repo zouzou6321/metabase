@@ -7,7 +7,6 @@ export default class ActivityStory extends Component {
         super(props, context);
 
         this.styles = {
-            borderWidth: '2px',
             borderColor: '#DFE8EA',
         }
     }
@@ -25,7 +24,7 @@ export default class ActivityStory extends Component {
 
         return (
             <div className="mt1 border-left flex mr2" style={{borderWidth: '3px', marginLeft: '22px', borderColor: '#F2F5F6'}}>
-                <div className="flex full ml4 bordered rounded p2" style={this.styles}>
+                <div className="flex full ml4 bordered rounded bg-white shadowed p2" style={this.styles}>
                     { story.bodyLink ?
                         <Link to={story.bodyLink} data-metabase-event={"Activity Feed;Story Clicked;"+story.topic} className="link">{story.body}</Link>
                     :

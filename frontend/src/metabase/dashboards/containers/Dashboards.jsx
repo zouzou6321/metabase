@@ -10,7 +10,6 @@ import type {Dashboard} from "metabase/meta/types/Dashboard";
 
 import DashboardList from "../components/DashboardList";
 
-import TitleAndDescription from "metabase/components/TitleAndDescription";
 import CreateDashboardModal from "metabase/components/CreateDashboardModal";
 import Modal from "metabase/components/Modal.jsx";
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper";
@@ -28,7 +27,9 @@ import * as dashboardsActions from "../dashboards";
 import {getDashboardListing} from "../selectors";
 import {getUser} from "metabase/selectors/user";
 
+import Page from 'metabase/components/page/Page'
 import PageHeader from 'metabase/components/page/PageHeader'
+import PageContent from 'metabase/components/page/PageContent'
 
 const mapStateToProps = (state, props) => ({
     dashboards: getDashboardListing(state),
@@ -145,85 +146,87 @@ export class Dashboards extends Component {
         const noResultsFound = filteredDashboards.length === 0;
 
         return (
-            <div className="full-height">
+            <Page>
                     <PageHeader
                         title="Dashboards"
                         actions={[
                             <Link to="/dashboards/archive">
-                                <Icon name="viewArchive"
-                                      className="mr2 text-brand-hover"
-                                      tooltip="View the archive"
-                                      size={20}/>
+                                <Icon
+                                    name="viewArchive"
+                                    className="mr2 text-brand-hover"
+                                    tooltip="View the archive"
+                                    size={20}
+                                />
                             </Link>,
+                            <Icon
+                                name="add"
+                                className="text-brand-hover"
+                                tooltip="Add new dashboard"
+                                size={20}
+                                onClick={this.showCreateDashboard}
+                            />
 
                         ]}
                     />
-            <LoadingAndErrorWrapper
-                loading={isLoading}
-                className={cx({"flex flex-full flex-column": noDashboardsCreated})}
-                noBackground
-            >
-                { modalOpen ? this.renderCreateDashboardModal() : null }
-                <div>
-                            {!noDashboardsCreated && (
-                            <Icon name="add"
-                                  className="text-brand-hover"
-                                  tooltip="Add new dashboard"
-                                  size={20}
-                                  onClick={this.showCreateDashboard}/>
-                            )}
-                </div>
-                { noDashboardsCreated ?
-                    <div className="mt2 flex-full flex align-center justify-center">
-                        <EmptyState
-                            message={<span>Put the charts and graphs you look at <br/>frequently in a single, handy place.</span>}
-                            image="/app/img/dashboard_illustration"
-                            action="Create a dashboard"
-                            onActionClick={this.showCreateDashboard}
-                            className="mt2"
-                            imageClassName="mln2"
-                        />
-                    </div>
-                    : <div className="wrapper">
-                        <div className="flex-full flex align-center pb1">
-                            <SearchHeader
-                                searchText={searchText}
-                                setSearchText={(text) => this.setState({searchText: text})}
-                            />
-                            <div className="flex-align-right">
-                                <ListFilterWidget
-                                    items={SECTIONS.filter(item => item.id !== "archived")}
-                                    activeItem={section}
-                                    onChange={this.updateSection}
-                                />
-                            </div>
-                        </div>
-                        { noResultsFound ?
-                            <div className="flex justify-center">
-                                <EmptyState
-                                    message={
-                                        <div className="mt4">
-                                            <h3 className="text-grey-5">No results found</h3>
-                                            <p className="text-grey-4">Try adjusting your filter to find what you’re
-                                                looking for.</p>
+                    <PageContent>
+                        <LoadingAndErrorWrapper
+                            loading={isLoading}
+                            className={cx({"flex flex-full flex-column": noDashboardsCreated})}
+                            noBackground
+                        >
+                            { modalOpen ? this.renderCreateDashboardModal() : null }
+                            { noDashboardsCreated ?
+                                <div className="mt2 flex-full flex align-center justify-center">
+                                    <EmptyState
+                                        message={<span>Put the charts and graphs you look at <br/>frequently in a single, handy place.</span>}
+                                        image="/app/img/dashboard_illustration"
+                                        action="Create a dashboard"
+                                        onActionClick={this.showCreateDashboard}
+                                        className="mt2"
+                                        imageClassName="mln2"
+                                    />
+                                </div>
+                                : <div>
+                                    <div className="flex-full flex align-center pb1">
+                                        <SearchHeader
+                                            searchText={searchText}
+                                            setSearchText={(text) => this.setState({searchText: text})}
+                                        />
+                                        <div className="flex-align-right">
+                                            <ListFilterWidget
+                                                items={SECTIONS.filter(item => item.id !== "archived")}
+                                                activeItem={section}
+                                                onChange={this.updateSection}
+                                            />
                                         </div>
+                                    </div>
+                                    { noResultsFound ?
+                                        <div className="flex justify-center">
+                                            <EmptyState
+                                                message={
+                                                    <div className="mt4">
+                                                        <h3 className="text-grey-5">No results found</h3>
+                                                        <p className="text-grey-4">Try adjusting your filter to find what you’re
+                                                            looking for.</p>
+                                                    </div>
+                                                }
+                                                image="/app/img/empty_dashboard"
+                                                imageHeight="210px"
+                                                action="Create a dashboard"
+                                                imageClassName="mln2"
+                                                smallDescription
+                                            />
+                                        </div>
+                                        : <DashboardList dashboards={filteredDashboards}
+                                                         setFavorited={this.props.setFavorited}
+                                                         setArchived={this.props.setArchived}/>
                                     }
-                                    image="/app/img/empty_dashboard"
-                                    imageHeight="210px"
-                                    action="Create a dashboard"
-                                    imageClassName="mln2"
-                                    smallDescription
-                                />
-                            </div>
-                            : <DashboardList dashboards={filteredDashboards}
-                                             setFavorited={this.props.setFavorited}
-                                             setArchived={this.props.setArchived}/>
-                        }
-                    </div>
+                                </div>
 
-                }
-                </LoadingAndErrorWrapper>
-            </div>
+                            }
+                    </LoadingAndErrorWrapper>
+                </PageContent>
+            </Page>
         );
     }
 }

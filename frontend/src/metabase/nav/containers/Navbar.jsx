@@ -96,7 +96,7 @@ export default class Navbar extends Component {
 
     renderEmptyNav() {
         return (
-            <nav className={cx("Nav py2 sm-py1 xl-py3 relative", this.props.className)}>
+            <nav className={cx("z4 py2 sm-py1 xl-py3 relative", this.props.className)}>
                 <ul className="wrapper flex align-center">
                     <li>
                         <Link to="/" data-metabase-event={"Navbar;Logo"} className="NavItem cursor-pointer flex align-center">
@@ -110,11 +110,16 @@ export default class Navbar extends Component {
 
     renderMainNav() {
         return (
-            <nav className={cx("Nav relative bg-brand", this.props.className)}>
+            <nav className={cx("z4 relative bg-brand", this.props.className)}>
                 <ol className="flex align-center">
-                    <li className="absolute left bottom top flex align center flex-full justify-center p2">
-                        <Link to="/" data-metabase-event={"Navbar;Logo"}>
-                            <LogoIcon dark={true}></LogoIcon>
+                    <li className="absolute left bottom top" style={{ width: '5em' }}>
+                        <Link
+                            to="/"
+                            className="NavItem flex align center flex-full justify-center p2"
+                            data-metabase-event={"Navbar;Logo"}
+                            activeClassName="NavItem--selected"
+                        >
+                            <LogoIcon dark={true} />
                         </Link>
                     </li>
                     <li className="wrapper">

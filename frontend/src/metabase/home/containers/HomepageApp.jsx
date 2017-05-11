@@ -15,6 +15,10 @@ import NextStep from "../components/NextStep.jsx";
 import * as homepageActions from "../actions";
 import { getActivity, getRecentViews, getUser } from "../selectors";
 
+import Page from "metabase/components/page/Page"
+import PageHeader from "metabase/components/page/PageHeader"
+import PageContent from "metabase/components/page/PageContent"
+
 const mapStateToProps = (state, props) => {
     return {
         activity:       getActivity(state),
@@ -67,7 +71,7 @@ export default class HomepageApp extends Component {
         const { user } = this.props;
 
         return (
-            <div className="full">
+            <Page>
                 { this.state.onboarding ?
                     <Modal>
                         <NewUserOnboardingModal
@@ -76,32 +80,19 @@ export default class HomepageApp extends Component {
                         />
                     </Modal>
                 : null }
-
-                <div className="bg-brand text-white md-pl4">
-                    <div style={{marginRight: 346}}>
-                        <div className="Layout-mainColumn">
-                            <header style={this.styles.headerGreeting} className="flex align-center pb4 pt1">
-                                <Smile />
-                                <div id="Greeting" className="ml2">{this.state.greeting}</div>
-                            </header>
+                <PageHeader title={this.state.greeting} />
+                <PageContent>
+                    <div className="flex">
+                        <div style={{ flex: '66.66%' }}>
+                            <Activity {...this.props} />
                         </div>
-                    </div>
-                </div>
-                <div className="flex">
-                    <div className="wrapper">
-                        <div className="Layout-mainColumn pl2">
-                          <div className="pt4 h2 text-normal ml2">Activity</div>
-                          <Activity {...this.props} />
-                        </div>
-                    </div>
-                    <div className="Layout-sidebar flex-no-shrink hide sm-show">
-                        <div>
+                        <div style={{ flex: '33.33%' }}>
                             <NextStep />
                             <RecentViews {...this.props} />
                         </div>
                     </div>
-                </div>
-            </div>
+                </PageContent>
+            </Page>
         );
     }
 }
