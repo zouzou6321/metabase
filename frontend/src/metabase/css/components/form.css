@@ -34,6 +34,7 @@
     font-size: 0.85em;
     font-weight: bold;
     color: currentColor;
+    margin-bottom: 0.25em;
 }
 
 .Form-field.Form--fieldError {

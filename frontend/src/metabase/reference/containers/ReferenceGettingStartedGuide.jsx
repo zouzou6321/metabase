@@ -213,7 +213,7 @@ export default class ReferenceGettingStartedGuide extends Component {
 
 
         return (
-            <form className="full relative py4" style={style} onSubmit={onSubmit}>
+            <form className="full relative" style={style} onSubmit={onSubmit}>
                 { isDashboardModalOpen &&
                     <Modal>
                         <CreateDashboardModal
@@ -448,7 +448,7 @@ export default class ReferenceGettingStartedGuide extends Component {
                             isSuperuser={user && user.is_superuser}
                         />
 
-                        <div className="wrapper wrapper--trim">
+                        <div className="wrapper">
                             { (!guide || isGuideEmpty(guide)) && user && user.is_superuser && (
                                 <AdminInstructions>
                                     <h2 className="py2">Help your team get started with your data.</h2>

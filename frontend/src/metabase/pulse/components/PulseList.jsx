@@ -4,6 +4,8 @@ import PulseListItem from "./PulseListItem.jsx";
 import WhatsAPulse from "./WhatsAPulse.jsx";
 import SetupModal from "./SetupModal.jsx";
 
+import PageHeader from 'metabase/components/page/PageHeader'
+
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper.jsx";
 import Modal from "metabase/components/Modal.jsx";
 
@@ -40,16 +42,16 @@ export default class PulseList extends Component {
     render() {
         let { pulses, user } = this.props;
         return (
-            <div className="PulseList pt3">
-                <div className="border-bottom mb2">
-                    <div className="wrapper wrapper--trim flex align-center mb2">
-                        <h1>Pulses</h1>
-                        <a onClick={this.create} className="PulseButton Button flex-align-right">Create a pulse</a>
-                    </div>
-                </div>
+            <div className='full-height' style={{ backgroundColor: 'rgb(249, 251, 252)' }}>
+                <PageHeader
+                    title="Pulses"
+                    actions={[
+                        <a onClick={this.create} className="ml-auto">Create a pulse</a>
+                    ]}
+                />
                 <LoadingAndErrorWrapper loading={!pulses}>
                 { () => pulses.length > 0 ?
-                    <ul className="wrapper wrapper--trim">
+                    <ul className="wrapper">
                         {pulses.slice().sort((a,b) => b.created_at - a.created_at).map(pulse =>
                             <li key={pulse.id}>
                                 <PulseListItem

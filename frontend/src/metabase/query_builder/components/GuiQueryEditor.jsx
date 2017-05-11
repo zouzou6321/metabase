@@ -336,7 +336,7 @@ export default class GuiQueryEditor extends Component {
         }
 
         return (
-            <div className={cx("GuiBuilder rounded shadowed", { "GuiBuilder--expand": this.state.expanded, disabled: readOnly })} ref="guiBuilder">
+            <div className={cx("GuiBuilder rounded shadowed full", { "GuiBuilder--expand": this.state.expanded, disabled: readOnly })} ref="guiBuilder">
                 <div className="GuiBuilder-row flex">
                     {this.renderDataSection()}
                     {this.renderFilterSection()}

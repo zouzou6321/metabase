@@ -28,6 +28,8 @@ import * as dashboardsActions from "../dashboards";
 import {getDashboardListing} from "../selectors";
 import {getUser} from "metabase/selectors/user";
 
+import PageHeader from 'metabase/components/page/PageHeader'
+
 const mapStateToProps = (state, props) => ({
     dashboards: getDashboardListing(state),
     user: getUser(state)
@@ -143,32 +145,33 @@ export class Dashboards extends Component {
         const noResultsFound = filteredDashboards.length === 0;
 
         return (
+            <div className="full-height">
+                    <PageHeader
+                        title="Dashboards"
+                        actions={[
+                            <Link to="/dashboards/archive">
+                                <Icon name="viewArchive"
+                                      className="mr2 text-brand-hover"
+                                      tooltip="View the archive"
+                                      size={20}/>
+                            </Link>,
+
+                        ]}
+                    />
             <LoadingAndErrorWrapper
-                style={{ backgroundColor: "#f9fbfc" }}
                 loading={isLoading}
-                className={cx("relative px4 full-height", {"flex flex-full flex-column": noDashboardsCreated})}
+                className={cx({"flex flex-full flex-column": noDashboardsCreated})}
                 noBackground
             >
                 { modalOpen ? this.renderCreateDashboardModal() : null }
-                <div className="flex align-center pt4 pb1">
-                    <TitleAndDescription title="Dashboards"/>
-
-                    <div className="flex-align-right cursor-pointer text-grey-5">
-                        <Link to="/dashboards/archive">
-                            <Icon name="viewArchive"
-                                  className="mr2 text-brand-hover"
-                                  tooltip="View the archive"
-                                  size={20}/>
-                        </Link>
-
-                        {!noDashboardsCreated &&
-                        <Icon name="add"
-                              className="text-brand-hover"
-                              tooltip="Add new dashboard"
-                              size={20}
-                              onClick={this.showCreateDashboard}/>
-                        }
-                    </div>
+                <div>
+                            {!noDashboardsCreated && (
+                            <Icon name="add"
+                                  className="text-brand-hover"
+                                  tooltip="Add new dashboard"
+                                  size={20}
+                                  onClick={this.showCreateDashboard}/>
+                            )}
                 </div>
                 { noDashboardsCreated ?
                     <div className="mt2 flex-full flex align-center justify-center">
@@ -181,7 +184,7 @@ export class Dashboards extends Component {
                             imageClassName="mln2"
                         />
                     </div>
-                    : <div>
+                    : <div className="wrapper">
                         <div className="flex-full flex align-center pb1">
                             <SearchHeader
                                 searchText={searchText}
@@ -219,7 +222,8 @@ export class Dashboards extends Component {
                     </div>
 
                 }
-            </LoadingAndErrorWrapper>
+                </LoadingAndErrorWrapper>
+            </div>
         );
     }
 }

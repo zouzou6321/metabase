@@ -19,8 +19,8 @@
 
 @media screen and (--breakpoint-min-md) {
     .wrapper, :local(.wrapper) {
-        padding-left: 3em;
-        padding-right: 3em;
+        padding-left: 5em;
+        padding-right: 5em;
     }
 }
 

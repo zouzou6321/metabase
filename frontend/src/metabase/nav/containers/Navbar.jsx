@@ -25,13 +25,6 @@ const mapDispatchToProps = {
 };
 
 const BUTTON_PADDING_STYLES = {
-    navButton: {
-        paddingLeft: "1.0rem",
-        paddingRight: "1.0rem",
-        paddingTop: "0.75rem",
-        paddingBottom: "0.75rem"
-    },
-
     newQuestion: {
         paddingLeft: "1.0rem",
         paddingRight: "1.0rem",
@@ -54,10 +47,9 @@ const AdminNavItem = ({ name, path, currentPath }) =>
 const MainNavLink = ({ to, name, eventName }) =>
     <Link
         to={to}
+        className="NavItem block text-white p2 py3 no-decoration text-bold"
         data-metabase-event={`NavBar;${eventName}`}
-        style={BUTTON_PADDING_STYLES.navButton}
-        className={"NavItem cursor-pointer text-white text-bold no-decoration flex align-center px2 transition-background"}
-        activeClassName="NavItem--selected"
+        activeClassName={"NavItem--selected"}
     >
         {name}
     </Link>
@@ -119,33 +111,37 @@ export default class Navbar extends Component {
     renderMainNav() {
         return (
             <nav className={cx("Nav relative bg-brand", this.props.className)}>
-                <ul className="flex align-center">
-                    <li>
-                        <Link to="/" data-metabase-event={"Navbar;Logo"} className="NavItem cursor-pointer text-white flex align-center my1 transition-background p1">
+                <ol className="flex align-center">
+                    <li className="absolute left bottom top flex align center flex-full justify-center p2">
+                        <Link to="/" data-metabase-event={"Navbar;Logo"}>
                             <LogoIcon dark={true}></LogoIcon>
                         </Link>
                     </li>
-                    <li className="pl3 hide sm-show">
-                        <MainNavLink to="/dashboards" name="Dashboards" eventName="Dashboards" />
+                    <li className="wrapper">
+                        <ol className="flex align-center">
+                            <li>
+                                <MainNavLink to="/dashboards" name="Dashboards" eventName="Dashboards" />
+                            </li>
+                            <li>
+                                <MainNavLink to="/questions" name="Questions" eventName="Questions" />
+                            </li>
+                            <li>
+                                <MainNavLink to="/pulse" name="Pulses" eventName="Pulses" />
+                            </li>
+                            <li>
+                                <MainNavLink to="/reference/guide" name="Data Reference" eventName="DataReference" />
+                            </li>
+                            <li>
+                                <Link to={Urls.question()} data-metabase-event={"Navbar;New Question"} style={BUTTON_PADDING_STYLES.newQuestion} className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all">
+                                    New <span>Question</span>
+                                </Link>
+                            </li>
+                        </ol>
                     </li>
-                    <li className="pl1 hide sm-show">
-                        <MainNavLink to="/questions" name="Questions" eventName="Questions" />
-                    </li>
-                    <li className="pl1 hide sm-show">
-                        <MainNavLink to="/pulse" name="Pulses" eventName="Pulses" />
-                    </li>
-                    <li className="pl1 hide sm-show">
-                        <MainNavLink to="/reference/guide" name="Data Reference" eventName="DataReference" />
-                    </li>
-                    <li className="pl3 hide sm-show">
-                        <Link to={Urls.question()} data-metabase-event={"Navbar;New Question"} style={BUTTON_PADDING_STYLES.newQuestion} className="NavNewQuestion rounded inline-block bg-white text-brand text-bold cursor-pointer px2 no-decoration transition-all">
-                            New <span>Question</span>
-                        </Link>
-                    </li>
-                    <li className="flex-align-right transition-background">
+                    <li className="flex-align-right transition-background absolute top right">
                         <div className="inline-block text-white"><ProfileLink {...this.props}></ProfileLink></div>
                     </li>
-                </ul>
+                </ol>
             </nav>
         );
     }

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import cx from 'classnames'
 
 import _ from "underscore";
 
@@ -42,6 +43,6 @@ export default class Input extends Component {
 
     render() {
         let props = _.omit(this.props, "onBlurChange", "value", "onBlur", "onChange");
-        return <input {...props} value={this.state.value} onBlur={this.onBlur} onChange={this.onChange} />
+        return <input {...props} className={cx("input", this.props.className)} value={this.state.value} onBlur={this.onBlur} onChange={this.onChange} />
     }
 }

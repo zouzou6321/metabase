@@ -9,7 +9,7 @@ export default class Header extends Component {
 
     static defaultProps = {
         buttons: null,
-        className: "py1 lg-py2 xl-py3 wrapper",
+        className: "py1 lg-py2 xl-py3",
         breadcrumb: null
     };
 
@@ -42,7 +42,7 @@ export default class Header extends Component {
         }
 
         return (
-            <div className={cx("QueryBuilder-section pt2 sm-pt2 flex align-center", className)}>
+            <div className={cx("pt2 sm-pt2 flex align-center", className)}>
                 <div className={cx("px2 sm-px0 pt2 relative flex-full")}>
                     { badge &&
                         <div className="absolute top left ml2 sm-ml2">{badge}</div>

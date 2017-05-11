@@ -230,17 +230,15 @@ class LegacyQueryBuilder extends Component {
                                 datasetQuery={card && card.dataset_query}
                             />
                         :
-                            <div className="wrapper">
-                                <GuiQueryEditor
-                                    {...this.props}
-                                    datasetQuery={card && card.dataset_query}
-                                />
-                            </div>
+                        <GuiQueryEditor
+                            {...this.props}
+                            datasetQuery={card && card.dataset_query}
+                        />
                         }
                     </div>
 
                     <div ref="viz" id="react_qb_viz" className="flex z1" style={{ "transition": "opacity 0.25s ease-in-out" }}>
-                        <QueryVisualization {...this.props} className="full wrapper mb2 z1" />
+                        <QueryVisualization {...this.props} className="full mb2 z1" />
                     </div>
 
                     { ModeFooter &&

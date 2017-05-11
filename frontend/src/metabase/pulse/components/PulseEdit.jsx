@@ -12,9 +12,11 @@ import WhatsAPulse from "./WhatsAPulse.jsx";
 import ActionButton from "metabase/components/ActionButton.jsx";
 import MetabaseAnalytics from "metabase/lib/analytics";
 import ModalWithTrigger from "metabase/components/ModalWithTrigger.jsx";
-import ModalContent from "metabase/components/ModalContent.jsx";
-import DeleteModalWithConfirm from "metabase/components/DeleteModalWithConfirm.jsx";
+import ModalContent from "metabase/components/ModalContent.jsx"; import DeleteModalWithConfirm from "metabase/components/DeleteModalWithConfirm.jsx";
 
+import Page from "metabase/components/page/Page"
+import PageHeader from "metabase/components/page/PageHeader"
+import PageContent from "metabase/components/page/PageContent"
 
 import { pulseIsValid, cleanPulse } from "metabase/lib/pulse";
 
@@ -94,27 +96,29 @@ export default class PulseEdit extends Component {
         let { pulse, formInput } = this.props;
         let isValid = pulseIsValid(pulse, formInput.channels);
         return (
-            <div className="PulseEdit">
-                <div className="PulseEdit-header flex align-center border-bottom py3">
-                    <h1>{pulse && pulse.id != null ? "Edit" : "New"} pulse</h1>
-                    <ModalWithTrigger
-                        ref="pulseInfo"
-                        className="Modal WhatsAPulseModal"
-                        triggerElement="What's a Pulse?"
-                        triggerClasses="text-brand text-bold flex-align-right"
-                    >
-                        <ModalContent
-                            onClose={() => this.refs.pulseInfo.close()}
+            <Page>
+                <PageHeader
+                    title={pulse && pulse.id != null ? "Edit" : "New"}
+                    actions={[
+                        <ModalWithTrigger
+                            ref="pulseInfo"
+                            className="Modal WhatsAPulseModal"
+                            triggerElement="What's a Pulse?"
+                            triggerClasses="text-brand text-bold flex-align-right"
                         >
-                            <div className="mx4 mb4">
-                                <WhatsAPulse
-                                    button={<button className="Button Button--primary" onClick={() => this.refs.pulseInfo.close()}>Got it</button>}
-                                />
-                            </div>
-                        </ModalContent>
-                    </ModalWithTrigger>
-                </div>
-                <div className="PulseEdit-content pt2 pb4">
+                            <ModalContent
+                                onClose={() => this.refs.pulseInfo.close()}
+                            >
+                                <div className="mx4 mb4">
+                                    <WhatsAPulse
+                                        button={<button className="Button Button--primary" onClick={() => this.refs.pulseInfo.close()}>Got it</button>}
+                                    />
+                                </div>
+                            </ModalContent>
+                        </ModalWithTrigger>
+                    ]}
+                />
+                <PageContent>
                     <PulseEditName {...this.props} setPulse={this.setPulse} />
                     <PulseEditCards {...this.props} setPulse={this.setPulse} />
                     <PulseEditChannels {...this.props} setPulse={this.setPulse} pulseIsValid={isValid} />
@@ -143,19 +147,19 @@ export default class PulseEdit extends Component {
                             </div>
                         </div>
                     }
-                </div>
-                <div className="PulseEdit-footer flex align-center border-top py3">
-                    <ActionButton
-                        actionFn={this.save}
-                        className={cx("Button Button--primary", { "disabled": !isValid })}
-                        normalText={pulse.id != null ? "Save changes" : "Create pulse"}
-                        activeText="Saving…"
-                        failedText="Save failed"
-                        successText="Saved"
-                    />
-                    <Link to="/pulse" className="text-bold flex-align-right no-decoration text-brand-hover">Cancel</Link>
-                </div>
-            </div>
+                    <div className="flex align-center border-top py3">
+                        <ActionButton
+                            actionFn={this.save}
+                            className={cx("Button Button--primary", { "disabled": !isValid })}
+                            normalText={pulse.id != null ? "Save changes" : "Create pulse"}
+                            activeText="Saving…"
+                            failedText="Save failed"
+                            successText="Saved"
+                        />
+                        <Link to="/pulse" className="text-bold flex-align-right no-decoration text-brand-hover">Cancel</Link>
+                    </div>
+                </PageContent>
+            </Page>
         );
     }
 }
