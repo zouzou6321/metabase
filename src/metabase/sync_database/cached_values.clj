@@ -21,7 +21,7 @@
                              (when <>
                                (schema/validate i/AnalyzeTable <>)))]
       ;; update table row count
-      #_(when (:row_count table-stats)
+      (when (:row_count table-stats)
         (db/update! table/Table table-id, :rows (:row_count table-stats)))
 
       ;; update individual fields

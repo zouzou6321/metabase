@@ -206,22 +206,18 @@
   [driver table new-field-ids]
   ((make-analyze-table driver) driver table new-field-ids))
 
-(defn analyze-table-data-shape!
-  "Analyze the data shape for a single `Table`."
+#_(defn analyze-table-data-shape!
+  "Produce a fingerprint for every field in a `Table`."
   [driver {table-id :id, :as table}]
-  (let [new-field-ids (db/select-ids field/Field, :table_id table-id, :visibility_type [:not= "retired"], :last_analyzed nil)]
+  (let [#_new-field-ids #_(db/select-ids field/Field, :table_id table-id, :visibility_type [:not= "retired"], :last_analyzed nil)]
     ;; TODO: this call should include the database
-    (when-let [table-stats (table/field-values table)
+    (let [table-values (table/field-values table)
                #_(u/prog1 (driver/analyze-table driver table new-field-ids)
                  (when <>
-                   (schema/validate i/AnalyzeTable <>)))]
-      ;; update table row count
-      (when (:row_count table-stats)
-        (db/update! table/Table table-id, :rows (:row_count table-stats)))
-
+                   (schema/validate i/AnalyzeTable <>)))
+          row_count (db/select-field :rows table/Table :id 1)]
       ;; update individual fields
       (doseq [{:keys [id preview-display special-type values]} (:fields table-stats)]
-        ;; set Field metadata we may have detected
         (when (and id (or preview-display special-type))
           (db/update-non-nil-keys! field/Field id
             ;; if a field marked `preview-display` as false then set the visibility type to `:details-only` (see models.field/visibility-types)
@@ -236,6 +232,33 @@
     (db/update-where! field/Field {:table_id        table-id
                                    :visibility_type [:not= "retired"]}
       :last_analyzed (u/new-sql-timestamp))))
+
+(defn analyze-table-data-shape!
+  "Produce a fingerprint for every field in a `Table`."
+  [driver {table-id :id, :as table}]
+  (let [#_new-field-ids #_(db/select-ids field/Field, :table_id table-id, :visibility_type [:not= "retired"], :last_analyzed nil)]
+    ;; TODO: this call should include the database
+    (let [table-values (table/field-values table)
+               #_(u/prog1 (driver/analyze-table driver table new-field-ids)
+                 (when <>
+                   (schema/validate i/AnalyzeTable <>)))
+          row-count (db/select-field :rows table/Table :id 1)]
+      ;; update individual fields
+      {:rows 17384
+       :Fields
+       (doseq [{:keys [id]} table-values]
+         {:id id
+          :table-type (rand-nth [:user :event :photo :transaction :location])
+          :cardinality 472
+          :has-primary-key? true
+          :tables-for-which-this-is-a-foreign-key ["foo" "bar"]
+          :min 2
+          :max 3
+          ;;:numberness 0.75
+          ;;:numeric-distribution [[0.05 0.001] [0.25 0.1] [0.5 0.5] [0.75 0.9] [0.95 0.999]]
+          
+          }
+         )})))
 
 (defn analyze-data-shape-for-tables!
   "Perform in-depth analysis on the data shape for all `Tables` in a given DATABASE.
