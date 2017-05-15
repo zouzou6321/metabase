@@ -196,16 +196,21 @@
 
 (declare RValue Aggregation)
 
-(def ^:private ExpressionOperator (s/named (s/enum :+ :- :* :/) "Valid expression operator"))
+(def ^:private ArithmeticExpressionOperator (s/named (s/enum :+ :- :* :/) "Valid expression operator"))
 
-(s/defrecord Expression [operator   :- ExpressionOperator
-                         args       :- [(s/cond-pre (s/recursive #'RValue)
-                                                    (s/recursive #'Aggregation))]
-                         custom-name :- (s/maybe su/NonBlankString)])
+(s/defrecord ArithmeticExpression [operator   :- ArithmeticExpressionOperator
+                                   args       :- [(s/cond-pre (s/recursive #'RValue)
+                                                              (s/recursive #'Aggregation))]
+                                   custom-name :- (s/maybe su/NonBlankString)])
+
+(def AnyExpression
+  "Schema for all expressions allowed in MBQL"
+  (s/named (s/cond-pre ArithmeticExpression)
+           "Valid expression."))
 
 (def AnyFieldOrExpression
   "Schema for a `FieldPlaceholder`, `AgRef`, or `Expression`."
-  (s/named (s/cond-pre ExpressionRef Expression FieldPlaceholderOrAgRef)
+  (s/named (s/cond-pre ExpressionRef AnyExpression FieldPlaceholderOrAgRef)
            "Valid field, ag field reference, expression, or expression reference."))
 
 
@@ -252,7 +257,7 @@
 (def RValue
   "Schema for anything that can be an [RValue](https://github.com/metabase/metabase/wiki/Query-Language-'98#rvalues) -
    a `Field`, `Value`, or `Expression`."
-  (s/named (s/cond-pre AnyValue FieldPlaceholderOrExpressionRef Expression)
+  (s/named (s/cond-pre AnyValue FieldPlaceholderOrExpressionRef AnyExpression)
            "RValue"))
 
 
@@ -265,7 +270,7 @@
 (s/defrecord AggregationWithField [aggregation-type :- (s/named (s/enum :avg :count :cumulative-sum :distinct :max :min :stddev :sum)
                                                                 "Valid aggregation type")
                                    field            :- (s/cond-pre FieldPlaceholderOrExpressionRef
-                                                                   Expression)
+                                                                   AnyExpression)
                                    custom-name      :- (s/maybe su/NonBlankString)])
 
 (defn- valid-aggregation-for-driver? [{:keys [aggregation-type]}]
@@ -276,7 +281,7 @@
 (def Aggregation
   "Schema for an `aggregation` subclause in an MBQL query."
   (s/constrained
-   (s/cond-pre AggregationWithField AggregationWithoutField Expression)
+   (s/cond-pre AggregationWithField AggregationWithoutField AnyExpression)
    valid-aggregation-for-driver?
    "standard-deviation-aggregations is not supported by this driver."))
 
@@ -342,5 +347,5 @@
    (s/optional-key :limit)       su/IntGreaterThanZero
    (s/optional-key :order-by)    [OrderBy]
    (s/optional-key :page)        Page
-   (s/optional-key :expressions) {s/Keyword Expression}
+   (s/optional-key :expressions) {s/Keyword AnyExpression}
    :source-table                 su/IntGreaterThanZero})
