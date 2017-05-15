@@ -203,9 +203,11 @@
                                                               (s/recursive #'Aggregation))]
                                    custom-name :- (s/maybe su/NonBlankString)])
 
+(s/defrecord SQLExpression [expr :- su/NonBlankString])
+
 (def AnyExpression
   "Schema for all expressions allowed in MBQL"
-  (s/named (s/cond-pre ArithmeticExpression)
+  (s/named (s/cond-pre ArithmeticExpression SQLExpression)
            "Valid expression."))
 
 (def AnyFieldOrExpression
