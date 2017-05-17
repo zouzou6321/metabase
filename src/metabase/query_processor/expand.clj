@@ -418,11 +418,11 @@
   `COLUMN`. `COLUMN` values are the keys in `MAPPING`, with the value
   found in `MAPPING` as the result of the expression."
   [column :- i/FieldPlaceholderOrExpressionRef
-   mapping :- {s/Str s/Str}]
+   mapping :- [{:id (s/cond-pre s/Str s/Num)
+                :value s/Str}]]
   (i/map->RemapExpression {:column column
-                           :mapping (reduce-kv (fn [acc k v]
-                                                 (assoc acc (Integer/parseInt k) v))
-                                               {} mapping)}))
+                           :mapping (zipmap (map :id mapping)
+                                            (map :value mapping))}))
 
 (s/defn ^:ql fk-remap-expression
   "Expression that uses `COLUMN` and `FOREIGN-COLUMN` to project out a
