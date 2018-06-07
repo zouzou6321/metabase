@@ -9,18 +9,22 @@ import { assocIn } from "icepick";
 
 import type { VisualizationProps } from "metabase/meta/types/Visualization";
 
-export default class BarFunnel extends Component<*, VisualizationProps, *> {
-    render() {
-        return (
-            <BarChart
-                 {...this.props}
-                 isScalarSeries={true}
-                 settings={{
-                     ...this.props.settings,
-                     ...getSettings(assocIn(this.props.series, [0, "card", "display"], "bar")),
-                     "bar.scalar_series": true
-                 }}
-             />
-        );
-    }
+export default class BarFunnel extends Component {
+  props: VisualizationProps;
+
+  render() {
+    return (
+      <BarChart
+        {...this.props}
+        isScalarSeries={true}
+        settings={{
+          ...this.props.settings,
+          ...getSettings(
+            assocIn(this.props.series, [0, "card", "display"], "bar"),
+          ),
+          "bar.scalar_series": true,
+        }}
+      />
+    );
+  }
 }

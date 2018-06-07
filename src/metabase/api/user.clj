@@ -5,6 +5,7 @@
              [common :as api]
              [session :as session-api]]
             [metabase.email.messages :as email]
+            [metabase.integrations.ldap :as ldap]
             [metabase.models.user :as user :refer [User]]
             [metabase.util :as u]
             [metabase.util.schema :as su]
@@ -21,7 +22,10 @@
 (api/defendpoint GET "/"
   "Fetch a list of all active `Users` for the admin People page."
   []
-  (db/select [User :id :first_name :last_name :email :is_superuser :google_auth :last_login], :is_active true))
+  (db/select [User :id :first_name :last_name :email :is_superuser :google_auth :ldap_auth :last_login]
+    :is_active true
+    {:order-by [[:%lower.last_name :asc]
+                [:%lower.first_name :asc]]}))
 
 (defn- reactivate-user! [existing-user first-name last-name]
   (when-not (:is_active existing-user)
@@ -30,15 +34,19 @@
       :last_name     last-name
       :is_active     true
       :is_superuser  false
-      ;; if the user orignally logged in via Google Auth and it's no longer enabled, convert them into a regular user (see Issue #3323)
+      ;; if the user orignally logged in via Google Auth and it's no longer enabled, convert them into a regular user
+      ;; (see Issue #3323)
       :google_auth   (boolean (and (:google_auth existing-user)
-                                   (session-api/google-auth-client-id))))) ; if google-auth-client-id is set it means Google Auth is enabled
+                                   ;; if google-auth-client-id is set it means Google Auth is enabled
+                                   (session-api/google-auth-client-id)))
+      :ldap_auth     (boolean (and (:ldap_auth existing-user)
+                                   (ldap/ldap-configured?)))))
   ;; now return the existing user whether they were originally active or not
   (User (u/get-id existing-user)))
 
 
 (api/defendpoint POST "/"
-  "Create a new `User`, or or reäctivate an existing one."
+  "Create a new `User`, or reactivate an existing one."
   [:as {{:keys [first_name last_name email password]} :body}]
   {first_name su/NonBlankString
    last_name  su/NonBlankString
@@ -71,8 +79,10 @@
    first_name (s/maybe su/NonBlankString)
    last_name  (s/maybe su/NonBlankString)}
   (check-self-or-superuser id)
-  (api/check-404 (db/exists? User, :id id, :is_active true)) ; only allow updates if the specified account is active
-  (api/check-400 (not (db/exists? User, :email email, :id [:not= id]))) ; can't change email if it's already taken BY ANOTHER ACCOUNT
+  ;; only allow updates if the specified account is active
+  (api/check-404 (db/exists? User, :id id, :is_active true))
+  ;; can't change email if it's already taken BY ANOTHER ACCOUNT
+  (api/check-400 (not (db/exists? User, :email email, :id [:not= id])))
   (api/check-500 (db/update-non-nil-keys! User id
                    :email        email
                    :first_name   first_name
@@ -88,10 +98,12 @@
   {password su/ComplexPassword}
   (check-self-or-superuser id)
   (api/let-404 [user (db/select-one [User :password_salt :password], :id id, :is_active true)]
-    ;; admins are allowed to reset anyone's password (in the admin people list) so no need to check the value of `old_password` for them
-    ;; regular users have to know their password, however
+    ;; admins are allowed to reset anyone's password (in the admin people list) so no need to check the value of
+    ;; `old_password` for them regular users have to know their password, however
     (when-not (:is_superuser @api/*current-user*)
-      (api/checkp (creds/bcrypt-verify (str (:password_salt user) old_password) (:password user)) "old_password" "Invalid password")))
+      (api/checkp (creds/bcrypt-verify (str (:password_salt user) old_password) (:password user))
+        "old_password"
+        "Invalid password")))
   (user/set-password! id password)
   ;; return the updated User
   (User id))

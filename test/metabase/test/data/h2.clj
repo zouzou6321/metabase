@@ -2,6 +2,7 @@
   "Code for creating / destroying an H2 database from a `DatabaseDefinition`."
   (:require [clojure.string :as s]
             [metabase.db.spec :as dbspec]
+            metabase.driver.h2 ; because we import metabase.driver.h2.H2Driver below
             [metabase.test.data
              [generic-sql :as generic]
              [interface :as i]]
@@ -51,16 +52,18 @@
 
 
 (u/strict-extend H2Driver
-  generic/IGenericSQLDatasetLoader
+  generic/IGenericSQLTestExtensions
   (let [{:keys [execute-sql!], :as mixin} generic/DefaultsMixin]
     (merge mixin
            {:create-db-sql             (constantly create-db-sql)
             :create-table-sql          create-table-sql
-            :database->spec            (comp dbspec/h2 i/database->connection-details) ; Don't use the h2 driver implementation, which makes the connection string read-only & if-exists only
+            ;; Don't use the h2 driver implementation, which makes the connection string read-only & if-exists only
+            :database->spec            (comp dbspec/h2 i/database->connection-details)
             :drop-db-if-exists-sql     (constantly nil)
             :execute-sql!              (fn [this _ dbdef sql]
-                                         ;; we always want to use 'server' context when execute-sql! is called
-                                         ;; (never try connect as GUEST, since we're not giving them priviledges to create tables / etc)
+                                         ;; we always want to use 'server' context when execute-sql! is called (never
+                                         ;; try connect as GUEST, since we're not giving them priviledges to create
+                                         ;; tables / etc)
                                          (execute-sql! this :server dbdef sql))
             :field-base-type->sql-type (u/drop-first-arg field-base-type->sql-type)
             :load-data!                generic/load-data-all-at-once!
@@ -69,8 +72,8 @@
             :prepare-identifier        (u/drop-first-arg s/upper-case)
             :quote-name                (u/drop-first-arg quote-name)}))
 
-  i/IDatasetLoader
-  (merge generic/IDatasetLoaderMixin
+  i/IDriverTestExtensions
+  (merge generic/IDriverTestExtensionsMixin
          {:database->connection-details       (u/drop-first-arg database->connection-details)
           :default-schema                     (constantly "PUBLIC")
           :engine                             (constantly :h2)

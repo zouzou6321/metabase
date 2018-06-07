@@ -33,6 +33,7 @@
    :creator_id             (:creator_id card)
    :database_id            (id)
    :dataset_query          (:dataset_query card)
+   :read_permissions       (vec (:read_permissions card))
    :description            nil
    :display                "table"
    :enable_embedding       false
@@ -44,7 +45,8 @@
    :cache_ttl              nil
    :query_type             "query"
    :table_id               (id :categories)
-   :visualization_settings {}})
+   :visualization_settings {}
+   :result_metadata        nil})
 
 (defn- dashboard->revision-object [dashboard]
   {:description  nil

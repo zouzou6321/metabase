@@ -2,6 +2,7 @@
   "Tests for /api/user endpoints."
   (:require [expectations :refer :all]
             [metabase
+             [email-test :as et]
              [http-client :as http]
              [middleware :as middleware]
              [util :as u]]
@@ -32,7 +33,8 @@
        :last_login   $
        :first_name   "Crowberto"
        :email        "crowberto@metabase.com"
-       :google_auth  false})
+       :google_auth  false
+       :ldap_auth    false})
     (match-$ (fetch-user :lucky)
       {:common_name  "Lucky Pigeon"
        :last_name    "Pigeon"
@@ -41,7 +43,8 @@
        :last_login   $
        :first_name   "Lucky"
        :email        "lucky@metabase.com"
-       :google_auth  false})
+       :google_auth  false
+       :ldap_auth    false})
     (match-$ (fetch-user :rasta)
       {:common_name  "Rasta Toucan"
        :last_name    "Toucan"
@@ -50,7 +53,8 @@
        :last_login   $
        :first_name   "Rasta"
        :email        "rasta@metabase.com"
-       :google_auth  false})}
+       :google_auth  false
+       :ldap_auth    false})}
   (do
     ;; Delete all the other random Users we've created so far
     (let [user-ids (set (map user->id [:crowberto :rasta :lucky :trashbird]))]
@@ -70,13 +74,14 @@
      :common_name  (str user-name " " user-name)
      :is_superuser false
      :is_qbnewb    true}
-    (do ((user->client :crowberto) :post 200 "user" {:first_name user-name
-                                                     :last_name  user-name
-                                                     :email      email})
-        (u/prog1 (db/select-one [User :email :first_name :last_name :is_superuser :is_qbnewb]
-                   :email email)
-          ;; clean up after ourselves
-          (db/delete! User :email email)))))
+    (et/with-fake-inbox
+      ((user->client :crowberto) :post 200 "user" {:first_name user-name
+                                                   :last_name  user-name
+                                                   :email      email})
+      (u/prog1 (db/select-one [User :email :first_name :last_name :is_superuser :is_qbnewb]
+                              :email email)
+               ;; clean up after ourselves
+               (db/delete! User :email email)))))
 
 
 ;; Test that reactivating a disabled account works
@@ -132,6 +137,7 @@
      :is_superuser false
      :is_qbnewb    true
      :google_auth  false
+     :ldap_auth    false
      :id           $})
   ((user->client :rasta) :get 200 "user/current"))
 
@@ -209,7 +215,7 @@
 ;; Test that a User can change their password (superuser and non-superuser)
 (defn- user-can-reset-password? [superuser?]
   (tt/with-temp User [user {:password "def", :is_superuser (boolean superuser?)}]
-    (let [creds           {:email (:email user), :password "def"}
+    (let [creds           {:username (:email user), :password "def"}
           hashed-password (db/select-one-field :password User, :email (:email user))]
       ;; use API to reset the users password
       (http/client creds :put 200 (format "user/%d/password" (:id user)) {:password     "abc123!!DEF"
@@ -247,7 +253,7 @@
                                  :last_name  (random-name)
                                  :email      "def@metabase.com"
                                  :password   "def123"}]
-    (let [creds {:email    "def@metabase.com"
+    (let [creds {:username "def@metabase.com"
                  :password "def123"}]
       [(metabase.http-client/client creds :put 200 (format "user/%d/qbnewb" id))
        (db/select-one-field :is_qbnewb User, :id id)])))

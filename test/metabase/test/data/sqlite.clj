@@ -27,12 +27,17 @@
   (fn [rows]
     (insert! (for [row rows]
                (into {} (for [[k v] row]
-                          [k (if-not (instance? java.util.Date v)
-                               v
-                               (hsql/call :datetime (hx/literal (u/date->iso-8601 v))))]))))))
+                          [k (cond
+                               (instance? java.sql.Time v)
+                               (hsql/call :time (hx/literal (u/format-time v "UTC")))
+
+                               (instance? java.util.Date v)
+                               (hsql/call :datetime (hx/literal (u/date->iso-8601 v)))
+
+                               :else v)]))))))
 
 (u/strict-extend SQLiteDriver
-  generic/IGenericSQLDatasetLoader
+  generic/IGenericSQLTestExtensions
   (merge generic/DefaultsMixin
          {:add-fk-sql                (constantly nil) ; TODO - fix me
           :create-db-sql             (constantly nil)
@@ -41,7 +46,7 @@
           :load-data!                (generic/make-load-data-fn load-data-stringify-dates generic/load-data-chunked)
           :pk-sql-type               (constantly "INTEGER")
           :field-base-type->sql-type (u/drop-first-arg field-base-type->sql-type)})
-  i/IDatasetLoader
-  (merge generic/IDatasetLoaderMixin
+  i/IDriverTestExtensions
+  (merge generic/IDriverTestExtensionsMixin
          {:database->connection-details (u/drop-first-arg database->connection-details)
           :engine                       (constantly :sqlite)}))
